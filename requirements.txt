@@ -8,7 +8,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
 pip==21.0.1
-setuptools==52.0.0.post20210125
+#setuptools==52.0.0.post20210125
 SQLAlchemy==1.4.5
 Werkzeug==1.0.1
 wheel==0.36.2
