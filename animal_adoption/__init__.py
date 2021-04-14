@@ -15,6 +15,8 @@ app.config['BASEDIR'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__
 db = SQLAlchemy()
 db.init_app(app)
 
+from animal_adoption.models.db import *
+
 if not os.path.exists('db.sqlite'):
     with app.app_context():
         db.create_all()
