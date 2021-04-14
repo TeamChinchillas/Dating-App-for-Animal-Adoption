@@ -1,12 +1,26 @@
-from animal_adoption import app
+from animal_adoption import app, Users
+from flask import jsonify
 
 
 @app.route('/', endpoint='', methods=['GET'])
 def login():
     """
-    Route for user to login with username and password and receive a JWT token
-    in response if credentials are valid
+    Test basic routing
     :return:
     """
     hello = "Hello World"
     return hello
+
+
+@app.route('/test-create-user', endpoint='test_create_user', methods=['GET'])
+def create_user():
+    """
+    Test user creation and password hashing
+    :return:
+    """
+    new_user = Users()
+    new_user.create_user('my_test', 'test123')
+    print(new_user.authenticate_user('my_test', 'test123'))
+    print(new_user.authenticate_user('my_test', 'test122'))
+
+    return jsonify(message='success'), 200
