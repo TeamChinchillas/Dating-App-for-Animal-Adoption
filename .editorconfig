@@ -1,0 +1,12 @@
+[*.yml]
+indent_size = 2
+
+[*.js]
+indent_size = 2
+
+[*.jsx]
+indent_size = 2
+
+[*.html]
+indent_size = 2
+
