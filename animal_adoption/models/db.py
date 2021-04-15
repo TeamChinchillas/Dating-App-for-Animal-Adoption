@@ -5,17 +5,17 @@ from werkzeug.security import generate_password_hash, \
 
 adoption_relationship = db.Table(
     'RelationshipTable',
-    db.Column('adopter_id', db.Integer, db.ForeignKey('AdoptersTable.id_adopters')),
-    db.Column('animal_id', db.Integer, db.ForeignKey('AnimalsTable.id_animals'))
+    db.Column('adopter_id', db.Integer, db.ForeignKey('AdopterTable.id_adopter')),
+    db.Column('animal_id', db.Integer, db.ForeignKey('AnimalTable.id_animal'))
 )
 
 
-class Users(db.Model):
-    __tablename__ = 'UsersTable'
-    id_users = db.Column(db.Integer, primary_key=True)
+class User(db.Model):
+    __tablename__ = 'UserTable'
+    id_user = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32))
     password_hash = db.Column(db.String(128))
-    user_details_id = db.Column(db.Integer, db.ForeignKey('UserDetailsTable.id_user_details'))
+    user_detail_id = db.Column(db.Integer, db.ForeignKey('UserDetailTable.id_user_detail'))
 
     def __init__(self):
         self.username = None
@@ -64,7 +64,7 @@ class Users(db.Model):
         if username is None or password is None:
             raise ValueError('Username and password may not be empty')
 
-        user = Users.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first()
         if user is None:
             raise ValueError('User %s does not exist' % username)
 
@@ -74,9 +74,9 @@ class Users(db.Model):
         return True
 
 
-class UserDetails(db.Model):
-    __tablename__ = 'UserDetailsTable'
-    id_user_details = db.Column(db.Integer, primary_key=True)
+class UserDetail(db.Model):
+    __tablename__ = 'UserDetailTable'
+    id_user_detail = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(32))
     last_name = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
@@ -97,50 +97,50 @@ class UserType(db.Model):
     user_type = db.Column(db.String(32))
 
 
-class Adopters(db.Model):
-    __tablename__ = 'AdoptersTable'
-    id_adopters = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('UsersTable.id_users'))
+class Adopter(db.Model):
+    __tablename__ = 'AdopterTable'
+    id_adopter = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
 
 
-class ShelterWorkers(db.Model):
-    __tablename__ = 'ShelterWorkersTable'
-    id_shelter_workers = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('UsersTable.id_users'))
-    shelter_id = db.Column(db.Integer, db.ForeignKey('SheltersTable.id_shelters'))
+class ShelterWorker(db.Model):
+    __tablename__ = 'ShelterWorkerTable'
+    id_shelter_worker = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
+    shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
 
 
-class Administrators(db.Model):
-    __tablename__ = 'AdministratorsTable'
-    id_administrators = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('UsersTable.id_users'))
+class Administrator(db.Model):
+    __tablename__ = 'AdministratorTable'
+    id_administrator = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
 
 
-class Shelters(db.Model):
-    __tablename__ = 'SheltersTable'
-    id_shelters = db.Column(db.Integer, primary_key=True)
+class Shelter(db.Model):
+    __tablename__ = 'ShelterTable'
+    id_shelter = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
     physical_address = db.Column(db.String(32))
     phone_number = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
 
 
-class Animals(db.Model):
-    __tablename__ = 'AnimalsTable'
-    id_animals = db.Column(db.Integer, primary_key=True)
+class Animal(db.Model):
+    __tablename__ = 'AnimalTable'
+    id_animal = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
     age = db.Column(db.String(32))
     description_link = db.Column(db.String(32))
     image_link = db.Column(db.String(32))
     animal_species_id = db.Column(db.Integer, db.ForeignKey('AnimalSpeciesTable.id_animal_species'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
-    animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionsTable.id_animal_dispositions'))
-    shelter_id = db.Column(db.Integer, db.ForeignKey('SheltersTable.id_shelters'))
+    animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+    shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
 
 
-class AnimalDispositions(db.Model):
-    __tablename__ = 'AnimalDispositionsTable'
-    id_animal_dispositions = db.Column(db.Integer, primary_key=True)
+class AnimalDisposition(db.Model):
+    __tablename__ = 'AnimalDispositionTable'
+    id_animal_disposition = db.Column(db.Integer, primary_key=True)
     disposition = db.Column(db.String(32))
 
 
@@ -148,12 +148,12 @@ class AnimalSpecies(db.Model):
     __tablename__ = 'AnimalSpeciesTable'
     id_animal_species = db.Column(db.Integer, primary_key=True)
     animal_species = db.Column(db.String(32))
-    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassesTable.id_animal_classes'))
+    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
 
 
-class AnimalClasses(db.Model):
-    __tablename__ = 'AnimalClassesTable'
-    id_animal_classes = db.Column(db.Integer, primary_key=True)
+class AnimalClass(db.Model):
+    __tablename__ = 'AnimalClassTable'
+    id_animal_class = db.Column(db.Integer, primary_key=True)
     animal_class = db.Column(db.String(32))
 
 

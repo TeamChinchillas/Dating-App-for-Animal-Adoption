@@ -1,4 +1,4 @@
-from animal_adoption import app, Users
+from animal_adoption import app, User
 from flask import jsonify
 
 
@@ -18,7 +18,7 @@ def create_user():
     Test user creation and password hashing
     :return:
     """
-    new_user = Users()
+    new_user = User()
     new_user.create_user('my_test', 'test123')
     print(new_user.authenticate_user('my_test', 'test123'))
     print(new_user.authenticate_user('my_test', 'test122'))
