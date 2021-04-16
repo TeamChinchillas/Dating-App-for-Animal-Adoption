@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import Landing from './pages/Landing'
+import { Flex, Box } from '@chakra-ui/react'
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <Flex direction="column" flexFlow="column" minH="100vh">
+        <Header />
+
+        <Box as="main" flex="1" bg="gray.50">
+          {/* main */}
+          <Switch>
+            <Route path="/account">
+              <div>Account page</div>
+            </Route>
+            <Route path="/signup">
+              <div>Sign up page</div>
+            </Route>
+            <Route path="/login">
+              <div>Login page</div>
+            </Route>
+            <Route path="/about">
+              <Box as="p" p="5">
+                This is a capstone project for OSU CS467.
+                <br />
+                This is a dating app project that matches shelter animals up with prospective owners.
+              </Box>
+            </Route>
+            <Route path="/">
+              <Landing />
+            </Route>
+          </Switch>
+        </Box>
+
+        <Footer />
+      </Flex>
+    </Router>
+  )
 }
 
-export default App;
+export default App
