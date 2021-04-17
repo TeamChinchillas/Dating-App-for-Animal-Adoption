@@ -1,8 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { Box, Flex, Text, Button, Heading, Spacer } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Heading,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react'
+import UserContext from './users/UserContext'
 
-const MenuItem = (props) => {
+import User from '../models/User'
+
+const NavLink = (props) => {
   const { to, children } = props
   return (
     <Text mt="{{ base: 5, md: 0 }}" mr={6}>
@@ -12,6 +26,12 @@ const MenuItem = (props) => {
 }
 
 export default function Header() {
+  const { user, setUser } = useContext(UserContext)
+
+  useEffect(() => {
+    setUser(new User({ first_name: 'TEST_USER' }))
+  }, [setUser])
+
   const [show, setShow] = useState(false)
   const handleToggle = () => setShow(!show)
 
@@ -33,14 +53,30 @@ export default function Header() {
       </Box>
 
       <Box display={{ sm: show ? 'block' : 'none', md: 'flex' }} width={{ sm: 'full', md: 'auto' }}>
-        <MenuItem to="/">Home</MenuItem>
-        <MenuItem to="/about">About</MenuItem>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/about">About</NavLink>
       </Box>
 
       <Box display={{ sm: show ? 'block' : 'none', md: 'block' }} mt={{ base: 4, md: 0 }}>
-        <Button colorScheme="green">
-          <Link to="/signup">Sign up</Link>
-        </Button>
+        {user ? (
+          <Menu>
+            <MenuButton as={Button} colorScheme="green" variant="outline">
+              {user.firstName}
+            </MenuButton>
+            <MenuList>
+              <Link to="/account">
+                <MenuItem>My account</MenuItem>
+              </Link>
+              <Link to="/logout">
+                <MenuItem>Log out</MenuItem>
+              </Link>
+            </MenuList>
+          </Menu>
+        ) : (
+          <Button colorScheme="green">
+            <Link to="/signup">Sign up</Link>
+          </Button>
+        )}
       </Box>
     </Flex>
   )

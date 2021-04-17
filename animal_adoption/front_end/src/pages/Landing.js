@@ -1,8 +1,22 @@
-import { Button, Image, Box, Stack, Heading, Text, Flex, Spacer } from '@chakra-ui/react'
+import { Button, Image, Box, Stack, Heading, Text, Flex } from '@chakra-ui/react'
+import UserContext from "../components/users/UserContext";
+import {  useContext } from "react";
+import User from '../models/User'
 
 export default function Landing() {
+  const {user, setUser} = useContext(UserContext)
+
+  const handleChangeUser = () => {
+    setUser(new User({first_name: 'ANOTHER USER'}))
+  }
+  const logout = () => {
+    setUser()
+  }
+
   return (
     <>
+    <Button onClick={handleChangeUser}>change user</Button>
+    <Button onClick={logout}>Logout</Button>
       <Flex
         align="center"
         justify={{ base: 'center', md: 'space-around', xl: 'space-between' }}

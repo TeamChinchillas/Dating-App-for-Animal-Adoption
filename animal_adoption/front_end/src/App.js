@@ -1,17 +1,21 @@
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import Landing from './pages/Landing'
 import { Flex, Box } from '@chakra-ui/react'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import UserContext from './components/users/UserContext'
+
+import { useState, useEffect } from 'react'
 
 function App() {
+  const [user, setUser] = useState()
+
   return (
-    <Router>
+    <UserContext.Provider value={{ user, setUser }}>
       <Flex direction="column" flexFlow="column" minH="100vh">
         <Header />
 
         <Box as="main" flex="1" bg="gray.50">
-          {/* main */}
           <Switch>
             <Route path="/account">
               <div>Account page</div>
@@ -37,7 +41,7 @@ function App() {
 
         <Footer />
       </Flex>
-    </Router>
+    </UserContext.Provider>
   )
 }
 
