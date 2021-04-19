@@ -4,9 +4,15 @@ from werkzeug.security import generate_password_hash, \
 
 
 adoption_relationship = db.Table(
-    'RelationshipTable',
+    'AdoptionRelationshipTable',
     db.Column('adopter_id', db.Integer, db.ForeignKey('AdopterTable.id_adopter')),
     db.Column('animal_id', db.Integer, db.ForeignKey('AnimalTable.id_animal'))
+)
+
+disposition_relationship = db.Table(
+    'DispositionRelationshipTable',
+    db.Column('adopter_id', db.Integer, db.ForeignKey('AdopterTable.id_adopter')),
+    db.Column('disposition_id', db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
 )
 
 
@@ -31,10 +37,13 @@ class User(db.Model):
         :param password:
         :return:
         """
-        self.username = username
-        self.hash_password(password)
-        db.session.add(self)
-        db.session.commit()
+        if not User.get_id_by_username(username):
+            self.username = username
+            self.hash_password(password)
+            db.session.add(self)
+            db.session.commit()
+        else:
+            print('Username \'{}\' already exists'.format(username))
 
     def hash_password(self, password):
         """
@@ -73,6 +82,14 @@ class User(db.Model):
 
         return True
 
+    @staticmethod
+    def get_id_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return user.id_user
+        else:
+            return None
+
 
 class UserDetail(db.Model):
     __tablename__ = 'UserDetailTable'
@@ -81,6 +98,14 @@ class UserDetail(db.Model):
     last_name = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserTypeTable.id_user_type'))
+    animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+
+    def __init__(self):
+        self.first_name = None
+        self.last_name = None
+        self.email_address = None
+        self.user_type_id = None
+        # self.animal_disposition_id = None
 
     def __repr__(self):
         return '<First name {} Last Name {} email address {} user type {}>'.format(
@@ -90,11 +115,28 @@ class UserDetail(db.Model):
             self.user_type_id
         )
 
+    @staticmethod
+    def get_user_detail(username):
+        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        return user_detail
+
+    def update_user_detail(self, first_name, last_name, email_address, user_type):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email_address = email_address
+        self.user_type_id = UserType.get_user_type_id_by_name(user_type)
+        # self.animal_disposition_id = AnimalDisposition.get_animal_disposition_id_by_name(animal_disposition)
+
 
 class UserType(db.Model):
     __tablename__ = 'UserTypeTable'
     id_user_type = db.Column(db.Integer, primary_key=True)
     user_type = db.Column(db.String(32))
+
+    @staticmethod
+    def get_user_type_id_by_name(user_type_name):
+        user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
+        return user_type_record.id_user_type
 
 
 class Adopter(db.Model):
@@ -142,6 +184,25 @@ class AnimalDisposition(db.Model):
     __tablename__ = 'AnimalDispositionTable'
     id_animal_disposition = db.Column(db.Integer, primary_key=True)
     disposition = db.Column(db.String(32))
+
+    def __init__(self):
+        self.disposition = None
+
+    def create_disposition(self, name):
+        if not AnimalDisposition.get_animal_disposition_id_by_name(name):
+            self.disposition = name
+            db.session.add(self)
+            db.session.commit()
+        else:
+            print('Animal disposition \'{}\' already exists'.format(name))
+
+    @staticmethod
+    def get_animal_disposition_id_by_name(disposition_name):
+        animal_disposition_record = AnimalDisposition.query.filter_by(disposition=disposition_name).first()
+        if animal_disposition_record:
+            return animal_disposition_record.id_animal_disposition
+        else:
+            return None
 
 
 class AnimalSpecies(db.Model):
