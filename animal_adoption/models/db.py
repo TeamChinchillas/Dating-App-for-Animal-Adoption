@@ -133,10 +133,28 @@ class UserType(db.Model):
     id_user_type = db.Column(db.Integer, primary_key=True)
     user_type = db.Column(db.String(32))
 
+    def __init__(self):
+        self.user_type = None
+
+    def __repr__(self):
+        return '<UserType {}>'.format(self.user_type)
+
+    def create_user_type(self, name):
+        user_type_record = UserType.get_user_type_id_by_name(name)
+        if not user_type_record:
+            self.user_type = name
+            db.session.add(self)
+            db.session.commit()
+        else:
+            print('User type \'{}\' already exists'.format(name))
+
     @staticmethod
     def get_user_type_id_by_name(user_type_name):
         user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
-        return user_type_record.id_user_type
+        if user_type_record:
+            return user_type_record.id_user_type
+        else:
+            return None
 
 
 class Adopter(db.Model):
