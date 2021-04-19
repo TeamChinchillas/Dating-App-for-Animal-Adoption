@@ -1,4 +1,3 @@
-import os
 from animal_adoption import app, User, AnimalDisposition
 
 
