@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Heading,
-  Spacer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from '@chakra-ui/react'
+import { Box, Flex, Text, Button, Heading, Spacer, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
 import UserContext from './users/UserContext'
 
 import User from '../models/User'
@@ -29,8 +18,15 @@ export default function Header() {
   const { user, setUser } = useContext(UserContext)
 
   useEffect(() => {
-    setUser(new User({ first_name: 'TEST_USER' }))
+    setUser(
+      new User({
+        first_name: 'TEST_USER',
+        user_type: 'ADMINISTRATOR',
+      })
+    )
   }, [setUser])
+
+  const logout = () => setUser()
 
   const [show, setShow] = useState(false)
   const handleToggle = () => setShow(!show)
@@ -67,9 +63,7 @@ export default function Header() {
               <Link to="/account">
                 <MenuItem>My account</MenuItem>
               </Link>
-              <Link to="/logout">
-                <MenuItem>Log out</MenuItem>
-              </Link>
+              <MenuItem onClick={logout}>Log out</MenuItem>
             </MenuList>
           </Menu>
         ) : (

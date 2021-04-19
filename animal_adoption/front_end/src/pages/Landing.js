@@ -1,69 +1,27 @@
 import { Button, Image, Box, Stack, Heading, Text, Flex } from '@chakra-ui/react'
-import UserContext from "../components/users/UserContext";
-import {  useContext } from "react";
+import UserContext from '../components/users/UserContext'
+import { useContext } from 'react'
 import User from '../models/User'
+import LandingBeforeLogin from '../components/landing/LandingBeforeLogin'
+import LandingForAdopters from '../components/landing/LandingForAdopters'
+import LandingForShelters from '../components/landing/LandingForShelters'
+import LandingForAdmins from '../components/landing/LandingForAdmins'
 
 export default function Landing() {
-  const {user, setUser} = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
-  const handleChangeUser = () => {
-    setUser(new User({first_name: 'ANOTHER USER'}))
-  }
-  const logout = () => {
-    setUser()
+  if (!user) {
+    return <LandingBeforeLogin />
   }
 
-  return (
-    <>
-    <Button onClick={handleChangeUser}>change user</Button>
-    <Button onClick={logout}>Logout</Button>
-      <Flex
-        align="center"
-        justify={{ base: 'center', md: 'space-around', xl: 'space-between' }}
-        direction={{ base: 'column-reverse', md: 'row' }}
-        wrap="no-wrap"
-        minH="80vh"
-        px={8}
-        py={8}
-      >
-        <Stack
-          spacing={4}
-          w={{ base: '80%', md: '50%' }}
-          align={['center', 'center', 'flex-start', 'flex-start', 'center']}
-        >
-          <Heading
-            as="h1"
-            size="xl"
-            fontWeight="bold"
-            color="primary.800"
-            textAlign={['center', 'center', 'left', 'left']}
-          >
-            <Text as="span" position="relative" color="gray.800">
-              Dating App for
-              <Text color="green.500">Animal Adoption</Text>
-            </Text>
-          </Heading>
-          <Heading
-            as="h2"
-            size="md"
-            color="primary.800"
-            opacity="0.8"
-            fontWeight="normal"
-            lineHeight={1.5}
-            textAlign={['center', 'center', 'left', 'left']}
-          >
-            Capstone project OSU CS467
-            <Text as="p" size="sm">
-              some description here
-            </Text>
-          </Heading>
-          <Button colorScheme="green">Get started</Button>
-        </Stack>
-
-        <Box w={{ base: '80%', sm: '70%', md: '50%' }} mb={{ base: 12, md: 0 }}>
-          <Image src="/img/lp.jpeg" size="100%" rounded="1rem" shadow="dark-lg" />
-        </Box>
-      </Flex>
-    </>
-  )
+  switch (user.userType) {
+    case 'ADOPTER':
+      return <LandingForAdopters />
+    case 'SHELTER':
+      return <LandingForShelters />
+    case 'ADMINISTRATOR':
+      return <LandingForAdmins />
+    default:
+      return <LandingBeforeLogin />
+  }
 }
