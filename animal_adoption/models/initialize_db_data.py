@@ -1,4 +1,4 @@
-from animal_adoption import app, User, AnimalDisposition
+from animal_adoption import app, User, UserType, AnimalDisposition
 
 
 def create_users():
@@ -11,6 +11,18 @@ def create_users():
     for user in users:
         new_user = User()
         new_user.create_user(user['username'], user['password'])
+
+
+def create_user_types():
+    user_types = [
+        'adopter',
+        'shelter worker',
+        'administrator',
+    ]
+
+    for user_type in user_types:
+        new_user_type = UserType()
+        new_user_type.create_user_type(user_type)
 
 
 def create_dispositions():
@@ -27,6 +39,7 @@ def create_dispositions():
 
 def initialize_db():
     create_users()
+    create_user_types()
     create_dispositions()
 
 
