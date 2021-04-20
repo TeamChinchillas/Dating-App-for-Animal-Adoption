@@ -1,4 +1,4 @@
-from animal_adoption import app, User, UserType, AnimalDisposition
+from animal_adoption import app, User, UserType, UserDetail, AnimalDisposition
 
 
 def create_users():
@@ -25,6 +25,93 @@ def create_user_types():
         new_user_type.create_user_type(user_type)
 
 
+def create_user_details():
+    user_details = [
+        {
+            'username': 'user1',
+            'first_name': 'john',
+            'last_name': 'doe',
+            'email_address': 'johndoe@a.com',
+            'user_type': 'adopter'
+        },
+        {
+            'username': 'user0',
+            'first_name': 'jane',
+            'last_name': 'doe',
+            'email_address': 'janedoe@a.com',
+            'user_type': 'adopter'
+        },
+        {
+            'username': 'user2',
+            'first_name': 'jim',
+            'last_name': 'doe',
+            'email_address': 'jimdoe@a.com',
+            'user_type': 'invalid'
+        },
+        {
+            'username': 'user2',
+            'first_name': 'jim',
+            'last_name': 'doe',
+            'email_address': 'jimdoe@a.com',
+            'user_type': 'shelter_worker'
+        },
+        {
+            'username': 'user3',
+            'first_name': 'jean',
+            'last_name': 'doe',
+            'email_address': 'jeandoe@a.com',
+            'user_type': 'administrator'
+        }
+    ]
+
+    for user_detail in user_details:
+        new_user_detail = UserDetail()
+        new_user_detail.create_user_detail(
+            user_detail['username'],
+            user_detail['first_name'],
+            user_detail['last_name'],
+            user_detail['email_address'],
+            user_detail['user_type']
+        )
+
+
+def update_user_details():
+    user_updates = [
+        {
+            'username': 'user1',
+            'first_name': 'john',
+            'last_name': 'doe',
+            'email_address': 'johndoe@abc.com'
+        },
+        {
+            'username': 'user0',
+            'first_name': 'jane',
+            'last_name': 'doe',
+            'email_address': 'janedoe@a.com'
+        },
+        {
+            'username': 'user2',
+            'first_name': 'jim',
+            'last_name': 'doe',
+            'email_address': 'jimdoe@abc.com'
+        },
+        {
+            'username': 'user3',
+            'first_name': 'jean',
+            'last_name': 'doe',
+            'email_address': 'jeandoe@abc.com'
+        }
+    ]
+
+    for user_update in user_updates:
+        UserDetail.update_user_detail(
+            user_update['username'],
+            user_update['first_name'],
+            user_update['last_name'],
+            user_update['email_address']
+        )
+
+
 def create_dispositions():
     dispositions = [
         'Good with other animals',
@@ -40,6 +127,8 @@ def create_dispositions():
 def initialize_db():
     create_users()
     create_user_types()
+    create_user_details()
+    update_user_details()
     create_dispositions()
 
 

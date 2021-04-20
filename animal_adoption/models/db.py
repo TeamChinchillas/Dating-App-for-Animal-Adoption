@@ -97,21 +97,24 @@ class UserDetail(db.Model):
     first_name = db.Column(db.String(32))
     last_name = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
+    user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserTypeTable.id_user_type'))
-    animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+    # animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
 
     def __init__(self):
         self.first_name = None
         self.last_name = None
         self.email_address = None
+        self.user_id = None
         self.user_type_id = None
         # self.animal_disposition_id = None
 
     def __repr__(self):
-        return '<First name {} Last Name {} email address {} user type {}>'.format(
+        return '<First name {} Last Name {} email address {} user id {} user type {}>'.format(
             self.first_name,
             self.last_name,
             self.email_address,
+            self.user_id,
             self.user_type_id
         )
 
@@ -120,12 +123,51 @@ class UserDetail(db.Model):
         user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
         return user_detail
 
-    def update_user_detail(self, first_name, last_name, email_address, user_type):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email_address = email_address
+    def create_user_detail(self, username, first_name, last_name, email_address, user_type):
+        self.user_id = User.get_id_by_username(username)
         self.user_type_id = UserType.get_user_type_id_by_name(user_type)
-        # self.animal_disposition_id = AnimalDisposition.get_animal_disposition_id_by_name(animal_disposition)
+        if self.user_id:
+            if self.user_type_id:
+                if not UserDetail.get_user_detail(username):
+                    self.first_name = first_name
+                    self.last_name = last_name
+                    self.email_address = email_address
+                    # self.user_id = User.get_id_by_username(username).first()
+                    db.session.add(self)
+                    db.session.commit()
+                else:
+                    print('User detail for \'{}\' already exists'.format(username))
+            else:
+                print('User type \'{}\' does not exist'.format(user_type))
+        else:
+            print('Username \'{}\' not found'.format(username))
+
+    @staticmethod
+    def update_user_detail(username, first_name=None, last_name=None, email_address=None):
+        changed = False
+        if not first_name and not last_name and not email_address:
+            print('No fields to update')
+        user_detail = UserDetail.get_user_detail(username)
+        if user_detail:
+            if first_name:
+                if user_detail.first_name != first_name:
+                    changed = True
+                    user_detail.first_name = first_name
+            if last_name:
+                if user_detail.last_name != last_name:
+                    changed = True
+                    user_detail.last_name = last_name
+            if email_address:
+                if user_detail.email_address != email_address:
+                    changed = True
+                    user_detail.email_address = email_address
+            if changed:
+                db.session.add(user_detail)
+                db.session.commit()
+            else:
+                print('No changes made for \'{}\''.format(username))
+        else:
+            print('Username\'{}\' not found to update details'.format(username))
 
 
 class UserType(db.Model):
