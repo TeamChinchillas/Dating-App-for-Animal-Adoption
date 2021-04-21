@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import Landing from './pages/Landing'
 import { Flex, Box } from '@chakra-ui/react'
+import Signup_Page from './pages/Signup_Page'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
@@ -17,7 +18,7 @@ function App() {
               <div>Account page</div>
             </Route>
             <Route path="/signup">
-              <div>Sign up page</div>
+              <Signup_Page/>
             </Route>
             <Route path="/login">
               <div>Login page</div>
