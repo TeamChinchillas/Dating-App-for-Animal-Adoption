@@ -12,10 +12,10 @@
     }
   },
   "extends": [
+    "airbnb",
     "eslint:recommended",
     "plugin:react/recommended",
-    "prettier",
-    "airbnb"
+    "prettier"
   ],
   "parserOptions": {
     "ecmaFeatures": {
