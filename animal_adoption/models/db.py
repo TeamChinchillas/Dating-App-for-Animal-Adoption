@@ -6,14 +6,14 @@ from werkzeug.security import generate_password_hash, \
 
 user_disposition_relationship = db.Table(
     'UserDispositionRelationshipTable',
-    db.Column('user_id', db.Integer, db.ForeignKey('User.id_user')),
-    db.Column('disposition_id', db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+    db.Column('user_detail_id', db.Integer, db.ForeignKey('UserDetailTable.id_user_detail')),
+    db.Column('disposition_id', db.Integer, db.ForeignKey('DispositionTable.id_disposition'))
 )
 
 animal_disposition_relationship = db.Table(
     'AnimalDispositionRelationshipTable',
-    db.Column('animal_id', db.Integer, db.ForeignKey('Animal.id_animal')),
-    db.Column('disposition_id', db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+    db.Column('animal_id', db.Integer, db.ForeignKey('AnimalTable.id_animal')),
+    db.Column('disposition_id', db.Integer, db.ForeignKey('DispositionTable.id_disposition'))
 )
 
 
@@ -251,7 +251,7 @@ class Animal(db.Model):
     animal_species_id = db.Column(db.Integer, db.ForeignKey('AnimalSpeciesTable.id_animal_species'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
-    adopter_id = db.Column(db.Integer, db.ForeignKey('Adopter.id_adopter'))
+    adopter_id = db.Column(db.Integer, db.ForeignKey('AdopterTable.id_adopter'))
     animal_dispositions = db.relationship(
         'Disposition',
         secondary=animal_disposition_relationship
