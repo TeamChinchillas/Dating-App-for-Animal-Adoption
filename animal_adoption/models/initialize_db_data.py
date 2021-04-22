@@ -1,4 +1,4 @@
-from animal_adoption import app, User, UserType, UserDetail, AnimalDisposition
+from animal_adoption import app, User, UserType, UserDetail, Disposition
 
 
 def create_users():
@@ -120,7 +120,7 @@ def create_dispositions():
     ]
 
     for disposition in dispositions:
-        new_dispo = AnimalDisposition()
+        new_dispo = Disposition()
         new_dispo.create_disposition(disposition)
 
 
