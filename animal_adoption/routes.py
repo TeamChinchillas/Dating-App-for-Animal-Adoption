@@ -1,4 +1,4 @@
-from animal_adoption import app, User
+from animal_adoption import app, User, UserDetail
 from flask import jsonify, request
 
 
@@ -34,6 +34,87 @@ def create_user():
 
     new_user = User()
     result = new_user.create_user(username=username, password=password)
+    if result:
+        return jsonify(message='User {} creation successful'.format(username)), 200
+    else:
+        return jsonify(message='User {} creation failed'.format(username)), 500
+
+
+@app.route('/get-user-details', endpoint='get-user-details', methods=['POST'])
+def get_user_details():
+    """
+    Get details of user
+    :return:
+    """
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+
+    if not username:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
+    result = UserDetail.get_user_detail(username)
+    # result_dict = {c.key: getattr(result, c.key) for c in inspect(result).mapper.column_attrs}
+    # print(UserDetail.object_as_dict(result))
+
+    if result:
+        return jsonify(message=UserDetail.object_as_dict(result)), 200
+    else:
+        return jsonify(message='User {} creation failed'.format(username)), 500
+
+
+@app.route('/update-user-details', endpoint='create-user-details', methods=['POST'])
+def update_user_details():
+    """
+    Create user details if user does not exist or update details for user that does exist
+    :return:
+    """
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    first_name = request.json.get('first_name', None)
+    last_name = request.json.get('last_name', None)
+    email_address = request.json.get('email_address', None)
+    user_type = request.json.get('user_type', None)
+
+    if not username:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not first_name:
+        print('uri=/login error="Missing first name parameter"')
+        return jsonify({"msg": "Missing first name parameter"}), 400
+    if not last_name:
+        print('uri=/login error="Missing last name parameter"')
+        return jsonify({"msg": "Missing last name parameter"}), 400
+    if not email_address:
+        print('uri=/login error="Missing email address parameter"')
+        return jsonify({"msg": "Missing email address parameter"}), 400
+    if not user_type:
+        print('uri=/login error="Missing user type parameter"')
+        return jsonify({"msg": "Missing user type parameter"}), 400
+
+    if UserDetail.get_user_detail(username):
+        result = UserDetail.update_user_detail(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email_address=email_address
+        )
+    else:
+        new_user_detail = UserDetail()
+        result = new_user_detail.create_user_detail(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email_address=email_address,
+            user_type=user_type
+        )
+
     if result:
         return jsonify(message='User {} creation successful'.format(username)), 200
     else:
