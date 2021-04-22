@@ -135,9 +135,9 @@ class UserDetail(db.Model):
         disposition_list = []
         user_detail = UserDetail.get_user_detail(username)
         if user_detail:
-            for disposition in user_detail.user_dispositions:
-                if disposition:
-                    disposition_list.append(disposition.disposition)
+            for user_disposition in user_detail.user_dispositions:
+                if user_disposition:
+                    disposition_list.append(user_disposition.disposition)
 
         return disposition_list
 
