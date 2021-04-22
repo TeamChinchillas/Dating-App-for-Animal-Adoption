@@ -1,4 +1,5 @@
 from animal_adoption import db
+from flask_sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, \
      check_password_hash
 
@@ -119,6 +120,10 @@ class UserDetail(db.Model):
         )
 
     @staticmethod
+    def object_as_dict(obj):
+        return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+
+    @staticmethod
     def get_user_detail(username):
         user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
         return user_detail
@@ -126,21 +131,26 @@ class UserDetail(db.Model):
     def create_user_detail(self, username, first_name, last_name, email_address, user_type):
         self.user_id = User.get_id_by_username(username)
         self.user_type_id = UserType.get_user_type_id_by_name(user_type)
-        if self.user_id:
-            if self.user_type_id:
-                if not UserDetail.get_user_detail(username):
-                    self.first_name = first_name
-                    self.last_name = last_name
-                    self.email_address = email_address
-                    # self.user_id = User.get_id_by_username(username).first()
-                    db.session.add(self)
-                    db.session.commit()
+        if not UserDetail.get_user_detail(username):
+            if self.user_id:
+                if self.user_type_id:
+                    if not UserDetail.get_user_detail(username):
+                        self.first_name = first_name
+                        self.last_name = last_name
+                        self.email_address = email_address
+                        db.session.add(self)
+                        db.session.commit()
+                        return True
+                    else:
+                        print('User detail for \'{}\' already exists'.format(username))
                 else:
-                    print('User detail for \'{}\' already exists'.format(username))
+                    print('User type \'{}\' does not exist'.format(user_type))
             else:
-                print('User type \'{}\' does not exist'.format(user_type))
+                print('Username \'{}\' not found'.format(username))
         else:
-            print('Username \'{}\' not found'.format(username))
+            print('Detail for username \'{}\' already exists'.format(username))
+
+        return False
 
     @staticmethod
     def update_user_detail(username, first_name=None, last_name=None, email_address=None):
@@ -164,10 +174,13 @@ class UserDetail(db.Model):
             if changed:
                 db.session.add(user_detail)
                 db.session.commit()
+                return True
             else:
                 print('No changes made for \'{}\''.format(username))
         else:
             print('Username\'{}\' not found to update details'.format(username))
+
+        return False
 
 
 class UserType(db.Model):
