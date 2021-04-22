@@ -4,15 +4,15 @@ from werkzeug.security import generate_password_hash, \
      check_password_hash
 
 
-adoption_relationship = db.Table(
-    'AdoptionRelationshipTable',
-    db.Column('adopter_id', db.Integer, db.ForeignKey('AdopterTable.id_adopter')),
-    db.Column('animal_id', db.Integer, db.ForeignKey('AnimalTable.id_animal'))
+user_disposition_relationship = db.Table(
+    'UserDispositionRelationshipTable',
+    db.Column('user_id', db.Integer, db.ForeignKey('User.id_user')),
+    db.Column('disposition_id', db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
 )
 
-disposition_relationship = db.Table(
-    'DispositionRelationshipTable',
-    db.Column('adopter_id', db.Integer, db.ForeignKey('AdopterTable.id_adopter')),
+animal_disposition_relationship = db.Table(
+    'AnimalDispositionRelationshipTable',
+    db.Column('animal_id', db.Integer, db.ForeignKey('Animal.id_animal')),
     db.Column('disposition_id', db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
 )
 
@@ -22,7 +22,6 @@ class User(db.Model):
     id_user = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32))
     password_hash = db.Column(db.String(128))
-    user_detail_id = db.Column(db.Integer, db.ForeignKey('UserDetailTable.id_user_detail'))
 
     def __init__(self):
         self.username = None
@@ -100,7 +99,10 @@ class UserDetail(db.Model):
     email_address = db.Column(db.String(32))
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserTypeTable.id_user_type'))
-    # animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
+    user_dispositions = db.relationship(
+        'Disposition',
+        secondary=user_disposition_relationship
+    )
 
     def __init__(self):
         self.first_name = None
@@ -108,7 +110,6 @@ class UserDetail(db.Model):
         self.email_address = None
         self.user_id = None
         self.user_type_id = None
-        # self.animal_disposition_id = None
 
     def __repr__(self):
         return '<First name {} Last Name {} email address {} user id {} user type {}>'.format(
@@ -249,20 +250,24 @@ class Animal(db.Model):
     image_link = db.Column(db.String(32))
     animal_species_id = db.Column(db.Integer, db.ForeignKey('AnimalSpeciesTable.id_animal_species'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
-    animal_disposition_id = db.Column(db.Integer, db.ForeignKey('AnimalDispositionTable.id_animal_disposition'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
+    adopter_id = db.Column(db.Integer, db.ForeignKey('Adopter.id_adopter'))
+    animal_dispositions = db.relationship(
+        'Disposition',
+        secondary=animal_disposition_relationship
+    )
 
 
-class AnimalDisposition(db.Model):
-    __tablename__ = 'AnimalDispositionTable'
-    id_animal_disposition = db.Column(db.Integer, primary_key=True)
+class Disposition(db.Model):
+    __tablename__ = 'DispositionTable'
+    id_disposition = db.Column(db.Integer, primary_key=True)
     disposition = db.Column(db.String(32))
 
     def __init__(self):
         self.disposition = None
 
     def create_disposition(self, name):
-        if not AnimalDisposition.get_animal_disposition_id_by_name(name):
+        if not Disposition.get_animal_disposition_id_by_name(name):
             self.disposition = name
             db.session.add(self)
             db.session.commit()
@@ -271,7 +276,7 @@ class AnimalDisposition(db.Model):
 
     @staticmethod
     def get_animal_disposition_id_by_name(disposition_name):
-        animal_disposition_record = AnimalDisposition.query.filter_by(disposition=disposition_name).first()
+        animal_disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
         if animal_disposition_record:
             return animal_disposition_record.id_animal_disposition
         else:
