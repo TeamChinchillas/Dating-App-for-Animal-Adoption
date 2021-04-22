@@ -112,12 +112,13 @@ class UserDetail(db.Model):
         self.user_type_id = None
 
     def __repr__(self):
-        return '<First name {} Last Name {} email address {} user id {} user type {}>'.format(
+        return '<Name: {} {} email: {} id: {} type: {} dispositions: {}>'.format(
             self.first_name,
             self.last_name,
             self.email_address,
             self.user_id,
-            self.user_type_id
+            self.user_type_id,
+            self.user_dispositions
         )
 
     @staticmethod
@@ -128,6 +129,17 @@ class UserDetail(db.Model):
     def get_user_detail(username):
         user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
         return user_detail
+
+    @staticmethod
+    def get_user_dispositions(username):
+        disposition_list = []
+        user_detail = UserDetail.get_user_detail(username)
+        if user_detail:
+            for disposition in user_detail.user_dispositions:
+                if disposition:
+                    disposition_list.append(disposition.disposition)
+
+        return disposition_list
 
     def create_user_detail(self, username, first_name, last_name, email_address, user_type):
         self.user_id = User.get_id_by_username(username)
@@ -154,9 +166,9 @@ class UserDetail(db.Model):
         return False
 
     @staticmethod
-    def update_user_detail(username, first_name=None, last_name=None, email_address=None):
+    def update_user_detail(username, first_name=None, last_name=None, email_address=None, dispositions=None):
         changed = False
-        if not first_name and not last_name and not email_address:
+        if not first_name and not last_name and not email_address and not dispositions:
             print('No fields to update')
         user_detail = UserDetail.get_user_detail(username)
         if user_detail:
@@ -172,6 +184,11 @@ class UserDetail(db.Model):
                 if user_detail.email_address != email_address:
                     changed = True
                     user_detail.email_address = email_address
+            if dispositions:
+                for disposition in dispositions:
+                    changed = True
+                    dispo = Disposition.get_disposition_by_name(disposition)
+                    user_detail.user_dispositions.append(dispo)
             if changed:
                 db.session.add(user_detail)
                 db.session.commit()
@@ -267,7 +284,7 @@ class Disposition(db.Model):
         self.disposition = None
 
     def create_disposition(self, name):
-        if not Disposition.get_animal_disposition_id_by_name(name):
+        if not Disposition.get_disposition_by_name(name):
             self.disposition = name
             db.session.add(self)
             db.session.commit()
@@ -275,12 +292,20 @@ class Disposition(db.Model):
             print('Animal disposition \'{}\' already exists'.format(name))
 
     @staticmethod
-    def get_animal_disposition_id_by_name(disposition_name):
-        animal_disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
-        if animal_disposition_record:
-            return animal_disposition_record.id_animal_disposition
+    def get_disposition_by_name(disposition_name):
+        disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
+        if disposition_record:
+            return disposition_record
         else:
             return None
+
+    # @staticmethod
+    # def get_animal_disposition_id_by_name(disposition_name):
+    #     animal_disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
+    #     if animal_disposition_record:
+    #         return animal_disposition_record.id_animal_disposition
+    #     else:
+    #         return None
 
 
 class AnimalSpecies(db.Model):
