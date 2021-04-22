@@ -81,25 +81,29 @@ def update_user_details():
             'username': 'user1',
             'first_name': 'john',
             'last_name': 'doe',
-            'email_address': 'johndoe@abc.com'
+            'email_address': 'johndoe@abc.com',
+            'dispositions': []
         },
         {
             'username': 'user0',
             'first_name': 'jane',
             'last_name': 'doe',
-            'email_address': 'janedoe@a.com'
+            'email_address': 'janedoe@a.com',
+            'dispositions': []
         },
         {
             'username': 'user2',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@abc.com'
+            'email_address': 'jimdoe@abc.com',
+            'dispositions': ['Good with other animals']
         },
         {
             'username': 'user3',
             'first_name': 'jean',
             'last_name': 'doe',
-            'email_address': 'jeandoe@abc.com'
+            'email_address': 'jeandoe@abc.com',
+            'dispositions': []
         }
     ]
 
@@ -108,8 +112,11 @@ def update_user_details():
             user_update['username'],
             user_update['first_name'],
             user_update['last_name'],
-            user_update['email_address']
+            user_update['email_address'],
+            user_update['dispositions']
         )
+        print(UserDetail.get_user_detail(user_update['username']))
+        print(UserDetail.get_user_dispositions(user_update['username']))
 
 
 def create_dispositions():
