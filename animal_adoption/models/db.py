@@ -299,14 +299,6 @@ class Disposition(db.Model):
         else:
             return None
 
-    # @staticmethod
-    # def get_animal_disposition_id_by_name(disposition_name):
-    #     animal_disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
-    #     if animal_disposition_record:
-    #         return animal_disposition_record.id_animal_disposition
-    #     else:
-    #         return None
-
 
 class AnimalSpecies(db.Model):
     __tablename__ = 'AnimalSpeciesTable'
