@@ -139,7 +139,7 @@ class UserDetail(db.Model):
                 if user_disposition:
                     disposition_list.append(user_disposition.disposition)
 
-        return disposition_list
+        return {'dispositions': disposition_list}
 
     def create_user_detail(self, username, first_name, last_name, email_address, user_type):
         self.user_id = User.get_id_by_username(username)
@@ -200,6 +200,22 @@ class UserDetail(db.Model):
             print('Username\'{}\' not found to update details'.format(username))
 
         return False
+
+    @staticmethod
+    def update_user_dispositions(username, dispositions):
+        user_detail = UserDetail.get_user_detail(username)
+        existing_dispositions = UserDetail.get_user_dispositions(username)
+        for existing_disposition in existing_dispositions['dispositions']:
+            if existing_disposition not in dispositions:
+                dispo = Disposition.get_disposition_by_name(existing_disposition)
+                user_detail.user_dispositions.remove(dispo)
+        for disposition in dispositions:
+            dispo = Disposition.get_disposition_by_name(disposition)
+            user_detail.user_dispositions.append(dispo)
+        db.session.add(user_detail)
+        db.session.commit()
+
+        return True
 
 
 class UserType(db.Model):

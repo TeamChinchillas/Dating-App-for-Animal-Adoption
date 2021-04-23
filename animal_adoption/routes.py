@@ -40,7 +40,7 @@ def create_user():
         return jsonify(message='User {} creation failed'.format(username)), 500
 
 
-@app.route('/get-user-details', endpoint='get-user-details', methods=['POST'])
+@app.route('/get-user-details', endpoint='get-user-details', methods=['GET'])
 def get_user_details():
     """
     Get details of user
@@ -60,6 +60,30 @@ def get_user_details():
 
     if result:
         return jsonify(message=UserDetail.object_as_dict(result)), 200
+    else:
+        return jsonify(message='User {} not found'.format(username)), 500
+
+
+@app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
+def get_user_dispositions():
+    """
+    Get details of user
+    :return:
+    """
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+
+    if not username:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
+    result = UserDetail.get_user_dispositions(username)
+
+    if result:
+        return jsonify(message=result), 200
     else:
         return jsonify(message='User {} not found'.format(username)), 500
 
@@ -154,6 +178,40 @@ def update_user_details():
 
     if result:
         return jsonify(message='User {} detail update successful'.format(username)), 200
+    else:
+        return jsonify(message='User {} detail update failed'.format(username)), 500
+
+
+@app.route('/update-user-dispositions', endpoint='update-user-dispositions', methods=['POST'])
+def update_user_dispositions():
+    """
+    Update dispositions for a specific user
+    :return:
+    """
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    dispositions = request.json.get('dispositions', None)
+
+    if not username:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not dispositions:
+        print('uri=/login error="Missing dispositions parameter"')
+        return jsonify({"msg": "Missing dispositions parameter"}), 400
+
+    if UserDetail.get_user_detail(username):
+        result = UserDetail.update_user_dispositions(
+            username=username,
+            dispositions=dispositions
+        )
+    else:
+        return jsonify(message='User {} does not exist'.format(username)), 500
+
+    if result:
+        return jsonify(message='Dispositions for user {} updated successfully'.format(username)), 200
     else:
         return jsonify(message='User {} detail update failed'.format(username)), 500
 
