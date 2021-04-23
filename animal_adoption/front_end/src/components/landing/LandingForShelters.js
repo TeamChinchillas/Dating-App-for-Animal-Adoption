@@ -74,7 +74,7 @@ export default function LandingForShelters() {
   const deleteAnimal = (animal) => {
     // TODO: pseudo implementation.
     // Send request to server-side
-    const ans = confirm('Are you sure to delete this animal from your profiles?')
+    const ans = window.confirm('Are you sure to delete this animal from your profiles?')
     if (ans) {
       setAnimals(animals.filter((e) => e.id !== animal.id))
     }

@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import { Flex, Box } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
 import Landing from './pages/Landing'
 import SignupPage from './pages/SignupPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import UserContext from './components/users/UserContext'
-
-import { useState, useEffect } from 'react'
 
 function App() {
   const [user, setUser] = useState()

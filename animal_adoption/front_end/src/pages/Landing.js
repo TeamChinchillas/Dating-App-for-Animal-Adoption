@@ -1,6 +1,6 @@
 import { Button, Image, Box, Stack, Heading, Text, Flex } from '@chakra-ui/react'
-import UserContext from '../components/users/UserContext'
 import { useContext } from 'react'
+import UserContext from '../components/users/UserContext'
 import User from '../models/User'
 import LandingBeforeLogin from '../components/landing/LandingBeforeLogin'
 import LandingForAdopters from '../components/landing/LandingForAdopters'

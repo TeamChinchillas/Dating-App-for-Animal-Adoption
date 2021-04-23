@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { Box, Flex, Text, Button, Heading, Spacer, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Heading,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react'
 import UserContext from './users/UserContext'
 
 import User from '../models/User'

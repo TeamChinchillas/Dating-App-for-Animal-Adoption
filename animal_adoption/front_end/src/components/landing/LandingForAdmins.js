@@ -74,7 +74,7 @@ export default function LandingForAdmins() {
   const deleteUser = (userId) => {
     // TODO: pseudo implementation.
     // Send request to server-side
-    const ans = confirm('Are you sure to delete this user?')
+    const ans = window.confirm('Are you sure to delete this user?')
     if (ans) {
       setUsers(users.filter((e) => e.id !== userId))
     }
@@ -131,7 +131,9 @@ export default function LandingForAdmins() {
             </Tbody>
           </Table>
         ) : (
-          <Box bg="orange.100" p="5">No profiles found</Box>
+          <Box bg="orange.100" p="5">
+            No profiles found
+          </Box>
         )}
       </Stack>
     </Flex>
