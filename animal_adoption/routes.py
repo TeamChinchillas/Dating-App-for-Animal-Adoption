@@ -111,7 +111,7 @@ def create_user_details():
         return jsonify(message='User {} creation failed'.format(username)), 500
 
 
-@app.route('/update-user-details', endpoint='create-user-details', methods=['POST'])
+@app.route('/update-user-details', endpoint='update-user-details', methods=['POST'])
 def update_user_details():
     """
     Update details for user that does exist
