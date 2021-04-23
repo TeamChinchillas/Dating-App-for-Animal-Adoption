@@ -195,6 +195,7 @@ class UserDetail(db.Model):
                 return True
             else:
                 print('No changes made for \'{}\''.format(username))
+                return True
         else:
             print('Username\'{}\' not found to update details'.format(username))
 
