@@ -96,14 +96,17 @@ def create_user_details():
         print('uri=/login error="Missing user type parameter"')
         return jsonify({"msg": "Missing user type parameter"}), 400
 
-    new_user_detail = UserDetail()
-    result = new_user_detail.create_user_detail(
-        username=username,
-        first_name=first_name,
-        last_name=last_name,
-        email_address=email_address,
-        user_type=user_type
-    )
+    if not UserDetail.get_user_detail(username):
+        new_user_detail = UserDetail()
+        result = new_user_detail.create_user_detail(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email_address=email_address,
+            user_type=user_type
+        )
+    else:
+        return jsonify(message='Detail record already exists for {}'.format(username)), 500
 
     if result:
         return jsonify(message='User {} creation successful'.format(username)), 200
