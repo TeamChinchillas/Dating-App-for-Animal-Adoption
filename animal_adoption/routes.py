@@ -61,7 +61,7 @@ def get_user_details():
     if result:
         return jsonify(message=UserDetail.object_as_dict(result)), 200
     else:
-        return jsonify(message='User {} creation failed'.format(username)), 500
+        return jsonify(message='User {} not found'.format(username)), 500
 
 
 @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
