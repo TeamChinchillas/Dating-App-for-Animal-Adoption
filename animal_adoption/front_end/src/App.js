@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import { Flex, Box } from '@chakra-ui/react'
 import Landing from './pages/Landing'
 import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
@@ -21,7 +22,7 @@ function App() {
               <SignupPage />
             </Route>
             <Route path="/login">
-              <div>Login page</div>
+              <LoginPage />
             </Route>
             <Route path="/about">
               <Box as="p" p="5">

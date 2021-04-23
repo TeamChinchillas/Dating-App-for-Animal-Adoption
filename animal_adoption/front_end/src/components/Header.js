@@ -41,6 +41,9 @@ export default function Header() {
         <Button colorScheme="green">
           <Link to="/signup">Sign up</Link>
         </Button>
+        <Button colorScheme="green">
+          <Link to="/login">Login</Link>
+        </Button>
       </Box>
     </Flex>
   )
