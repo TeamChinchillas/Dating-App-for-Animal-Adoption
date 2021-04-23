@@ -6,11 +6,8 @@ import {
   Image,
   Box,
   Stack,
-  SimpleGrid,
   Heading,
-  Text,
   Badge,
-  Flex,
   Spinner,
   Container,
   Modal,
@@ -21,15 +18,17 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Grid,
 } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import Animal from '../../models/Animal'
 
 const data = require('../../sample_data/animals.json')
 
 const AnimalCard = ({ animal }) => (
-  <Box flex={{ md: '1 1 30%' }} borderWidth="1px" borderRadius="lg" overflow="hidden" m="2">
-    <Image src={animal.imageLink} />
+  <Box borderWidth="1px" borderRadius="lg" overflow="hidden" m="2" cursor="pointer">
+    <Image w="100%" src={animal.imageLink} />
 
     <Box p="6">
       <Box d="flex" alignItems="baseline">
@@ -90,17 +89,14 @@ export default function LandingForAdopters() {
   const [animals, setAnimals] = useState(null)
 
   useEffect(() => {
-    setAnimals(
-      data.map((e) => {
-        const res = new Animal(e)
-        return res
-      })
-    )
+    setAnimals(data.map((e) => new Animal(e)))
   }, [])
 
   const search = () => {
-    // TODO: Send search request
-    setAnimals(animals.filter((e) => e.name === searchInputRef.current.value))
+    const allAnimals = data.map((e) => new Animal(e))
+    const searchWord = searchInputRef.current.value.toLowerCase()
+    // TODO: Send an actual search request to the server-side
+    setAnimals(allAnimals.filter((e) => e.name.toLowerCase().includes(searchWord)))
   }
 
   if (animals === null) {
@@ -120,21 +116,29 @@ export default function LandingForAdopters() {
         </InputRightAddon>
       </InputGroup>
 
-      <Stack>
-        <SimpleGrid columns={2} spacing={10}>
-          <Box height="80px">
-            <Heading size="lg">Animal Profiles</Heading>
+      <Stack w="60vw">
+        <Grid templateColumns="repeat(auto-fit, minmax(180px, 1fr))">
+          <Box>
+            <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
+              Animal Profiles
+            </Heading>
           </Box>
-          <Box height="80px" textAlign="right">
+          <Box
+            mt={{ sm: 5, md: 0, base: 0 }}
+            mr={{ sm: 0, base: 10 }}
+            textAlign={{ base: 'right', sm: 'center' }}
+          >
             <FilterModal />
           </Box>
-        </SimpleGrid>
+        </Grid>
 
-        <Flex flexDirection={{ md: 'row', sm: 'column' }} flexWrap="wrap" justifyContent="center">
+        <Grid templateColumns="repeat(auto-fit, minmax(160px, 270px))" justifyContent="center">
           {animals.map((animal) => (
-            <AnimalCard animal={animal} key={animal.id} />
+            <Link to={`/animals/${animal.id}`} key={animal.id}>
+              <AnimalCard animal={animal} />
+            </Link>
           ))}
-        </Flex>
+        </Grid>
       </Stack>
     </Container>
   )

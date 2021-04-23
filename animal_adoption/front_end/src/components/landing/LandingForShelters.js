@@ -1,15 +1,9 @@
 import {
-  InputGroup,
-  Input,
-  InputRightAddon,
   Button,
   Image,
   Box,
   Stack,
-  SimpleGrid,
   Heading,
-  Text,
-  Badge,
   Flex,
   Spinner,
   Container,
@@ -124,16 +118,20 @@ export default function LandingForShelters() {
             {animals.map((animal) => (
               <Tr key={animal.id}>
                 <Td border="1px">
-                  <Image src={animal.imageLink} />
+                  <Link to={`animals/${animal.id}`}>
+                    <Image src={animal.imageLink} />
+                  </Link>
                 </Td>
                 <Td border="1px"> {animal.name} </Td>
                 <Td border="1px"> {animal.age} </Td>
                 <Td border="1px"> {animal.description} </Td>
                 <Td border="1px"> {animal.status} </Td>
                 <Td border="1px">
-                  <Button mr="2" colorScheme="teal">
-                    Edit
-                  </Button>
+                  <Link to={`animals/${animal.id}/edit`}>
+                    <Button mr="2" colorScheme="teal">
+                      Edit
+                    </Button>
+                  </Link>
                   <Button colorScheme="red" onClick={() => deleteAnimal(animal)}>
                     Delete
                   </Button>

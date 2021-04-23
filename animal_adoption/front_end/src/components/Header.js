@@ -32,7 +32,7 @@ export default function Header() {
     setUser(
       new User({
         first_name: 'TEST_USER',
-        user_type: 'ADMINISTRATOR',
+        user_type: 'SHELTER',
       })
     )
   }, [setUser])

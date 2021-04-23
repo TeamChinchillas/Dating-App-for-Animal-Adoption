@@ -6,6 +6,7 @@ import SignupPage from './pages/SignupPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import UserContext from './components/users/UserContext'
+import Animals from './pages/Animals'
 
 function App() {
   const [user, setUser] = useState()
@@ -20,12 +21,15 @@ function App() {
             <Route path="/account">
               <div>Account page</div>
             </Route>
+
             <Route path="/signup">
               <SignupPage />
             </Route>
+
             <Route path="/login">
               <div>Login page</div>
             </Route>
+
             <Route path="/about">
               <Box as="p" p="5">
                 This is a capstone project for OSU CS467.
@@ -34,6 +38,17 @@ function App() {
                 owners.
               </Box>
             </Route>
+
+            <Route path="/animals">
+              <Animals />
+            </Route>
+            {/* <Route path="/animals/:animalId/edit">
+              <div>edit page</div>
+            </Route>
+            <Route path="/animals/:animalId">
+              <AnimalDetail />
+            </Route> */}
+
             <Route path="/">
               <Landing />
             </Route>
