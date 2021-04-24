@@ -1,5 +1,13 @@
 from animal_adoption import app, User, UserDetail
 from flask import jsonify, request
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
+
+
+app.config['JWT_SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
+jwt = JWTManager(app)
 
 
 @app.route('/', endpoint='', methods=['GET'])
@@ -34,7 +42,8 @@ def login():
 
     result = User.authenticate_user(username=username, password=password)
     if result:
-        return jsonify(message='User {} authentication successful'.format(username)), 200
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
     else:
         return jsonify(message='Bad username or password'), 401
 
@@ -68,43 +77,45 @@ def create_user():
 
 
 @app.route('/get-user-details', endpoint='get-user-details', methods=['GET'])
+@jwt_required()
 def get_user_details():
     """
     Get details for a specified user
     :return:
     """
-    username = request.args.get('user')
+    current_user = get_jwt_identity()
 
-    if not username:
+    if not current_user:
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    result = UserDetail.get_user_detail(username)
+    result = UserDetail.get_user_detail(current_user)
 
     if result:
         return jsonify(message=UserDetail.object_as_dict(result)), 200
     else:
-        return jsonify(message='User {} not found'.format(username)), 500
+        return jsonify(message='User {} not found'.format(current_user)), 500
 
 
 @app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
+@jwt_required()
 def get_user_dispositions():
     """
     Get dispositions for a specified user
     :return:
     """
-    username = request.args.get('user')
+    current_user = get_jwt_identity()
 
-    if not username:
+    if not current_user:
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    result = UserDetail.get_user_dispositions(username)
+    result = UserDetail.get_user_dispositions(current_user)
 
     if result:
         return jsonify(message=result), 200
     else:
-        return jsonify(message='User {} not found'.format(username)), 500
+        return jsonify(message='User {} not found'.format(current_user)), 500
 
 
 @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
