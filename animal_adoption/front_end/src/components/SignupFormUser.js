@@ -4,21 +4,40 @@ export default class SignupFormUser extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      first_name: '',
-      last_name: '',
-      email_address: '',
-      animal_type: '',
-      user_role: '',
+      firstName: '',
+      lastName: '',
+      emailAddress: '',
+      animalType: '',
+      goodWithAnimals: false,
+      goodWithChildren: false,
+      animalLeashed: false,
     }
 
     this.submitForm = this.submitForm.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
 
+  checkClick(event) {
+    const { name, checked } = event.target
+
+    this.setState(() => {
+      const animalDisposition = event.disposition_types
+      animalDisposition[name] = checked
+      return animalDisposition[name]
+    })
+  }
+
   submitForm(event) {
-    console.log('Form submitted')
-    console.log(event.target.first_name.value)
+    // Console.log messages are for developers to see what will be passed
     // To view any field we enter "event.target.{field_name}.value"
+    console.log('Adopter Form submitted')
+    console.log(event.target.firstName.value)
+    console.log(event.target.lastName.value)
+    console.log(event.target.emailAddress.value)
+    console.log(event.target.animalType.value)
+    console.log(event.target.goodWithAnimals.checked)
+    console.log(event.target.goodWithChildren.checked)
+    console.log(event.target.animalLeashed.checked)
     // Add code to connect to Flask API
     event.preventDefault()
   }
@@ -31,40 +50,38 @@ export default class SignupFormUser extends Component {
     console.log(event.target.name)
   }
 
+  // Add required later
   render() {
     return (
       <div>
-        <h1> Registration Form</h1>
+        <h1> Adopter Registration Form</h1>
         <form onSubmit={this.submitForm}>
           <input
             type="text"
-            name="first_name"
+            name="firstName"
             placeholder="First Name"
             value={this.state.firstName}
             onChange={this.handleChange}
-            required
           />
           <br />
           <input
             type="text"
-            name="last_name"
+            name="lastName"
             placeholder="Last Name"
             value={this.state.lastName}
             onChange={this.handleChange}
-            required
           />
           <br />
           <input
             type="email"
-            name="email"
+            name="emailAddress"
             placeholder="Email Address"
             value={this.state.email}
             onChange={this.handleChange}
-            required
           />
           <br />
           <label>Select Desired Animal Type:</label>
-          <select value={this.state.animalType} onChange={this.handleChange} required>
+          <select name="animalType" value={this.state.animalType} onChange={this.handleChange}>
             <option value="dog">Dog</option>
             <option value="cat">Cat</option>
             <option value="other">Other</option>
@@ -73,28 +90,13 @@ export default class SignupFormUser extends Component {
           <label>
             Select Animal Disposition:
             <br />
-            <input
-              type="checkbox"
-              name="good_with_animals"
-              checked={this.state.goodWithAnimals}
-              onChange={this.handleChange}
-            />
+            <input type="checkbox" name="goodWithAnimals" onChange={this.handleChange} />
             Good with other animals
             <br />
-            <input
-              type="checkbox"
-              name="good_with_children"
-              checked={this.state.goodWithChildren}
-              onChange={this.handleChange}
-            />
+            <input type="checkbox" name="goodWithChildren" onChange={this.handleChange} />
             Good with other children
             <br />
-            <input
-              type="checkbox"
-              name="animal_leashed"
-              checked={this.state.animalLeashed}
-              onChange={this.handleChange}
-            />
+            <input type="checkbox" name="animalLeashed" onChange={this.handleChange} />
             Animal must be leashed at all times
             <br />
             <br />

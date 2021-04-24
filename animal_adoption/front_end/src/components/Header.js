@@ -78,9 +78,14 @@ export default function Header() {
             </MenuList>
           </Menu>
         ) : (
-          <Button colorScheme="green">
-            <Link to="/signup">Sign up</Link>
-          </Button>
+          <>
+            <Button colorScheme="green">
+              <Link to="/signup">Sign up</Link>
+            </Button>
+            <Button colorScheme="teal" ml="2">
+              <Link to="/login">Login</Link>
+            </Button>
+          </>
         )}
       </Box>
     </Flex>

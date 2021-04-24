@@ -3,6 +3,7 @@ import { Flex, Box } from '@chakra-ui/react'
 import { useState } from 'react'
 import Landing from './pages/Landing'
 import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import UserContext from './components/users/UserContext'
@@ -27,7 +28,7 @@ function App() {
             </Route>
 
             <Route path="/login">
-              <div>Login page</div>
+              <LoginPage />
             </Route>
 
             <Route path="/about">
