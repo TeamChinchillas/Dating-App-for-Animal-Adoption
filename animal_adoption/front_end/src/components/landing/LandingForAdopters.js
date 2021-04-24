@@ -21,7 +21,7 @@ import {
   Grid,
 } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Animal from '../../models/Animal'
 
 const data = require('../../sample_data/animals.json')

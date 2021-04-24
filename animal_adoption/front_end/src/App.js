@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { Flex, Box } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Landing from './pages/Landing'
 import SignupPage from './pages/SignupPage'
 import Header from './components/Header'
@@ -42,12 +42,6 @@ function App() {
             <Route path="/animals">
               <Animals />
             </Route>
-            {/* <Route path="/animals/:animalId/edit">
-              <div>edit page</div>
-            </Route>
-            <Route path="/animals/:animalId">
-              <AnimalDetail />
-            </Route> */}
 
             <Route path="/">
               <Landing />

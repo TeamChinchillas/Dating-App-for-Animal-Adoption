@@ -2,3 +2,4 @@ animal_adoption/__pycache__
 animal_adoption/db.sqlite
 animal_adoption/models/__pycache__/__init__.cpython-39.pyc
 animal_adoption/models/__pycache__/db.cpython-39.pyc
+.DS_Store

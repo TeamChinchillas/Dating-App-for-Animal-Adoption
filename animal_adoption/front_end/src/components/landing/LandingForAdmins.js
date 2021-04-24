@@ -1,26 +1,11 @@
 import {
-  InputGroup,
-  Input,
-  InputRightAddon,
   Button,
-  Image,
   Box,
   Stack,
-  SimpleGrid,
   Heading,
-  Text,
-  Badge,
   Flex,
   Spinner,
   Container,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   Table,
   Thead,
   Th,
@@ -28,40 +13,10 @@ import {
   Td,
   Tbody,
 } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import User from '../../models/User'
 
 const data = require('../../sample_data/users.json')
-
-const FilterModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  return (
-    <>
-      <Button colorScheme="green" onClick={onOpen}>
-        Filter
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Filter</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>Filter form</ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button colorScheme="green" onClick={onClose}>
-              OK
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  )
-}
 
 export default function LandingForAdmins() {
   const [users, setUsers] = useState(null)

@@ -1,5 +1,6 @@
 import { Switch, Route, useRouteMatch } from 'react-router-dom'
 import AnimalDetail from '../components/animals/AnimalDetail'
+import CreateAnimal from '../components/animals/CreateAnimal'
 
 export default function Animals() {
   const match = useRouteMatch()
@@ -7,10 +8,7 @@ export default function Animals() {
   return (
     <Switch>
       <Route path={`${match.path}/create`}>
-        <div>Create New Animal Profile</div>
-      </Route>
-      <Route path={`${match.path}/:animalId/edit`}>
-        <div>Edit Animal Profile</div>
+        <CreateAnimal />
       </Route>
       <Route path={`${match.path}/:animalId`}>
         <AnimalDetail />

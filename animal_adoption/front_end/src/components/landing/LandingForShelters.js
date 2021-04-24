@@ -7,13 +7,6 @@ import {
   Flex,
   Spinner,
   Container,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   useDisclosure,
   Table,
   Thead,
@@ -23,42 +16,38 @@ import {
   Tbody,
 } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Animal from '../../models/Animal'
+import Drawer from '../common/Drawer'
+import FormEditAnimal from '../animals/FormEditAnimal'
 
 const data = require('../../sample_data/animals.json')
 
-const FilterModal = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  return (
-    <>
-      <Button colorScheme="green" onClick={onOpen}>
-        Filter
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Filter</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>Filter form</ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button colorScheme="green" onClick={onClose}>
-              OK
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  )
-}
-
 export default function LandingForShelters() {
   const [animals, setAnimals] = useState(null)
+  const [selectedAnimal, setSelectedAnimal] = useState()
+  const { isOpen, onOpen, onClose: _onClose } = useDisclosure()
+
+  useEffect(() => {
+    setAnimals(data.map((e) => new Animal(e)))
+  }, [])
+
+  const editAnimal = (animal) => {
+    setSelectedAnimal({ ...animal })
+    onOpen()
+  }
+
+  const onClose = () => {
+    setSelectedAnimal()
+    _onClose()
+  }
+
+  const onSave = () => {
+    // TODO: actually send request to the server
+    setAnimals(animals.map((e) => (e.id === selectedAnimal.id ? selectedAnimal : e)))
+    setSelectedAnimal()
+    _onClose()
+  }
 
   /**
    * Delete animal from animals
@@ -66,24 +55,14 @@ export default function LandingForShelters() {
    * @param {Animal} animal
    */
   const deleteAnimal = (animal) => {
-    // TODO: pseudo implementation.
-    // Send request to server-side
+    // TODO: pseudo implementation. Send request to server-side
     const ans = window.confirm('Are you sure to delete this animal from your profiles?')
     if (ans) {
       setAnimals(animals.filter((e) => e.id !== animal.id))
     }
   }
 
-  useEffect(() => {
-    setAnimals(
-      data.map((e) => {
-        const res = new Animal(e)
-        return res
-      })
-    )
-  }, [])
-
-  if (animals === null) {
+  if (!animals) {
     return (
       <Container centerContent p="5">
         <Spinner size="xl" />
@@ -127,11 +106,9 @@ export default function LandingForShelters() {
                 <Td border="1px"> {animal.description} </Td>
                 <Td border="1px"> {animal.status} </Td>
                 <Td border="1px">
-                  <Link to={`animals/${animal.id}/edit`}>
-                    <Button mr="2" colorScheme="teal">
-                      Edit
-                    </Button>
-                  </Link>
+                  <Button mr="2" colorScheme="teal" onClick={() => editAnimal(animal)}>
+                    Edit
+                  </Button>
                   <Button colorScheme="red" onClick={() => deleteAnimal(animal)}>
                     Delete
                   </Button>
@@ -140,6 +117,11 @@ export default function LandingForShelters() {
             ))}
           </Tbody>
         </Table>
+
+        {/* Edit animal profile */}
+        <Drawer isOpen={isOpen} onClose={onClose} onSave={onSave} header="Edit animal profile">
+          <FormEditAnimal animal={selectedAnimal} setAnimal={setSelectedAnimal} />
+        </Drawer>
       </Stack>
     </Flex>
   )
