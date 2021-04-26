@@ -95,35 +95,13 @@ def get_user_details():
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    print(current_user)
-    result = UserDetail.get_user_detail(User.get_username_by_id(current_user))
-    print(result)
+    username = User.get_username_by_id(current_user)
+    result = UserDetail.get_user_detail(username)
 
     if result:
         return jsonify(message=UserDetail.object_as_dict(result)), 200
     else:
-        return jsonify(message='User {} not found'.format(current_user)), 500
-
-
-@app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
-@jwt_required(locations='cookies')
-def get_user_dispositions():
-    """
-    Get dispositions for a specified user
-    :return:
-    """
-    current_user = get_jwt_identity()
-
-    if not current_user:
-        print('uri=/login error="Missing username parameter"')
-        return jsonify({"msg": "Missing username parameter"}), 400
-
-    result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
-
-    if result:
-        return jsonify(message=result), 200
-    else:
-        return jsonify(message='User {} not found'.format(current_user)), 500
+        return jsonify(message='User {} not found'.format(username)), 500
 
 
 @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
@@ -149,8 +127,8 @@ def create_user_details():
     user_type = request.json.get('user_type', None)
 
     if not username:
-        print('uri=/login error="User {} not found"'.format(current_user))
-        return jsonify({"msg": "User {} not found".format(current_user)}), 400
+        print('uri=/login error="User {} not found"'.format(username))
+        return jsonify({"msg": "User {} not found".format(username)}), 400
     if not first_name:
         print('uri=/login error="Missing first name parameter"')
         return jsonify({"msg": "Missing first name parameter"}), 400
@@ -161,7 +139,9 @@ def create_user_details():
         print('uri=/login error="Missing user type parameter"')
         return jsonify({"msg": "Missing user type parameter"}), 400
 
-    if not UserDetail.get_user_detail(username):
+    existing_user_detail = UserDetail.get_user_detail(username)
+
+    if not existing_user_detail:
         new_user_detail = UserDetail()
         result = new_user_detail.create_user_detail(
             username=username,
@@ -169,13 +149,10 @@ def create_user_details():
             last_name=last_name,
             user_type=user_type
         )
+        if result:
+            return jsonify(message='User details for {} created successfully'.format(username)), 200
     else:
-        return jsonify(message='Detail record already exists for {}'.format(username)), 500
-
-    if result:
-        return jsonify(message='User {} creation successful'.format(username)), 200
-    else:
-        return jsonify(message='User {} creation failed'.format(username)), 500
+        return jsonify(message='User details for {} failed'.format(username)), 500
 
 
 @app.route('/update-user-details', endpoint='update-user-details', methods=['POST'])
@@ -215,6 +192,27 @@ def update_user_details():
         return jsonify(message='User {} detail update successful'.format(username)), 200
     else:
         return jsonify(message='User {} detail update failed'.format(username)), 500
+
+
+@app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
+@jwt_required(locations='cookies')
+def get_user_dispositions():
+    """
+    Get dispositions for a specified user
+    :return:
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
+    result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
+
+    if result:
+        return jsonify(message=result), 200
+    else:
+        return jsonify(message='User {} not found'.format(current_user)), 500
 
 
 @app.route('/update-user-dispositions', endpoint='update-user-dispositions', methods=['POST'])
