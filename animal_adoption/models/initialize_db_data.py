@@ -3,9 +3,9 @@ from animal_adoption import app, User, UserType, UserDetail, Disposition
 
 def create_users():
     users = [
-        {'username': 'johndoe@a.com', 'password': 'test1'},
-        {'username': 'jimdoe@a.com', 'password': 'test2'},
-        {'username': 'jeandoe@a.com', 'password': 'test3'},
+        {'username': 'johndoe@abc.com', 'password': 'test1'},
+        {'username': 'jimdoe@abc.com', 'password': 'test2'},
+        {'username': 'jeandoe@abc.com', 'password': 'test3'},
     ]
 
     for user in users:
@@ -28,31 +28,31 @@ def create_user_types():
 def create_user_details():
     user_details = [
         {
-            'username': 'johndoe@a.com',
+            'username': 'johndoe@abc.com',
             'first_name': 'john',
             'last_name': 'doe',
             'user_type': 'adopter'
         },
         {
-            'username': 'janedoe@a.com',
+            'username': 'janedoe@abc.com',
             'first_name': 'jane',
             'last_name': 'doe',
             'user_type': 'adopter'
         },
         {
-            'username': 'jimdoe@a.com',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
             'user_type': 'invalid'
         },
         {
-            'username': 'jimdoe@a.com',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'user_type': 'shelter_worker'
+            'user_type': 'shelter worker'
         },
         {
-            'username': 'jeandoe@a.com',
+            'username': 'jeandoe@abc.com',
             'first_name': 'jean',
             'last_name': 'doe',
             'user_type': 'administrator'
@@ -125,11 +125,17 @@ def initialize_shelters():
 
 
 def initialize_db():
+    print('Creating users')
     create_users()
+    print('Creating user types')
     create_user_types()
+    print('Creating dispositions')
     create_dispositions()
+    print('Creating user details')
     create_user_details()
+    print('Updating user details')
     update_user_details()
+    print('Initializing shelters')
     initialize_shelters()
 
 
