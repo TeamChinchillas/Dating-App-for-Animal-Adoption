@@ -127,23 +127,30 @@ def get_user_dispositions():
 
 
 @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
+@jwt_required(locations='cookies')
 def create_user_details():
     """
     Create user details for new user
     :return:
     """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
     if not request.is_json:
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    username = request.json.get('username', None)
+    username = User.get_username_by_id(current_user)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
     user_type = request.json.get('user_type', None)
 
     if not username:
-        print('uri=/login error="Missing username parameter"')
-        return jsonify({"msg": "Missing username parameter"}), 400
+        print('uri=/login error="User {} not found"'.format(current_user))
+        return jsonify({"msg": "User {} not found".format(current_user)}), 400
     if not first_name:
         print('uri=/login error="Missing first name parameter"')
         return jsonify({"msg": "Missing first name parameter"}), 400
