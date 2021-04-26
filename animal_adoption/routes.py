@@ -1,12 +1,16 @@
+import datetime
 from animal_adoption import app, User, UserDetail
-from flask import jsonify, request
+from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    get_jwt_identity, set_access_cookies
 )
 
 
 app.config['JWT_SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
+JWT_TOKEN_LOCATION = ['cookies']
+JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(seconds=1800)
+JWT_COOKIE_NAME = "ACCESS-COOKIE"
 jwt = JWTManager(app)
 
 
@@ -42,8 +46,10 @@ def login():
 
     result = User.authenticate_user(username=username, password=password)
     if result:
-        access_token = create_access_token(identity=User.get_id_by_username(username)) #todo change token to cookie
-        return jsonify(access_token=access_token), 200
+        access_token = create_access_token(identity=User.get_id_by_username(username))
+        response = make_response(redirect('/', 200))
+        set_access_cookies(response, access_token)
+        return response
     else:
         return jsonify(message='Bad username or password'), 401
 
@@ -77,7 +83,7 @@ def create_user():
 
 
 @app.route('/get-user-details', endpoint='get-user-details', methods=['GET'])
-@jwt_required()
+@jwt_required(locations='cookies')
 def get_user_details():
     """
     Get details for a specified user
@@ -100,7 +106,7 @@ def get_user_details():
 
 
 @app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
-@jwt_required()
+@jwt_required(locations='cookies')
 def get_user_dispositions():
     """
     Get dispositions for a specified user
