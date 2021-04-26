@@ -1,4 +1,4 @@
-from animal_adoption import app, User, UserType, UserDetail, Disposition
+from animal_adoption import app, User, UserType, UserDetail, Disposition, Shelter
 
 
 def create_users():
@@ -120,8 +120,37 @@ def create_dispositions():
         new_dispo.create_disposition(disposition)
 
 
-def initialize_shelters():
-    pass
+def create_shelters():
+    shelters = [
+        {
+            'name': 'Critters and Creatures',
+            'physical_address': '123 Bark Ave',
+            'phone_number': '123-456-7890',
+            'email_address': 'info@candc.com'
+        },
+        {
+            'name': 'Creature Comforts',
+            'physical_address': '555 Feline Way',
+            'phone_number': '999-867-5309',
+            'email_address': 'adopt@creaturecomforts.com'
+        },
+        {
+            'name': 'Save a Pet',
+            'physical_address': '789 Rover Pkwy',
+            'phone_number': '111-222-3456',
+            'email_address': 'rescue@saveapet.com'
+        }
+    ]
+
+    for shelter in shelters:
+        new_shelter = Shelter()
+        result = new_shelter.create_new_shelter(
+            shelter['name'],
+            shelter['physical_address'],
+            shelter['phone_number'],
+            shelter['email_address']
+        )
+        print('Create new shelter {}: {}'.format(shelter['name'], result))
 
 
 def initialize_db():
@@ -135,8 +164,8 @@ def initialize_db():
     create_user_details()
     print('Updating user details')
     update_user_details()
-    print('Initializing shelters')
-    initialize_shelters()
+    print('Creating shelters')
+    create_shelters()
 
 
 if __name__ == '__main__':

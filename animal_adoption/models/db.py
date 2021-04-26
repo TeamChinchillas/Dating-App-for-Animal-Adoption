@@ -162,7 +162,7 @@ class UserDetail(db.Model):
 
         return {'dispositions': disposition_list}
 
-    def create_user_detail(self, username, first_name, last_name, user_type):
+    def create_user_detail(self, username, first_name, last_name, user_type, shelter=None):
         self.user_id = User.get_id_by_username(username)
         self.user_type_id = UserType.get_user_type_id_by_name(user_type)
         if not UserDetail.get_user_detail(username):
@@ -186,7 +186,7 @@ class UserDetail(db.Model):
         return False
 
     @staticmethod
-    def update_user_detail(username, first_name=None, last_name=None, dispositions=None):
+    def update_user_detail(username, first_name=None, last_name=None, dispositions=None, shelter=None):
         changed = False
         if not first_name and not last_name and not dispositions:
             print('No fields to update')
@@ -289,6 +289,30 @@ class Shelter(db.Model):
     physical_address = db.Column(db.String(32))
     phone_number = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
+
+    def __init__(self):
+        self.name = None
+        self.physical_address = None
+        self.phone_number = None
+        self.email_address = None
+
+    @staticmethod
+    def get_shelter_by_name(name):
+        return Shelter.query.filter_by(name=name).first()
+
+    def create_new_shelter(self, name, physical_address, phone_number, email_address):
+        existing_shelter = Shelter.get_shelter_by_name(name)
+        if not existing_shelter:
+            self.name = name
+            self.physical_address = physical_address
+            self.phone_number = phone_number
+            self.email_address = email_address
+            db.session.add(self)
+            db.session.commit()
+            return True
+
+        return False
+
 
 
 class Animal(db.Model):
