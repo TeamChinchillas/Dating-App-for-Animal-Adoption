@@ -42,7 +42,7 @@ def login():
 
     result = User.authenticate_user(username=username, password=password)
     if result:
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity=User.get_id_by_username(username)) #todo change token to cookie
         return jsonify(access_token=access_token), 200
     else:
         return jsonify(message='Bad username or password'), 401
@@ -89,7 +89,9 @@ def get_user_details():
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    result = UserDetail.get_user_detail(current_user)
+    print(current_user)
+    result = UserDetail.get_user_detail(User.get_username_by_id(current_user))
+    print(result)
 
     if result:
         return jsonify(message=UserDetail.object_as_dict(result)), 200
@@ -110,7 +112,7 @@ def get_user_dispositions():
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    result = UserDetail.get_user_dispositions(current_user)
+    result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
 
     if result:
         return jsonify(message=result), 200
@@ -131,7 +133,6 @@ def create_user_details():
     username = request.json.get('username', None)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
-    email_address = request.json.get('email_address', None)
     user_type = request.json.get('user_type', None)
 
     if not username:
@@ -143,9 +144,6 @@ def create_user_details():
     if not last_name:
         print('uri=/login error="Missing last name parameter"')
         return jsonify({"msg": "Missing last name parameter"}), 400
-    if not email_address:
-        print('uri=/login error="Missing email address parameter"')
-        return jsonify({"msg": "Missing email address parameter"}), 400
     if not user_type:
         print('uri=/login error="Missing user type parameter"')
         return jsonify({"msg": "Missing user type parameter"}), 400
@@ -156,7 +154,6 @@ def create_user_details():
             username=username,
             first_name=first_name,
             last_name=last_name,
-            email_address=email_address,
             user_type=user_type
         )
     else:
@@ -181,7 +178,6 @@ def update_user_details():
     username = request.json.get('username', None)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
-    email_address = request.json.get('email_address', None)
 
     if not username:
         print('uri=/login error="Missing username parameter"')
@@ -192,16 +188,12 @@ def update_user_details():
     if not last_name:
         print('uri=/login error="Missing last name parameter"')
         return jsonify({"msg": "Missing last name parameter"}), 400
-    if not email_address:
-        print('uri=/login error="Missing email address parameter"')
-        return jsonify({"msg": "Missing email address parameter"}), 400
 
     if UserDetail.get_user_detail(username):
         result = UserDetail.update_user_detail(
             username=username,
             first_name=first_name,
-            last_name=last_name,
-            email_address=email_address
+            last_name=last_name
         )
     else:
         return jsonify(message='User {} does not exist'.format(username)), 500
@@ -244,3 +236,12 @@ def update_user_dispositions():
         return jsonify(message='Dispositions for user {} updated successfully'.format(username)), 200
     else:
         return jsonify(message='User {} detail update failed'.format(username)), 500
+
+
+@app.route('/get-shelters', endpoint='get_shelter', methods=['POST'])
+def get_shelters():
+    """
+    Return a list of shelters
+    :return:
+    """
+    pass
