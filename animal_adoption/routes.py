@@ -96,10 +96,10 @@ def get_user_details():
         return jsonify({"msg": "Missing username parameter"}), 400
 
     username = User.get_username_by_id(current_user)
-    result = UserDetail.get_user_detail(username)
+    result = UserDetail.get_printable_user_detail(username)
 
     if result:
-        return jsonify(message=UserDetail.object_as_dict(result)), 200
+        return jsonify(message=result), 200
     else:
         return jsonify(message='User {} not found'.format(username)), 500
 
@@ -156,16 +156,23 @@ def create_user_details():
 
 
 @app.route('/update-user-details', endpoint='update-user-details', methods=['POST'])
+@jwt_required(locations='cookies')
 def update_user_details():
     """
     Update details for user that does exist
     :return:
     """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
     if not request.is_json:
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    username = request.json.get('username', None)
+    username = User.get_username_by_id(current_user)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
 

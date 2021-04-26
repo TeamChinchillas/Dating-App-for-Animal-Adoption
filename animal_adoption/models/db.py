@@ -138,6 +138,20 @@ class UserDetail(db.Model):
         return user_detail
 
     @staticmethod
+    def get_printable_user_detail(username):
+        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        user_detail_dict = UserDetail.object_as_dict(user_detail)
+        name = User.query.filter_by(id_user=user_detail_dict['user_id']).first().username
+        user_type = UserType.query.filter_by(id_user_type=user_detail_dict['user_type_id']).first().user_type
+        printable_user_details = {
+            'username': name,
+            'first_name': user_detail_dict['first_name'],
+            'last_name': user_detail_dict['last_name'],
+            'user_type': user_type
+        }
+        return printable_user_details
+
+    @staticmethod
     def get_user_dispositions(username):
         disposition_list = []
         user_detail = UserDetail.get_user_detail(username)
