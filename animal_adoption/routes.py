@@ -223,21 +223,25 @@ def get_user_dispositions():
 
 
 @app.route('/update-user-dispositions', endpoint='update-user-dispositions', methods=['POST'])
+@jwt_required(locations='cookies')
 def update_user_dispositions():
     """
     Update dispositions for a specific user
     :return:
     """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+
     if not request.is_json:
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    username = request.json.get('username', None)
+    username = User.get_username_by_id(current_user)
     dispositions = request.json.get('dispositions', None)
 
-    if not username:
-        print('uri=/login error="Missing username parameter"')
-        return jsonify({"msg": "Missing username parameter"}), 400
     if not dispositions:
         print('uri=/login error="Missing dispositions parameter"')
         return jsonify({"msg": "Missing dispositions parameter"}), 400
