@@ -3,9 +3,9 @@ from animal_adoption import app, User, UserType, UserDetail, Disposition
 
 def create_users():
     users = [
-        {'username': 'user1', 'password': 'test1'},
-        {'username': 'user2', 'password': 'test2'},
-        {'username': 'user3', 'password': 'test3'},
+        {'username': 'johndoe@a.com', 'password': 'test1'},
+        {'username': 'jimdoe@a.com', 'password': 'test2'},
+        {'username': 'jeandoe@a.com', 'password': 'test3'},
     ]
 
     for user in users:
@@ -28,38 +28,33 @@ def create_user_types():
 def create_user_details():
     user_details = [
         {
-            'username': 'user1',
+            'username': 'johndoe@a.com',
             'first_name': 'john',
             'last_name': 'doe',
-            'email_address': 'johndoe@a.com',
             'user_type': 'adopter'
         },
         {
-            'username': 'user0',
+            'username': 'janedoe@a.com',
             'first_name': 'jane',
             'last_name': 'doe',
-            'email_address': 'janedoe@a.com',
             'user_type': 'adopter'
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@a.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@a.com',
             'user_type': 'invalid'
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@a.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@a.com',
             'user_type': 'shelter_worker'
         },
         {
-            'username': 'user3',
+            'username': 'jeandoe@a.com',
             'first_name': 'jean',
             'last_name': 'doe',
-            'email_address': 'jeandoe@a.com',
             'user_type': 'administrator'
         }
     ]
@@ -70,7 +65,6 @@ def create_user_details():
             user_detail['username'],
             user_detail['first_name'],
             user_detail['last_name'],
-            user_detail['email_address'],
             user_detail['user_type']
         )
 
@@ -78,31 +72,27 @@ def create_user_details():
 def update_user_details():
     user_updates = [
         {
-            'username': 'user1',
+            'username': 'johndoe@abc.com',
             'first_name': 'john',
             'last_name': 'doe',
-            'email_address': 'johndoe@abc.com',
             'dispositions': []
         },
         {
-            'username': 'user0',
+            'username': 'janedoe@a.com',
             'first_name': 'jane',
             'last_name': 'doe',
-            'email_address': 'janedoe@a.com',
             'dispositions': []
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@abc.com',
             'dispositions': ['Good with other animals']
         },
         {
-            'username': 'user3',
+            'username': 'jeandoe@abc.com',
             'first_name': 'jean',
             'last_name': 'doe',
-            'email_address': 'jeandoe@abc.com',
             'dispositions': []
         }
     ]
@@ -112,7 +102,6 @@ def update_user_details():
             user_update['username'],
             user_update['first_name'],
             user_update['last_name'],
-            user_update['email_address'],
             user_update['dispositions']
         )
         print(UserDetail.get_user_detail(user_update['username']))
@@ -131,12 +120,17 @@ def create_dispositions():
         new_dispo.create_disposition(disposition)
 
 
+def initialize_shelters():
+    pass
+
+
 def initialize_db():
     create_users()
     create_user_types()
+    create_dispositions()
     create_user_details()
     update_user_details()
-    create_dispositions()
+    initialize_shelters()
 
 
 if __name__ == '__main__':
