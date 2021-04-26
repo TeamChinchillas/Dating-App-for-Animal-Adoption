@@ -116,7 +116,6 @@ class UserDetail(db.Model):
     def __init__(self):
         self.first_name = None
         self.last_name = None
-        # self.email_address = None
         self.user_id = None
         self.user_type_id = None
 
@@ -187,10 +186,6 @@ class UserDetail(db.Model):
                 if user_detail.last_name != last_name:
                     changed = True
                     user_detail.last_name = last_name
-            # if email_address:
-            #     if user_detail.email_address != email_address:
-            #         changed = True
-            #         user_detail.email_address = email_address
             if dispositions:
                 for disposition in dispositions:
                     changed = True
