@@ -100,6 +100,13 @@ class User(db.Model):
 
         return True
 
+    @staticmethod
+    def change_username(user_id, username):
+        existing_user = User.query.filter_by(id_user=user_id).first()
+        existing_user.username = username
+        db.session.add(existing_user)
+        db.session.commit()
+
 
 class UserDetail(db.Model):
     __tablename__ = 'UserDetailTable'
@@ -186,12 +193,16 @@ class UserDetail(db.Model):
         return False
 
     @staticmethod
-    def update_user_detail(username, first_name=None, last_name=None, dispositions=None, shelter=None):
+    def update_user_detail(user_id, username=None, first_name=None, last_name=None, dispositions=None, shelter=None):
         changed = False
         if not first_name and not last_name and not dispositions:
             print('No fields to update')
-        user_detail = UserDetail.get_user_detail(username)
+        user_detail = UserDetail.get_user_detail(User.get_username_by_id(user_id))
         if user_detail:
+            if username:
+                if User.get_username_by_id(user_id) != username:
+                    changed = True
+                    User.change_username(user_id, username)
             if first_name:
                 if user_detail.first_name != first_name:
                     changed = True
@@ -245,6 +256,22 @@ class UserType(db.Model):
     def __repr__(self):
         return '<UserType {}>'.format(self.user_type)
 
+    @staticmethod
+    def get_user_type_id_by_name(user_type_name):
+        user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
+        if user_type_record:
+            return user_type_record.id_user_type
+        else:
+            return None
+
+    @staticmethod
+    def get_user_type_name_by_id(user_type_id):
+        user_type_record = UserType.query.filter_by(id_user_type=user_type_id).first()
+        if user_type_record:
+            return user_type_record.user_type
+        else:
+            return None
+
     def create_user_type(self, name):
         user_type_record = UserType.get_user_type_id_by_name(name)
         if not user_type_record:
@@ -254,19 +281,19 @@ class UserType(db.Model):
         else:
             print('User type \'{}\' already exists'.format(name))
 
-    @staticmethod
-    def get_user_type_id_by_name(user_type_name):
-        user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
-        if user_type_record:
-            return user_type_record.id_user_type
-        else:
-            return None
-
 
 class Adopter(db.Model):
     __tablename__ = 'AdopterTable'
     id_adopter = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
+
+    @staticmethod
+    def assign_user_by_username(username):
+        pass
+
+    @staticmethod
+    def assign_user_by_id(username):
+        pass
 
 
 class ShelterWorker(db.Model):
@@ -274,6 +301,14 @@ class ShelterWorker(db.Model):
     id_shelter_worker = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
+
+    @staticmethod
+    def assign_user_by_username(username):
+        pass
+
+    @staticmethod
+    def assign_user_by_id(username):
+        pass
 
 
 class Administrator(db.Model):
@@ -297,6 +332,18 @@ class Shelter(db.Model):
         self.email_address = None
 
     @staticmethod
+    def object_as_dict(obj):
+        return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+
+    @staticmethod
+    def get_shelters():
+        shelters = Shelter.query.all()
+        shelter_list = []
+        for shelter in shelters:
+            shelter_list.append(Shelter.object_as_dict(shelter))
+        return shelter_list
+
+    @staticmethod
     def get_shelter_by_name(name):
         return Shelter.query.filter_by(name=name).first()
 
@@ -312,7 +359,6 @@ class Shelter(db.Model):
             return True
 
         return False
-
 
 
 class Animal(db.Model):
