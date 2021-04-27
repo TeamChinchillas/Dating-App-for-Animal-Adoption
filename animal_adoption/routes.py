@@ -1,5 +1,5 @@
 import datetime
-from animal_adoption import app, User, UserDetail
+from animal_adoption import app, Shelter, User, UserDetail
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -83,9 +83,9 @@ def create_user():
 
 
 @app.route('/create-user-with-details', endpoint='create_user_with_details', methods=['POST'])
-def create_user():
+def create_user_with_details():
     """
-    Create a new user with the provided credentials
+    Create a new user with the provided credentials and details
     :return:
     """
     if not request.is_json:
@@ -97,6 +97,7 @@ def create_user():
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
     user_type = request.json.get('user_type', None)
+    shelter_name = request.json.get('shelter_name', None)
 
     if not username:
         print('uri=/login error="Missing username parameter"')
@@ -113,6 +114,10 @@ def create_user():
     if not user_type:
         print('uri=/login error="Missing user type parameter"')
         return jsonify({"msg": "Missing user type parameter"}), 400
+    if user_type == 'shelter worker':
+        if not shelter_name:
+            print('uri=/login error="Missing shelter name parameter for shelter worker"')
+            return jsonify({"msg": "Missing shelter name parameter for shelter worker"}), 400
 
     new_user = User()
     create_user_result = new_user.create_user(username=username, password=password)
@@ -127,6 +132,9 @@ def create_user():
             last_name=last_name,
             user_type=user_type
         )
+
+        if user_type == 'shelter worker':
+            pass
 
         if create_user_result and create_user_detail_result:
             return jsonify(message='User account and details for {} created successfully'.format(username)), 200
@@ -224,7 +232,7 @@ def update_user_details():
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    username = User.get_username_by_id(current_user)
+    username = request.json.get('username', None)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
 
@@ -238,8 +246,9 @@ def update_user_details():
         print('uri=/login error="Missing last name parameter"')
         return jsonify({"msg": "Missing last name parameter"}), 400
 
-    if UserDetail.get_user_detail(username):
+    if UserDetail.get_user_detail(User.get_username_by_id(current_user)):
         result = UserDetail.update_user_detail(
+            current_user,
             username=username,
             first_name=first_name,
             last_name=last_name
@@ -312,13 +321,18 @@ def update_user_dispositions():
         return jsonify(message='User {} detail update failed'.format(username)), 500
 
 
-@app.route('/get-shelters', endpoint='get_shelter', methods=['POST'])
+@app.route('/get-shelters', endpoint='get_shelter', methods=['GET'])
 def get_shelters():
     """
-    Return a list of shelters
+    Return a list of shelters with details
     :return:
     """
-    pass
+    shelters = Shelter.get_shelters()
+
+    if shelters:
+        return jsonify(message=shelters), 200
+    else:
+        return jsonify(message='Failed to get shelters'), 500
 
 
 @app.route('/assign-user-to-shelter', endpoint='assign_user_to_shelter', methods=['POST'])
