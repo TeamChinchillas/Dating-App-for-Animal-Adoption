@@ -6,7 +6,9 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+static_dir = os.path.join(os.path.dirname(__file__), 'front_end/build')
+app = Flask(__name__, static_folder=static_dir, static_url_path='')
+
 app.config['SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

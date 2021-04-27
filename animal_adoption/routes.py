@@ -1,4 +1,5 @@
 import datetime
+from flask.helpers import send_from_directory
 from animal_adoption import app, Shelter, User, UserDetail
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -15,13 +16,12 @@ jwt = JWTManager(app)
 
 
 @app.route('/', endpoint='', methods=['GET'])
-def login():
+def index():
     """
-    Test basic routing
+    Index
     :return:
     """
-    hello = "Hello World"
-    return hello
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/login', endpoint='login', methods=['POST'])
