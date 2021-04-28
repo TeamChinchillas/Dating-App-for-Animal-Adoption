@@ -42,8 +42,26 @@ class User(db.Model):
             self.hash_password(password)
             db.session.add(self)
             db.session.commit()
+            return True
         else:
             print('Username \'{}\' already exists'.format(username))
+            return False
+
+    @staticmethod
+    def get_id_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return user.id_user
+        else:
+            return None
+
+    @staticmethod
+    def get_username_by_id(user_id):
+        user = User.query.filter_by(id_user=user_id).first()
+        if user:
+            return user.username
+        else:
+            return None
 
     def hash_password(self, password):
         """
@@ -83,12 +101,11 @@ class User(db.Model):
         return True
 
     @staticmethod
-    def get_id_by_username(username):
-        user = User.query.filter_by(username=username).first()
-        if user:
-            return user.id_user
-        else:
-            return None
+    def change_username(user_id, username):
+        existing_user = User.query.filter_by(id_user=user_id).first()
+        existing_user.username = username
+        db.session.add(existing_user)
+        db.session.commit()
 
 
 class UserDetail(db.Model):
@@ -96,7 +113,6 @@ class UserDetail(db.Model):
     id_user_detail = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(32))
     last_name = db.Column(db.String(32))
-    email_address = db.Column(db.String(32))
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserTypeTable.id_user_type'))
     user_dispositions = db.relationship(
@@ -107,15 +123,13 @@ class UserDetail(db.Model):
     def __init__(self):
         self.first_name = None
         self.last_name = None
-        self.email_address = None
         self.user_id = None
         self.user_type_id = None
 
     def __repr__(self):
-        return '<Name: {} {} email: {} id: {} type: {} dispositions: {}>'.format(
+        return '<Name: {} {} id: {} type: {} dispositions: {}>'.format(
             self.first_name,
             self.last_name,
-            self.email_address,
             self.user_id,
             self.user_type_id,
             self.user_dispositions
@@ -131,6 +145,20 @@ class UserDetail(db.Model):
         return user_detail
 
     @staticmethod
+    def get_printable_user_detail(username):
+        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        user_detail_dict = UserDetail.object_as_dict(user_detail)
+        name = User.query.filter_by(id_user=user_detail_dict['user_id']).first().username
+        user_type = UserType.query.filter_by(id_user_type=user_detail_dict['user_type_id']).first().user_type
+        printable_user_details = {
+            'username': name,
+            'first_name': user_detail_dict['first_name'],
+            'last_name': user_detail_dict['last_name'],
+            'user_type': user_type
+        }
+        return printable_user_details
+
+    @staticmethod
     def get_user_dispositions(username):
         disposition_list = []
         user_detail = UserDetail.get_user_detail(username)
@@ -141,7 +169,7 @@ class UserDetail(db.Model):
 
         return {'dispositions': disposition_list}
 
-    def create_user_detail(self, username, first_name, last_name, email_address, user_type):
+    def create_user_detail(self, username, first_name, last_name, user_type, shelter=None):
         self.user_id = User.get_id_by_username(username)
         self.user_type_id = UserType.get_user_type_id_by_name(user_type)
         if not UserDetail.get_user_detail(username):
@@ -150,7 +178,6 @@ class UserDetail(db.Model):
                     if not UserDetail.get_user_detail(username):
                         self.first_name = first_name
                         self.last_name = last_name
-                        self.email_address = email_address
                         db.session.add(self)
                         db.session.commit()
                         return True
@@ -166,12 +193,16 @@ class UserDetail(db.Model):
         return False
 
     @staticmethod
-    def update_user_detail(username, first_name=None, last_name=None, email_address=None, dispositions=None):
+    def update_user_detail(user_id, username=None, first_name=None, last_name=None, dispositions=None, shelter=None):
         changed = False
-        if not first_name and not last_name and not email_address and not dispositions:
+        if not first_name and not last_name and not dispositions:
             print('No fields to update')
-        user_detail = UserDetail.get_user_detail(username)
+        user_detail = UserDetail.get_user_detail(User.get_username_by_id(user_id))
         if user_detail:
+            if username:
+                if User.get_username_by_id(user_id) != username:
+                    changed = True
+                    User.change_username(user_id, username)
             if first_name:
                 if user_detail.first_name != first_name:
                     changed = True
@@ -180,10 +211,6 @@ class UserDetail(db.Model):
                 if user_detail.last_name != last_name:
                     changed = True
                     user_detail.last_name = last_name
-            if email_address:
-                if user_detail.email_address != email_address:
-                    changed = True
-                    user_detail.email_address = email_address
             if dispositions:
                 for disposition in dispositions:
                     changed = True
@@ -229,6 +256,22 @@ class UserType(db.Model):
     def __repr__(self):
         return '<UserType {}>'.format(self.user_type)
 
+    @staticmethod
+    def get_user_type_id_by_name(user_type_name):
+        user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
+        if user_type_record:
+            return user_type_record.id_user_type
+        else:
+            return None
+
+    @staticmethod
+    def get_user_type_name_by_id(user_type_id):
+        user_type_record = UserType.query.filter_by(id_user_type=user_type_id).first()
+        if user_type_record:
+            return user_type_record.user_type
+        else:
+            return None
+
     def create_user_type(self, name):
         user_type_record = UserType.get_user_type_id_by_name(name)
         if not user_type_record:
@@ -238,19 +281,19 @@ class UserType(db.Model):
         else:
             print('User type \'{}\' already exists'.format(name))
 
-    @staticmethod
-    def get_user_type_id_by_name(user_type_name):
-        user_type_record = UserType.query.filter_by(user_type=user_type_name).first()
-        if user_type_record:
-            return user_type_record.id_user_type
-        else:
-            return None
-
 
 class Adopter(db.Model):
     __tablename__ = 'AdopterTable'
     id_adopter = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
+
+    @staticmethod
+    def assign_user_by_username(username):
+        pass
+
+    @staticmethod
+    def assign_user_by_id(username):
+        pass
 
 
 class ShelterWorker(db.Model):
@@ -258,6 +301,14 @@ class ShelterWorker(db.Model):
     id_shelter_worker = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
+
+    @staticmethod
+    def assign_user_by_username(username):
+        pass
+
+    @staticmethod
+    def assign_user_by_id(username):
+        pass
 
 
 class Administrator(db.Model):
@@ -273,6 +324,41 @@ class Shelter(db.Model):
     physical_address = db.Column(db.String(32))
     phone_number = db.Column(db.String(32))
     email_address = db.Column(db.String(32))
+
+    def __init__(self):
+        self.name = None
+        self.physical_address = None
+        self.phone_number = None
+        self.email_address = None
+
+    @staticmethod
+    def object_as_dict(obj):
+        return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+
+    @staticmethod
+    def get_shelters():
+        shelters = Shelter.query.all()
+        shelter_list = []
+        for shelter in shelters:
+            shelter_list.append(Shelter.object_as_dict(shelter))
+        return shelter_list
+
+    @staticmethod
+    def get_shelter_by_name(name):
+        return Shelter.query.filter_by(name=name).first()
+
+    def create_new_shelter(self, name, physical_address, phone_number, email_address):
+        existing_shelter = Shelter.get_shelter_by_name(name)
+        if not existing_shelter:
+            self.name = name
+            self.physical_address = physical_address
+            self.phone_number = phone_number
+            self.email_address = email_address
+            db.session.add(self)
+            db.session.commit()
+            return True
+
+        return False
 
 
 class Animal(db.Model):

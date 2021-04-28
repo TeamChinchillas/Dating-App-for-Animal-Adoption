@@ -1,12 +1,11 @@
-from animal_adoption import app, User, UserType, UserDetail, Disposition
+from animal_adoption import app, User, UserType, UserDetail, Disposition, Shelter
 
 
 def create_users():
     users = [
-        {'username': 'user0', 'password': 'test0'},
-        {'username': 'user1', 'password': 'test1'},
-        {'username': 'user2', 'password': 'test2'},
-        {'username': 'user3', 'password': 'test3'},
+        {'username': 'johndoe@abc.com', 'password': 'test1'},
+        {'username': 'jimdoe@abc.com', 'password': 'test2'},
+        {'username': 'jeandoe@abc.com', 'password': 'test3'},
     ]
 
     for user in users:
@@ -29,38 +28,33 @@ def create_user_types():
 def create_user_details():
     user_details = [
         {
-            'username': 'user1',
+            'username': 'johndoe@abc.com',
             'first_name': 'john',
             'last_name': 'doe',
-            'email_address': 'johndoe@a.com',
             'user_type': 'adopter'
         },
         {
-            'username': 'user0',
+            'username': 'janedoe@abc.com',
             'first_name': 'jane',
             'last_name': 'doe',
-            'email_address': 'janedoe@a.com',
             'user_type': 'adopter'
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@a.com',
             'user_type': 'invalid'
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@a.com',
-            'user_type': 'shelter_worker'
+            'user_type': 'shelter worker'
         },
         {
-            'username': 'user3',
+            'username': 'jeandoe@abc.com',
             'first_name': 'jean',
             'last_name': 'doe',
-            'email_address': 'jeandoe@a.com',
             'user_type': 'administrator'
         }
     ]
@@ -71,7 +65,6 @@ def create_user_details():
             user_detail['username'],
             user_detail['first_name'],
             user_detail['last_name'],
-            user_detail['email_address'],
             user_detail['user_type']
         )
 
@@ -79,31 +72,27 @@ def create_user_details():
 def update_user_details():
     user_updates = [
         {
-            'username': 'user1',
+            'username': 'johndoe@abc.com',
             'first_name': 'john',
             'last_name': 'doe',
-            'email_address': 'johndoe@abc.com',
             'dispositions': []
         },
         {
-            'username': 'user0',
+            'username': 'janedoe@a.com',
             'first_name': 'jane',
             'last_name': 'doe',
-            'email_address': 'janedoe@a.com',
             'dispositions': []
         },
         {
-            'username': 'user2',
+            'username': 'jimdoe@abc.com',
             'first_name': 'jim',
             'last_name': 'doe',
-            'email_address': 'jimdoe@abc.com',
             'dispositions': ['Good with other animals']
         },
         {
-            'username': 'user3',
+            'username': 'jeandoe@abc.com',
             'first_name': 'jean',
             'last_name': 'doe',
-            'email_address': 'jeandoe@abc.com',
             'dispositions': []
         }
     ]
@@ -113,7 +102,6 @@ def update_user_details():
             user_update['username'],
             user_update['first_name'],
             user_update['last_name'],
-            user_update['email_address'],
             user_update['dispositions']
         )
         print(UserDetail.get_user_detail(user_update['username']))
@@ -132,12 +120,52 @@ def create_dispositions():
         new_dispo.create_disposition(disposition)
 
 
+def create_shelters():
+    shelters = [
+        {
+            'name': 'Critters and Creatures',
+            'physical_address': '123 Bark Ave',
+            'phone_number': '123-456-7890',
+            'email_address': 'info@candc.com'
+        },
+        {
+            'name': 'Creature Comforts',
+            'physical_address': '555 Feline Way',
+            'phone_number': '999-867-5309',
+            'email_address': 'adopt@creaturecomforts.com'
+        },
+        {
+            'name': 'Save a Pet',
+            'physical_address': '789 Rover Pkwy',
+            'phone_number': '111-222-3456',
+            'email_address': 'rescue@saveapet.com'
+        }
+    ]
+
+    for shelter in shelters:
+        new_shelter = Shelter()
+        result = new_shelter.create_new_shelter(
+            shelter['name'],
+            shelter['physical_address'],
+            shelter['phone_number'],
+            shelter['email_address']
+        )
+        print('Create new shelter {}: {}'.format(shelter['name'], result))
+
+
 def initialize_db():
+    print('Creating users')
     create_users()
+    print('Creating user types')
     create_user_types()
-    create_user_details()
-    update_user_details()
+    print('Creating dispositions')
     create_dispositions()
+    print('Creating user details')
+    create_user_details()
+    print('Updating user details')
+    update_user_details()
+    print('Creating shelters')
+    create_shelters()
 
 
 if __name__ == '__main__':
