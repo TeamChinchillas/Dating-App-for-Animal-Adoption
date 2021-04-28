@@ -47,7 +47,7 @@ def login():
     result = User.authenticate_user(username=username, password=password)
     if result:
         access_token = create_access_token(identity=User.get_id_by_username(username))
-        response = make_response(redirect('/', 200))
+        response = jsonify(message='Login Succeeded!')
         set_access_cookies(response, access_token)
         return response
     else:
