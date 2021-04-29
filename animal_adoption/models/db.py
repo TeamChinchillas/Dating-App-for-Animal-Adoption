@@ -287,13 +287,36 @@ class Adopter(db.Model):
     id_adopter = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
 
-    @staticmethod
-    def assign_user_by_username(username):
-        pass
+    def __init__(self):
+        self.user_id = None
 
     @staticmethod
-    def assign_user_by_id(username):
-        pass
+    def assign_user_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            if Adopter.query.filter_by(user_id=user.id_user).first():
+                print('User {} already assigned as adopter'.format(username))
+            else:
+                new_adopter = Adopter()
+                new_adopter.user_id = user.id_user
+                db.session.add(new_adopter)
+                db.session.commit()
+        else:
+            print('User {} not found'.format(username))
+
+    @staticmethod
+    def assign_user_by_id(user_id):
+        user = User.query.filter_by(id_user=user_id).first()
+        if user:
+            if Adopter.query.filter_by(user_id=user.id_user).first():
+                print('User {} already assigned as adopter'.format(user.username))
+            else:
+                new_adopter = Adopter()
+                new_adopter.user_id = user.id_user
+                db.session.add(new_adopter)
+                db.session.commit()
+        else:
+            print('User id {} not found'.format(user_id))
 
 
 class ShelterWorker(db.Model):
@@ -302,9 +325,39 @@ class ShelterWorker(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
 
+    def __init__(self):
+        self.user_id = None
+        self.shelter_id = None
+
     @staticmethod
-    def assign_user_by_username(username):
-        pass
+    def assign_user_by_username(username, shelter_name):
+        user = User.query.filter_by(username=username).first()
+        shelter = Shelter.query.filter_by(name=shelter_name).first()
+        if user:
+            if shelter:
+                existing_shelter_worker = ShelterWorker.query.filter_by(user_id=user.id_user).first()
+                if existing_shelter_worker:
+                    if existing_shelter_worker.shelter_id == shelter.id_shelter:
+                        print('User {} already assigned as shelter worker for {}'.format(username, shelter_name))
+                    else:
+                        print('Re-assigning {} from shelter {} to shelter {}'.format(
+                            username,
+                            Shelter.query.filter_by(id_shelter=existing_shelter_worker.shelter_id).first().name,
+                            shelter_name
+                        ))
+                        existing_shelter_worker.shelter_id = shelter.id_shelter
+                        db.session.add(existing_shelter_worker)
+                        db.session.commit()
+                else:
+                    new_shelter_worker = ShelterWorker()
+                    new_shelter_worker.user_id = user.id_user
+                    new_shelter_worker.shelter_id = shelter.id_shelter
+                    db.session.add(new_shelter_worker)
+                    db.session.commit()
+            else:
+                print('Shelter {} not found'.format(shelter_name))
+        else:
+            print('User {} not found'.format(username))
 
     @staticmethod
     def assign_user_by_id(username):

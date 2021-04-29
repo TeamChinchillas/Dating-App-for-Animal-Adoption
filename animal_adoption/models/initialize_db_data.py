@@ -1,4 +1,4 @@
-from animal_adoption import app, User, UserType, UserDetail, Disposition, Shelter
+from animal_adoption import app, User, UserType, UserDetail, Disposition, Shelter, Adopter, ShelterWorker
 
 
 def create_users():
@@ -153,6 +153,16 @@ def create_shelters():
         print('Create new shelter {}: {}'.format(shelter['name'], result))
 
 
+def assign_adopters():
+    Adopter.assign_user_by_username('johndoe@abc.com')
+    Adopter.assign_user_by_id(User.get_id_by_username('jimdoe@abc.com'))
+
+
+def assign_shelter_workers():
+    ShelterWorker.assign_user_by_username('jeandoe@abc.com', 'Save a Pet')
+    ShelterWorker.assign_user_by_username('jeandoe@abc.com', 'Creature Comforts')
+
+
 def initialize_db():
     print('Creating users')
     create_users()
@@ -166,6 +176,10 @@ def initialize_db():
     update_user_details()
     print('Creating shelters')
     create_shelters()
+    print('Assigning users as adopters')
+    assign_adopters()
+    print('Assigning shelter workers')
+    assign_shelter_workers()
 
 
 if __name__ == '__main__':
