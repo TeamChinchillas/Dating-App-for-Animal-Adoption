@@ -365,15 +365,15 @@ def assign_user_to_shelter():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     username = User.get_username_by_id(current_user)
-    shelter = request.json.get('shelter', None)
+    shelter_name = request.json.get('shelter_name', None)
 
-    if not shelter:
+    if not shelter_name:
         print('uri=/assign-user-to-shelter error="Missing shelter parameter"')
         return jsonify({"msg": "Missing shelter parameter"}), 400
 
-    result = ShelterWorker.assign_user_by_username(username, shelter)
+    result = ShelterWorker.assign_user_by_username(username, shelter_name)
 
     if result:
-        return jsonify(message='User {} assigned to shelter {} successfully'.format(username, shelter)), 200
+        return jsonify(message='User {} assigned to shelter {} successfully'.format(username, shelter_name)), 200
     else:
-        return jsonify(message='User {} assignment to shelter {} failed'.format(username, shelter)), 500
+        return jsonify(message='User {} assignment to shelter {} failed'.format(username, shelter_name)), 500
