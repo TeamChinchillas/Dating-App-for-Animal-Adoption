@@ -154,6 +154,104 @@ def create_user_with_details():
         return jsonify(message='User account and details for {} failed'.format(username)), 500
 
 
+@app.route('/create-user-with-all-details', endpoint='create_user_with_all_details', methods=['POST'])
+def create_user_with_all_details():
+    """
+    Create a new user with the provided credentials and details
+    :return:
+    """
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    first_name = request.json.get('firstName', None)
+    last_name = request.json.get('lastName', None)
+    user_type = request.json.get('userType', None)
+    shelter_name = request.json.get('shelterName', None)
+    dispositions = request.json.get('dispositions', None)
+    good_with_animals = request.json.get('goodWithAnimals', None)
+    good_with_children = request.json.get('goodWithChildren', None)
+    animal_leashed = request.json.get('animalLeashed', None)
+
+    if not username:
+        print('uri=/login error="Missing username parameter"')
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not password:
+        print('uri=/login error="Missing password parameter"')
+        return jsonify({"msg": "Missing password parameter"}), 400
+    if not first_name:
+        print('uri=/login error="Missing first name parameter"')
+        return jsonify({"msg": "Missing first name parameter"}), 400
+    if not last_name:
+        print('uri=/login error="Missing last name parameter"')
+        return jsonify({"msg": "Missing last name parameter"}), 400
+    if not user_type:
+        print('uri=/login error="Missing user type parameter"')
+        return jsonify({"msg": "Missing user type parameter"}), 400
+    if user_type == 'shelter worker':
+        if not shelter_name:
+            print('uri=/login error="Missing shelter name parameter for shelter worker"')
+            return jsonify({"msg": "Missing shelter name parameter for shelter worker"}), 400
+
+    response = {
+        'create_user_result': False,
+        'create_user_detail_result': False,
+        'assign_user_to_shelter': False,
+        'assign_dispositions': False
+    }
+
+    new_user = User()
+    create_user_result = new_user.create_user(username=username, password=password)
+
+    response['create_user_result'] = create_user_result
+
+    existing_user_detail = UserDetail.get_user_detail(username)
+
+    if not existing_user_detail:
+        new_user_detail = UserDetail()
+        create_user_detail_result = new_user_detail.create_user_detail(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            user_type=user_type
+        )
+        response['create_user_detail_result'] = create_user_detail_result
+
+    if user_type == 'shelter worker':
+        if shelter_name:
+            assign_shelter_worker_result = ShelterWorker.assign_user_by_username(username, shelter_name)
+            response['assign_user_to_shelter'] = assign_shelter_worker_result
+            if assign_shelter_worker_result:
+                print('User {} assigned to shelter {}'.format(username, shelter_name))
+
+    if not dispositions:
+        dispositions = []
+        if good_with_animals:
+            dispositions.append('Good with other animals')
+        if good_with_children:
+            dispositions.append('Good with children')
+        if animal_leashed:
+            dispositions.append('Animal must be leashed at all times')
+
+    print(dispositions)
+    if UserDetail.get_user_detail(username):
+        dispo_result = UserDetail.update_user_dispositions(
+            username=username,
+            dispositions=dispositions
+        )
+        response['assign_dispositions'] = dispo_result
+    else:
+        response['assign_dispositions'] = False
+        # return jsonify(message='User {} does not exist'.format(username)), 500
+
+    if response['create_user_result'] and response['create_user_detail_result']:
+        return jsonify(message=response), 200
+    else:
+        return jsonify(message=response), 500
+
+
 @app.route('/get-user-details', endpoint='get-user-details', methods=['GET'])
 @jwt_required(locations='cookies')
 def get_user_details():
