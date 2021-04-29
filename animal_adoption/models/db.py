@@ -332,6 +332,10 @@ class ShelterWorker(db.Model):
     @staticmethod
     def assign_user_by_username(username, shelter_name):
         user = User.query.filter_by(username=username).first()
+        user_detail = UserDetail.get_user_detail(username)
+        if not UserType.get_user_type_name_by_id(user_type_id=user_detail.user_type_id) == 'shelter worker':
+            print('User is not a shelter worker')
+            return False
         shelter = Shelter.query.filter_by(name=shelter_name).first()
         if user:
             if shelter:
@@ -348,16 +352,20 @@ class ShelterWorker(db.Model):
                         existing_shelter_worker.shelter_id = shelter.id_shelter
                         db.session.add(existing_shelter_worker)
                         db.session.commit()
+                        return True
                 else:
                     new_shelter_worker = ShelterWorker()
                     new_shelter_worker.user_id = user.id_user
                     new_shelter_worker.shelter_id = shelter.id_shelter
                     db.session.add(new_shelter_worker)
                     db.session.commit()
+                    return True
             else:
                 print('Shelter {} not found'.format(shelter_name))
         else:
             print('User {} not found'.format(username))
+
+        return False
 
 
 class Administrator(db.Model):
