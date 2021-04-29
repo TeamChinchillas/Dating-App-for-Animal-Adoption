@@ -359,10 +359,6 @@ class ShelterWorker(db.Model):
         else:
             print('User {} not found'.format(username))
 
-    @staticmethod
-    def assign_user_by_id(username):
-        pass
-
 
 class Administrator(db.Model):
     __tablename__ = 'AdministratorTable'
