@@ -56,7 +56,7 @@ export default function Header() {
     <Flex as="nav" align="center" justify="space-between" wrap="wrap" padding="1.5rem" bg="white">
       <Box>
         <Heading as="h1" size="lg" letterSpacing="-.1rem">
-          Animal Adoption
+          <Link to="/">Animal Adoption</Link>
         </Heading>
       </Box>
 
@@ -90,12 +90,14 @@ export default function Header() {
             </Menu>
           ) : (
             <>
-              <Button colorScheme="green">
-                <Link to="/signup">Sign up</Link>
-              </Button>
-              <Button colorScheme="teal" ml="2">
-                <Link to="/login">Login</Link>
-              </Button>
+              <Link to="/signup">
+                <Button colorScheme="green">Sign up</Button>
+              </Link>
+              <Link to="/login">
+                <Button colorScheme="teal" ml="2">
+                  Login
+                </Button>
+              </Link>
             </>
           )}
         </Box>

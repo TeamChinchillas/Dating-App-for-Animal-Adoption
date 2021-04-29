@@ -1,4 +1,5 @@
 import { Button, Image, Box, Stack, Heading, Text, Flex } from '@chakra-ui/react'
+import { Link } from 'react-router-dom'
 
 export default function LandingBeforeLogin() {
   return (
@@ -42,7 +43,9 @@ export default function LandingBeforeLogin() {
             some description here
           </Text>
         </Heading>
-        <Button colorScheme="green">Get started</Button>
+        <Link to="/signup">
+          <Button colorScheme="green">Get started</Button>
+        </Link>
       </Stack>
 
       <Box w={{ base: '80%', sm: '70%', md: '50%' }} mb={{ base: 12, md: 0 }}>
