@@ -146,7 +146,7 @@ class UserDetail(db.Model):
 
     @staticmethod
     def get_printable_user_detail(username):
-        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        user_detail = UserDetail.query.filter_by(user_id=User.get_id_by_username(username)).first()
         user_detail_dict = UserDetail.object_as_dict(user_detail)
         name = User.query.filter_by(id_user=user_detail_dict['user_id']).first().username
         user_type = UserType.query.filter_by(id_user_type=user_detail_dict['user_type_id']).first().user_type

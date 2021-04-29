@@ -4,22 +4,21 @@ import LandingBeforeLogin from '../components/landing/LandingBeforeLogin'
 import LandingForAdopters from '../components/landing/LandingForAdopters'
 import LandingForShelters from '../components/landing/LandingForShelters'
 import LandingForAdmins from '../components/landing/LandingForAdmins'
+import User from '../models/User'
 
 export default function Landing() {
+  /** @type {{user: User}} */
   const { user } = useContext(UserContext)
 
-  if (!user) {
-    return <LandingBeforeLogin />
+  if (user?.isAdopter) {
+    return <LandingForAdopters />
+  }
+  if (user?.isShelterWorker) {
+    return <LandingForShelters />
+  }
+  if (user?.isAdministrator) {
+    return <LandingForAdmins />
   }
 
-  switch (user.userType) {
-    case 'ADOPTER':
-      return <LandingForAdopters />
-    case 'SHELTER':
-      return <LandingForShelters />
-    case 'ADMINISTRATOR':
-      return <LandingForAdmins />
-    default:
-      return <LandingBeforeLogin />
-  }
+  return <LandingBeforeLogin />
 }

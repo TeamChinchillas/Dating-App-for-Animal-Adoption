@@ -4,7 +4,7 @@ from animal_adoption import app, Shelter, User, UserDetail
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    get_jwt_identity, set_access_cookies
+    get_jwt_identity, set_access_cookies, unset_access_cookies
 )
 
 
@@ -52,6 +52,18 @@ def login():
         return response
     else:
         return jsonify(message='Bad username or password'), 401
+
+
+@app.route('/logout', endpoint='logout', methods=['GET'])
+@jwt_required(locations='cookies')
+def logout():
+    """
+    Logout
+    :return:
+    """
+    response = jsonify(message='Logout Succeeded')
+    unset_access_cookies(response)
+    return response
 
 
 @app.route('/create-user', endpoint='create-user', methods=['POST'])

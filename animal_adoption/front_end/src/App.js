@@ -8,8 +8,10 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import UserContext from './components/users/UserContext'
 import Animals from './pages/Animals'
+import User from './models/User'
 
 function App() {
+  /** @type {[User, Function]} */
   const [user, setUser] = useState()
 
   return (

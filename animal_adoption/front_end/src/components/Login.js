@@ -1,63 +1,81 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
+import {
+  Input,
+  FormControl,
+  FormLabel,
+  Button,
+  Heading,
+  Container,
+  Box,
+  Text,
+} from '@chakra-ui/react'
 
-export default class Login extends Component {
-  constructor(props) {
-    super(props)
+export default function Login() {
+  const [formState, setFormState] = useState({
+    username: '',
+    password: '',
+  })
 
-    this.state = {
-      email: '',
-      password: '',
-    }
+  const [error, setError] = useState('')
 
-    this.submitForm = this.submitForm.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+  const redirectToHome = () => {
+    window.location.href = '/'
   }
 
-  submitForm(event) {
-    const { email, password } = this.state
-    console.log('Submit Form Fired')
-    console.log(event.target.email.value)
-    console.log(event.target.password.value)
-    // To view any field we enter "event.target.{field_name}.value"
-    // Add code to connect to Flask API
+  const submitForm = async (event) => {
     event.preventDefault()
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formState }),
+      })
+
+      if (response.status < 200 || response.status >= 300) {
+        const { msg } = await response.json()
+        setError(msg)
+        return
+      }
+
+      redirectToHome()
+    } catch (e) {
+      setError('Network error. Please try again later.')
+    }
   }
 
-  handleChange(event) {
-    console.log('Handle Change')
-    this.setState({
+  const handleChange = (event) => {
+    setFormState({
+      ...formState,
       [event.target.name]: event.target.value,
     })
-    console.log(event.target.name)
   }
 
-  // Add handle successful login function
-
-  render() {
-    return (
-      <div>
-        <h1>Login Page</h1>
-        <br />
-        <form onSubmit={this.submitForm}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <br />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <br />
-          <button type="submit">Login</button>
-        </form>
-      </div>
-    )
-  }
+  return (
+    <Container>
+      <Heading size="md" mt="5">
+        Login
+      </Heading>
+      {error && (
+        <Box>
+          <Text color="red">{error}</Text>
+        </Box>
+      )}
+      <FormControl as="form" onSubmit={submitForm}>
+        <Input mt="2" type="text" name="username" placeholder="Username" onChange={handleChange} />
+        <Input
+          mt="2"
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
+        <Button type="submit" mt="2" colorScheme="teal">
+          Login
+        </Button>
+      </FormControl>
+    </Container>
+  )
 }

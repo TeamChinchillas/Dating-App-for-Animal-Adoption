@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import {
   Box,
   Flex,
@@ -26,18 +26,32 @@ const NavLink = (props) => {
 }
 
 export default function Header() {
+  /** @type {{user: User:, setUser: Function}} */
   const { user, setUser } = useContext(UserContext)
 
-  useEffect(() => {
-    setUser(
-      new User({
-        first_name: 'TEST_USER',
-        user_type: 'SHELTER',
-      })
-    )
-  }, [setUser])
+  const history = useHistory()
 
-  const logout = () => setUser()
+  /** @type {[Boolean, Function]} */
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(async () => {
+    try {
+      const { message } = await fetch('/get-user-details').then((res) => res.json())
+      if (message) {
+        setUser(new User(message))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
+    setIsLoading(false)
+  }, [])
+
+  const logout = async () => {
+    await fetch('/logout')
+    setUser()
+    history.push('/')
+  }
 
   const [show, setShow] = useState(false)
   const handleToggle = () => setShow(!show)
@@ -46,7 +60,7 @@ export default function Header() {
     <Flex as="nav" align="center" justify="space-between" wrap="wrap" padding="1.5rem" bg="white">
       <Box>
         <Heading as="h1" size="lg" letterSpacing="-.1rem">
-          Animal Adoption
+          <Link to="/">Animal Adoption</Link>
         </Heading>
       </Box>
 
@@ -64,30 +78,34 @@ export default function Header() {
         <NavLink to="/about">About</NavLink>
       </Box>
 
-      <Box display={{ sm: show ? 'block' : 'none', md: 'block' }} mt={{ base: 4, md: 0 }}>
-        {user ? (
-          <Menu>
-            <MenuButton as={Button} colorScheme="green" variant="outline">
-              {user.firstName}
-            </MenuButton>
-            <MenuList>
-              <Link to="/account">
-                <MenuItem>My account</MenuItem>
+      {!isLoading && (
+        <Box display={{ sm: show ? 'block' : 'none', md: 'block' }} mt={{ base: 4, md: 0 }}>
+          {user ? (
+            <Menu>
+              <MenuButton as={Button} colorScheme="green" variant="outline">
+                {user.firstName}
+              </MenuButton>
+              <MenuList>
+                <Link to="/account">
+                  <MenuItem>My account</MenuItem>
+                </Link>
+                <MenuItem onClick={logout}>Log out</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
+              <Link to="/signup">
+                <Button colorScheme="green">Sign up</Button>
               </Link>
-              <MenuItem onClick={logout}>Log out</MenuItem>
-            </MenuList>
-          </Menu>
-        ) : (
-          <>
-            <Button colorScheme="green">
-              <Link to="/signup">Sign up</Link>
-            </Button>
-            <Button colorScheme="teal" ml="2">
-              <Link to="/login">Login</Link>
-            </Button>
-          </>
-        )}
-      </Box>
+              <Link to="/login">
+                <Button colorScheme="teal" ml="2">
+                  Login
+                </Button>
+              </Link>
+            </>
+          )}
+        </Box>
+      )}
     </Flex>
   )
 }
