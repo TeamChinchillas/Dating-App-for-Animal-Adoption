@@ -26,8 +26,12 @@ const NavLink = (props) => {
 }
 
 export default function Header() {
+  /** @type {{user: User:, setUser: Function}} */
   const { user, setUser } = useContext(UserContext)
+
   const history = useHistory()
+
+  /** @type {[Boolean, Function]} */
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(async () => {
