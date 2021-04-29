@@ -67,7 +67,7 @@ export default function LandingForAdmins() {
             </Thead>
             <Tbody>
               {users.map((user) => (
-                <Tr key={user.id}>
+                <Tr key={user.username}>
                   <Td border="1px"> {user.username} </Td>
                   <Td border="1px"> {user.firstName} </Td>
                   <Td border="1px"> {user.lastName} </Td>
