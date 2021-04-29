@@ -230,6 +230,7 @@ class UserDetail(db.Model):
 
     @staticmethod
     def update_user_dispositions(username, dispositions):
+        available_dispositions = Disposition.get_list_of_dispositions()
         user_detail = UserDetail.get_user_detail(username)
         existing_dispositions = UserDetail.get_user_dispositions(username)
         for existing_disposition in existing_dispositions['dispositions']:
@@ -237,8 +238,12 @@ class UserDetail(db.Model):
                 dispo = Disposition.get_disposition_by_name(existing_disposition)
                 user_detail.user_dispositions.remove(dispo)
         for disposition in dispositions:
-            dispo = Disposition.get_disposition_by_name(disposition)
-            user_detail.user_dispositions.append(dispo)
+            if disposition not in available_dispositions:
+                print('Disposition {} not found'.format(disposition))
+                return False
+            else:
+                dispo = Disposition.get_disposition_by_name(disposition)
+                user_detail.user_dispositions.append(dispo)
         db.session.add(user_detail)
         db.session.commit()
 
@@ -471,8 +476,20 @@ class Disposition(db.Model):
             print('Animal disposition \'{}\' already exists'.format(name))
 
     @staticmethod
+    def get_list_of_dispositions():
+        disposition_names = []
+
+        dispositions = Disposition.query.all()
+        for disposition in dispositions:
+            disposition_names.append(disposition.disposition)
+
+        return disposition_names
+
+    @staticmethod
     def get_disposition_by_name(disposition_name):
+        print(disposition_name)
         disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
+        print(disposition_record)
         if disposition_record:
             return disposition_record
         else:
