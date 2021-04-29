@@ -43,10 +43,8 @@ export default function Header() {
     setIsLoading(false)
   }, [])
 
-  const logout = () => {
-    /**
-     * TODO: make logout route on server-side and send logout request
-     */
+  const logout = async () => {
+    await fetch('/logout')
     setUser()
     history.push('/')
   }
