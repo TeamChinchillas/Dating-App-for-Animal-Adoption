@@ -141,7 +141,7 @@ class UserDetail(db.Model):
 
     @staticmethod
     def get_user_detail(username):
-        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        user_detail = UserDetail.query.filter_by(user_id=User.get_id_by_username(username)).first()
         return user_detail
 
     @staticmethod
@@ -333,8 +333,9 @@ class ShelterWorker(db.Model):
     def assign_user_by_username(username, shelter_name):
         user = User.query.filter_by(username=username).first()
         user_detail = UserDetail.get_user_detail(username)
-        if not UserType.get_user_type_name_by_id(user_type_id=user_detail.user_type_id) == 'shelter worker':
-            print('User is not a shelter worker')
+        user_type = UserType.get_user_type_name_by_id(user_detail.user_type_id)
+        if not user_type == 'shelter worker':
+            print('User {} is not a shelter worker'.format(username))
             return False
         shelter = Shelter.query.filter_by(name=shelter_name).first()
         if user:
