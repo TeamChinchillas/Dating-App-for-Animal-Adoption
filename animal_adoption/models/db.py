@@ -230,6 +230,7 @@ class UserDetail(db.Model):
 
     @staticmethod
     def update_user_dispositions(username, dispositions):
+        changed = False
         available_dispositions = Disposition.get_list_of_dispositions()
         user_detail = UserDetail.get_user_detail(username)
         existing_dispositions = UserDetail.get_user_dispositions(username)
@@ -237,17 +238,22 @@ class UserDetail(db.Model):
             if existing_disposition not in dispositions:
                 dispo = Disposition.get_disposition_by_name(existing_disposition)
                 user_detail.user_dispositions.remove(dispo)
+                changed = True
         for disposition in dispositions:
             if disposition not in available_dispositions:
                 print('Disposition {} not found'.format(disposition))
                 return False
-            else:
+            if disposition not in existing_dispositions['dispositions']:
                 dispo = Disposition.get_disposition_by_name(disposition)
                 user_detail.user_dispositions.append(dispo)
-        db.session.add(user_detail)
-        db.session.commit()
+                changed = True
 
-        return True
+        if changed:
+            db.session.add(user_detail)
+            db.session.commit()
+            return True
+        else:
+            return False
 
 
 class UserType(db.Model):
