@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import {
   Box,
   Flex,
@@ -27,17 +27,29 @@ const NavLink = (props) => {
 
 export default function Header() {
   const { user, setUser } = useContext(UserContext)
+  const history = useHistory()
+  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    setUser(
-      new User({
-        first_name: 'TEST_USER',
-        user_type: 'SHELTER',
-      })
-    )
-  }, [setUser])
+  useEffect(async () => {
+    try {
+      const { message } = await fetch('/get-user-details').then((res) => res.json())
+      if (message) {
+        setUser(new User(message))
+      }
+    } catch (e) {
+      console.error(e)
+    }
 
-  const logout = () => setUser()
+    setIsLoading(false)
+  }, [])
+
+  const logout = () => {
+    /**
+     * TODO: make logout route on server-side and send logout request
+     */
+    setUser()
+    history.push('/')
+  }
 
   const [show, setShow] = useState(false)
   const handleToggle = () => setShow(!show)
@@ -64,30 +76,32 @@ export default function Header() {
         <NavLink to="/about">About</NavLink>
       </Box>
 
-      <Box display={{ sm: show ? 'block' : 'none', md: 'block' }} mt={{ base: 4, md: 0 }}>
-        {user ? (
-          <Menu>
-            <MenuButton as={Button} colorScheme="green" variant="outline">
-              {user.firstName}
-            </MenuButton>
-            <MenuList>
-              <Link to="/account">
-                <MenuItem>My account</MenuItem>
-              </Link>
-              <MenuItem onClick={logout}>Log out</MenuItem>
-            </MenuList>
-          </Menu>
-        ) : (
-          <>
-            <Button colorScheme="green">
-              <Link to="/signup">Sign up</Link>
-            </Button>
-            <Button colorScheme="teal" ml="2">
-              <Link to="/login">Login</Link>
-            </Button>
-          </>
-        )}
-      </Box>
+      {!isLoading && (
+        <Box display={{ sm: show ? 'block' : 'none', md: 'block' }} mt={{ base: 4, md: 0 }}>
+          {user ? (
+            <Menu>
+              <MenuButton as={Button} colorScheme="green" variant="outline">
+                {user.firstName}
+              </MenuButton>
+              <MenuList>
+                <Link to="/account">
+                  <MenuItem>My account</MenuItem>
+                </Link>
+                <MenuItem onClick={logout}>Log out</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
+              <Button colorScheme="green">
+                <Link to="/signup">Sign up</Link>
+              </Button>
+              <Button colorScheme="teal" ml="2">
+                <Link to="/login">Login</Link>
+              </Button>
+            </>
+          )}
+        </Box>
+      )}
     </Flex>
   )
 }

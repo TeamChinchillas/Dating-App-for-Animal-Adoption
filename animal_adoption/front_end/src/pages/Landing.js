@@ -8,18 +8,15 @@ import LandingForAdmins from '../components/landing/LandingForAdmins'
 export default function Landing() {
   const { user } = useContext(UserContext)
 
-  if (!user) {
-    return <LandingBeforeLogin />
+  if (user?.isAdopter) {
+    return <LandingForAdopters />
+  }
+  if (user?.isShelterWorker) {
+    return <LandingForShelters />
+  }
+  if (user?.isAdministrator) {
+    return <LandingForAdmins />
   }
 
-  switch (user.userType) {
-    case 'ADOPTER':
-      return <LandingForAdopters />
-    case 'SHELTER':
-      return <LandingForShelters />
-    case 'ADMINISTRATOR':
-      return <LandingForAdmins />
-    default:
-      return <LandingBeforeLogin />
-  }
+  return <LandingBeforeLogin />
 }
