@@ -365,6 +365,24 @@ class Administrator(db.Model):
     id_administrator = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
 
+    def __init__(self):
+        self.user_id = None
+
+    @staticmethod
+    def assign_user_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            existing_administrator = Administrator.query.filter_by(user_id=User.get_id_by_username(username)).first()
+            if existing_administrator:
+                print('User {} is already an administrator'.format(username))
+            else:
+                new_admin = Administrator()
+                new_admin.user_id = User.get_id_by_username(username)
+                db.session.add(new_admin)
+                db.session.commit()
+        else:
+            print('User {} not found'.format(username))
+
 
 class Shelter(db.Model):
     __tablename__ = 'ShelterTable'

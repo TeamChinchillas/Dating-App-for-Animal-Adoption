@@ -1,4 +1,8 @@
-from animal_adoption import app, User, UserType, UserDetail, Disposition, Shelter, Adopter, ShelterWorker
+from animal_adoption import (
+    app, User, UserType, UserDetail,
+    Disposition, Shelter, Adopter, ShelterWorker,
+    Administrator
+)
 
 
 def create_users():
@@ -6,6 +10,7 @@ def create_users():
         {'username': 'johndoe@abc.com', 'password': 'test1'},
         {'username': 'jimdoe@abc.com', 'password': 'test2'},
         {'username': 'jeandoe@abc.com', 'password': 'test3'},
+        {'username': 'admin@abc.com', 'password': 'test4'},
     ]
 
     for user in users:
@@ -163,6 +168,10 @@ def assign_shelter_workers():
     ShelterWorker.assign_user_by_username('jeandoe@abc.com', 'Creature Comforts')
 
 
+def assign_administrators():
+    Administrator.assign_user_by_username('admin@abc.com')
+
+
 def initialize_db():
     print('Creating users')
     create_users()
@@ -170,12 +179,12 @@ def initialize_db():
     create_user_types()
     print('Creating dispositions')
     create_dispositions()
+    print('Creating shelters')
+    create_shelters()
     print('Creating user details')
     create_user_details()
     print('Updating user details')
     update_user_details()
-    print('Creating shelters')
-    create_shelters()
     print('Assigning users as adopters')
     assign_adopters()
     print('Assigning shelter workers')
