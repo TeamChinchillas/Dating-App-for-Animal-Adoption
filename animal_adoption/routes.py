@@ -244,7 +244,6 @@ def create_user_with_all_details():
         response['assign_dispositions'] = dispo_result
     else:
         response['assign_dispositions'] = False
-        # return jsonify(message='User {} does not exist'.format(username)), 500
 
     if response['create_user_result'] and response['create_user_detail_result']:
         return jsonify(message=response), 200
