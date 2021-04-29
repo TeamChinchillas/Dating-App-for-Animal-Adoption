@@ -22,7 +22,9 @@ export default function Login() {
     window.location.href = '/'
   }
 
-  const submitForm = async () => {
+  const submitForm = async (event) => {
+    event.preventDefault()
+
     try {
       const response = await fetch('/login', {
         method: 'POST',
@@ -61,7 +63,7 @@ export default function Login() {
           <Text color="red">{error}</Text>
         </Box>
       )}
-      <FormControl>
+      <FormControl as="form" onSubmit={submitForm}>
         <Input mt="2" type="text" name="username" placeholder="Username" onChange={handleChange} />
         <Input
           mt="2"
@@ -70,7 +72,7 @@ export default function Login() {
           placeholder="Password"
           onChange={handleChange}
         />
-        <Button mt="2" colorScheme="teal" onClick={submitForm}>
+        <Button type="submit" mt="2" colorScheme="teal">
           Login
         </Button>
       </FormControl>
