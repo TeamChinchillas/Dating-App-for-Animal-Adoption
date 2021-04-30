@@ -141,7 +141,7 @@ class UserDetail(db.Model):
 
     @staticmethod
     def get_user_detail(username):
-        user_detail = UserDetail.query.filter_by(id_user_detail=User.get_id_by_username(username)).first()
+        user_detail = UserDetail.query.filter_by(user_id=User.get_id_by_username(username)).first()
         return user_detail
 
     @staticmethod
@@ -230,19 +230,30 @@ class UserDetail(db.Model):
 
     @staticmethod
     def update_user_dispositions(username, dispositions):
+        changed = False
+        available_dispositions = Disposition.get_list_of_dispositions()
         user_detail = UserDetail.get_user_detail(username)
         existing_dispositions = UserDetail.get_user_dispositions(username)
         for existing_disposition in existing_dispositions['dispositions']:
             if existing_disposition not in dispositions:
                 dispo = Disposition.get_disposition_by_name(existing_disposition)
                 user_detail.user_dispositions.remove(dispo)
+                changed = True
         for disposition in dispositions:
-            dispo = Disposition.get_disposition_by_name(disposition)
-            user_detail.user_dispositions.append(dispo)
-        db.session.add(user_detail)
-        db.session.commit()
+            if disposition not in available_dispositions:
+                print('Disposition {} not found'.format(disposition))
+                return False
+            if disposition not in existing_dispositions['dispositions']:
+                dispo = Disposition.get_disposition_by_name(disposition)
+                user_detail.user_dispositions.append(dispo)
+                changed = True
 
-        return True
+        if changed:
+            db.session.add(user_detail)
+            db.session.commit()
+            return True
+        else:
+            return False
 
 
 class UserType(db.Model):
@@ -287,13 +298,36 @@ class Adopter(db.Model):
     id_adopter = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
 
-    @staticmethod
-    def assign_user_by_username(username):
-        pass
+    def __init__(self):
+        self.user_id = None
 
     @staticmethod
-    def assign_user_by_id(username):
-        pass
+    def assign_user_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            if Adopter.query.filter_by(user_id=user.id_user).first():
+                print('User {} already assigned as adopter'.format(username))
+            else:
+                new_adopter = Adopter()
+                new_adopter.user_id = user.id_user
+                db.session.add(new_adopter)
+                db.session.commit()
+        else:
+            print('User {} not found'.format(username))
+
+    @staticmethod
+    def assign_user_by_id(user_id):
+        user = User.query.filter_by(id_user=user_id).first()
+        if user:
+            if Adopter.query.filter_by(user_id=user.id_user).first():
+                print('User {} already assigned as adopter'.format(user.username))
+            else:
+                new_adopter = Adopter()
+                new_adopter.user_id = user.id_user
+                db.session.add(new_adopter)
+                db.session.commit()
+        else:
+            print('User id {} not found'.format(user_id))
 
 
 class ShelterWorker(db.Model):
@@ -302,19 +336,72 @@ class ShelterWorker(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
 
-    @staticmethod
-    def assign_user_by_username(username):
-        pass
+    def __init__(self):
+        self.user_id = None
+        self.shelter_id = None
 
     @staticmethod
-    def assign_user_by_id(username):
-        pass
+    def assign_user_by_username(username, shelter_name):
+        user = User.query.filter_by(username=username).first()
+        user_detail = UserDetail.get_user_detail(username)
+        user_type = UserType.get_user_type_name_by_id(user_detail.user_type_id)
+        if not user_type == 'shelter worker':
+            print('User {} is not a shelter worker'.format(username))
+            return False
+        shelter = Shelter.query.filter_by(name=shelter_name).first()
+        if user:
+            if shelter:
+                existing_shelter_worker = ShelterWorker.query.filter_by(user_id=user.id_user).first()
+                if existing_shelter_worker:
+                    if existing_shelter_worker.shelter_id == shelter.id_shelter:
+                        print('User {} already assigned as shelter worker for {}'.format(username, shelter_name))
+                    else:
+                        print('Re-assigning {} from shelter {} to shelter {}'.format(
+                            username,
+                            Shelter.query.filter_by(id_shelter=existing_shelter_worker.shelter_id).first().name,
+                            shelter_name
+                        ))
+                        existing_shelter_worker.shelter_id = shelter.id_shelter
+                        db.session.add(existing_shelter_worker)
+                        db.session.commit()
+                        return True
+                else:
+                    new_shelter_worker = ShelterWorker()
+                    new_shelter_worker.user_id = user.id_user
+                    new_shelter_worker.shelter_id = shelter.id_shelter
+                    db.session.add(new_shelter_worker)
+                    db.session.commit()
+                    return True
+            else:
+                print('Shelter {} not found'.format(shelter_name))
+        else:
+            print('User {} not found'.format(username))
+
+        return False
 
 
 class Administrator(db.Model):
     __tablename__ = 'AdministratorTable'
     id_administrator = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
+
+    def __init__(self):
+        self.user_id = None
+
+    @staticmethod
+    def assign_user_by_username(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            existing_administrator = Administrator.query.filter_by(user_id=User.get_id_by_username(username)).first()
+            if existing_administrator:
+                print('User {} is already an administrator'.format(username))
+            else:
+                new_admin = Administrator()
+                new_admin.user_id = User.get_id_by_username(username)
+                db.session.add(new_admin)
+                db.session.commit()
+        else:
+            print('User {} not found'.format(username))
 
 
 class Shelter(db.Model):
@@ -395,8 +482,20 @@ class Disposition(db.Model):
             print('Animal disposition \'{}\' already exists'.format(name))
 
     @staticmethod
+    def get_list_of_dispositions():
+        disposition_names = []
+
+        dispositions = Disposition.query.all()
+        for disposition in dispositions:
+            disposition_names.append(disposition.disposition)
+
+        return disposition_names
+
+    @staticmethod
     def get_disposition_by_name(disposition_name):
+        print(disposition_name)
         disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
+        print(disposition_record)
         if disposition_record:
             return disposition_record
         else:
