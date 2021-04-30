@@ -1,3 +1,4 @@
+import { Container, Flex } from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 export default class SignupFormUser extends Component {
@@ -6,7 +7,9 @@ export default class SignupFormUser extends Component {
     this.state = {
       firstName: '',
       lastName: '',
-      emailAddress: '',
+      username: '',
+      password: '',
+      userType: 'adopter',
       animalType: '',
       goodWithAnimals: false,
       goodWithChildren: false,
@@ -15,15 +18,25 @@ export default class SignupFormUser extends Component {
 
     this.submitForm = this.submitForm.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleCheckbox = this.handleCheckbox.bind(this)
+    this.handleDropDown = this.handleDropDown.bind(this)
   }
 
-  checkClick(event) {
-    const { name, checked } = event.target
+  handleDropDown(event) {
+    this.setState({
+      [event.target.name]: event.target.value,
+    })
+  }
 
-    this.setState(() => {
-      const animalDisposition = event.disposition_types
-      animalDisposition[name] = checked
-      return animalDisposition[name]
+  handleCheckbox(event) {
+    this.setState({
+      [event.target.name]: event.target.checked,
+    })
+  }
+
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value,
     })
   }
 
@@ -33,26 +46,30 @@ export default class SignupFormUser extends Component {
     console.log('Adopter Form submitted')
     console.log(event.target.firstName.value)
     console.log(event.target.lastName.value)
-    console.log(event.target.emailAddress.value)
+    console.log(event.target.username.value)
+    console.log(event.target.password.value)
     console.log(event.target.animalType.value)
     console.log(event.target.goodWithAnimals.checked)
     console.log(event.target.goodWithChildren.checked)
     console.log(event.target.animalLeashed.checked)
-    // Add code to connect to Flask API
     event.preventDefault()
-  }
-
-  handleChange(event) {
-    console.log('Handle Change')
-    this.setState({
-      [event.target.name]: event.target.value,
+    fetch('/create-user-with-all-details', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(this.state),
     })
-    console.log(event.target.name)
+
+    console.log('STATE STRINGIFIED')
+    console.log(JSON.stringify(this.state))
+    // Add code to connect to Flask API
   }
 
   // Add required later
   render() {
     return (
+      <Flex color="red" bg="black">
       <div>
         <h1> Adopter Registration Form</h1>
         <form onSubmit={this.submitForm}>
@@ -74,14 +91,22 @@ export default class SignupFormUser extends Component {
           <br />
           <input
             type="email"
-            name="emailAddress"
+            name="username"
             placeholder="Email Address"
-            value={this.state.email}
+            value={this.state.username}
+            onChange={this.handleChange}
+          />
+          <br />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={this.state.password}
             onChange={this.handleChange}
           />
           <br />
           <label>Select Desired Animal Type:</label>
-          <select name="animalType" value={this.state.animalType} onChange={this.handleChange}>
+          <select name="animalType" value={this.state.animalType} onChange={this.handleDropDown}>
             <option value="dog">Dog</option>
             <option value="cat">Cat</option>
             <option value="other">Other</option>
@@ -90,20 +115,35 @@ export default class SignupFormUser extends Component {
           <label>
             Select Animal Disposition:
             <br />
-            <input type="checkbox" name="goodWithAnimals" onChange={this.handleChange} />
+            <input
+              type="checkbox"
+              name="goodWithAnimals"
+              value={this.state.goodWithAnimals}
+              onChange={this.handleCheckbox}
+            />
             Good with other animals
             <br />
-            <input type="checkbox" name="goodWithChildren" onChange={this.handleChange} />
+            <input
+              type="checkbox"
+              name="goodWithChildren"
+              value={this.state.goodWithChildren}
+              onChange={this.handleCheckbox}
+            />
             Good with other children
             <br />
-            <input type="checkbox" name="animalLeashed" onChange={this.handleChange} />
+            <input
+              type="checkbox"
+              name="animalLeashed"
+              value={this.state.animalLeashed}
+              onChange={this.handleCheckbox}
+            />
             Animal must be leashed at all times
-            <br />
             <br />
           </label>
           <button type="submit">Register</button>
         </form>
       </div>
+      </Flex>
     )
   }
 }
