@@ -1,7 +1,7 @@
 from animal_adoption import (
     app, User, UserType, UserDetail,
     Disposition, Shelter, Adopter, ShelterWorker,
-    Administrator
+    Administrator, AnimalClass
 )
 
 
@@ -28,6 +28,63 @@ def create_user_types():
     for user_type in user_types:
         new_user_type = UserType()
         new_user_type.create_user_type(user_type)
+
+
+def create_dispositions():
+    dispositions = [
+        'Good with other animals',
+        'Good with children',
+        'Animal must be leashed at all times'
+    ]
+
+    for disposition in dispositions:
+        new_dispo = Disposition()
+        new_dispo.create_disposition(disposition)
+
+
+def create_shelters():
+    shelters = [
+        {
+            'name': 'Critters and Creatures',
+            'physical_address': '123 Bark Ave',
+            'phone_number': '123-456-7890',
+            'email_address': 'info@candc.com'
+        },
+        {
+            'name': 'Creature Comforts',
+            'physical_address': '555 Feline Way',
+            'phone_number': '999-867-5309',
+            'email_address': 'adopt@creaturecomforts.com'
+        },
+        {
+            'name': 'Save a Pet',
+            'physical_address': '789 Rover Pkwy',
+            'phone_number': '111-222-3456',
+            'email_address': 'rescue@saveapet.com'
+        }
+    ]
+
+    for shelter in shelters:
+        new_shelter = Shelter()
+        result = new_shelter.create_new_shelter(
+            shelter['name'],
+            shelter['physical_address'],
+            shelter['phone_number'],
+            shelter['email_address']
+        )
+        print('Create new shelter {}: {}'.format(shelter['name'], result))
+
+
+def create_animal_classes():
+    animal_classes = [
+        'Dog',
+        'Cat',
+        'Other'
+    ]
+
+    for animal_class in animal_classes:
+        new_animal_class = AnimalClass()
+        new_animal_class.add_animal_class(animal_class)
 
 
 def create_user_details():
@@ -113,49 +170,21 @@ def update_user_details():
         print(UserDetail.get_user_dispositions(user_update['username']))
 
 
-def create_dispositions():
-    dispositions = [
-        'Good with other animals',
-        'Good with children',
-        'Animal must be leashed at all times'
-    ]
-
-    for disposition in dispositions:
-        new_dispo = Disposition()
-        new_dispo.create_disposition(disposition)
-
-
-def create_shelters():
-    shelters = [
+def assign_animal_preferences():
+    animal_preferences = [
         {
-            'name': 'Critters and Creatures',
-            'physical_address': '123 Bark Ave',
-            'phone_number': '123-456-7890',
-            'email_address': 'info@candc.com'
+            'name': 'johndoe@abc.com',
+            'preference': 'Dog'
         },
         {
-            'name': 'Creature Comforts',
-            'physical_address': '555 Feline Way',
-            'phone_number': '999-867-5309',
-            'email_address': 'adopt@creaturecomforts.com'
-        },
-        {
-            'name': 'Save a Pet',
-            'physical_address': '789 Rover Pkwy',
-            'phone_number': '111-222-3456',
-            'email_address': 'rescue@saveapet.com'
+            'name': 'jimdoe@abc.com',
+            'preference': 'Cat'
         }
     ]
 
-    for shelter in shelters:
-        new_shelter = Shelter()
-        result = new_shelter.create_new_shelter(
-            shelter['name'],
-            shelter['physical_address'],
-            shelter['phone_number'],
-            shelter['email_address']
-        )
-        print('Create new shelter {}: {}'.format(shelter['name'], result))
+    for animal_preference in animal_preferences:
+        adopter = Adopter.get_adopter_by_name(animal_preference['name'])
+        adopter.assign_animal_preference_by_name(animal_preference['preference'])
 
 
 def assign_adopters():
@@ -181,6 +210,8 @@ def initialize_db():
     create_dispositions()
     print('Creating shelters')
     create_shelters()
+    print('Creating animal classes')
+    create_animal_classes()
     print('Creating user details')
     create_user_details()
     print('Updating user details')
@@ -189,6 +220,8 @@ def initialize_db():
     assign_adopters()
     print('Assigning shelter workers')
     assign_shelter_workers()
+    print('Assigning animal preferences to adopters')
+    assign_animal_preferences()
 
 
 if __name__ == '__main__':
