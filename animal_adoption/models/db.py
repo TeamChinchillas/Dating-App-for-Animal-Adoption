@@ -297,9 +297,16 @@ class Adopter(db.Model):
     __tablename__ = 'AdopterTable'
     id_adopter = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('UserTable.id_user'))
+    animal_preference_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
 
     def __init__(self):
         self.user_id = None
+        self.animal_preference_id = None
+
+    @staticmethod
+    def get_adopter_by_name(username):
+        adopter_user = Adopter.query.filter_by(user_id=User.get_id_by_username(username)).first()
+        return adopter_user
 
     @staticmethod
     def assign_user_by_username(username):
@@ -307,13 +314,16 @@ class Adopter(db.Model):
         if user:
             if Adopter.query.filter_by(user_id=user.id_user).first():
                 print('User {} already assigned as adopter'.format(username))
+                return True
             else:
                 new_adopter = Adopter()
                 new_adopter.user_id = user.id_user
                 db.session.add(new_adopter)
                 db.session.commit()
+                return True
         else:
             print('User {} not found'.format(username))
+            return False
 
     @staticmethod
     def assign_user_by_id(user_id):
@@ -321,13 +331,32 @@ class Adopter(db.Model):
         if user:
             if Adopter.query.filter_by(user_id=user.id_user).first():
                 print('User {} already assigned as adopter'.format(user.username))
+                return True
             else:
                 new_adopter = Adopter()
                 new_adopter.user_id = user.id_user
                 db.session.add(new_adopter)
                 db.session.commit()
+                return True
         else:
             print('User id {} not found'.format(user_id))
+            return False
+
+    def assign_animal_preference_by_name(self, class_name):
+        animal_class = AnimalClass.get_animal_class_by_name(class_name)
+        if animal_class:
+            self.animal_preference_id = animal_class.id_animal_class
+            db.session.add(self)
+            db.session.commit()
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def get_animal_preference(username):
+        adopter = Adopter.get_adopter_by_name(username)
+        animal_class = AnimalClass.get_animal_class_by_id(adopter.animal_preference_id)
+        return animal_class.animal_class
 
 
 class ShelterWorker(db.Model):
@@ -513,6 +542,33 @@ class AnimalClass(db.Model):
     __tablename__ = 'AnimalClassTable'
     id_animal_class = db.Column(db.Integer, primary_key=True)
     animal_class = db.Column(db.String(32))
+
+    def __init__(self):
+        self.animal_class = None
+
+    def add_animal_class(self, name):
+        if not AnimalClass.get_animal_class_by_name(name):
+            self.animal_class = name
+            db.session.add(self)
+            db.session.commit()
+
+    @staticmethod
+    def get_animal_class_by_name(name):
+        animal_class = AnimalClass.query.filter_by(animal_class=name).first()
+        if animal_class:
+            return animal_class
+        else:
+            print('Animal class {} not found'.format(name))
+            return None
+
+    @staticmethod
+    def get_animal_class_by_id(class_id):
+        animal_class = AnimalClass.query.filter_by(id_animal_class=class_id).first()
+        if animal_class:
+            return animal_class
+        else:
+            print('Animal class {} not found'.format(class_id))
+            return None
 
 
 class AdoptionStatus(db.Model):
