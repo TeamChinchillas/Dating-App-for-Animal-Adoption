@@ -1,6 +1,6 @@
 import datetime
 from flask.helpers import send_from_directory
-from animal_adoption import app, Shelter, User, UserDetail, ShelterWorker
+from animal_adoption import app, Shelter, User, UserDetail, ShelterWorker, Adopter
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -174,6 +174,7 @@ def create_user_with_all_details():
     good_with_animals = request.json.get('goodWithAnimals', None)
     good_with_children = request.json.get('goodWithChildren', None)
     animal_leashed = request.json.get('animalLeashed', None)
+    animal_preference = request.json.get('animalPreference', None)
 
     if not username:
         print('uri=/login error="Missing username parameter"')
@@ -198,8 +199,10 @@ def create_user_with_all_details():
     response = {
         'create_user_result': False,
         'create_user_detail_result': False,
+        'assign user as adopter': False,
         'assign_user_to_shelter': False,
-        'assign_dispositions': False
+        'assign_dispositions': False,
+        'animal_preference': False
     }
 
     new_user = User()
@@ -219,12 +222,22 @@ def create_user_with_all_details():
         )
         response['create_user_detail_result'] = create_user_detail_result
 
-    if user_type == 'shelter worker':
+    if user_type == 'adopter':
+        assign_adopter_result = Adopter.assign_user_by_username(username)
+        response['assign user as adopter'] = assign_adopter_result
+    elif user_type == 'shelter worker':
         if shelter_name:
             assign_shelter_worker_result = ShelterWorker.assign_user_by_username(username, shelter_name)
             response['assign_user_to_shelter'] = assign_shelter_worker_result
             if assign_shelter_worker_result:
                 print('User {} assigned to shelter {}'.format(username, shelter_name))
+    else:
+        print('User type {} not found'.format(user_type))
+
+    if animal_preference:
+        adopter = Adopter.get_adopter_by_name(username)
+        assign_animal_preference_result = adopter.assign_animal_preference_by_name(animal_preference)
+        response['animal_preference'] = assign_animal_preference_result
 
     if not dispositions:
         dispositions = []
@@ -235,7 +248,6 @@ def create_user_with_all_details():
         if animal_leashed:
             dispositions.append('Animal must be leashed at all times')
 
-    # print(dispositions)
     if UserDetail.get_user_detail(username):
         dispo_result = UserDetail.update_user_dispositions(
             username=username,
@@ -266,6 +278,12 @@ def get_user_details():
 
     username = User.get_username_by_id(current_user)
     result = UserDetail.get_printable_user_detail(username)
+
+    animal_preference = Adopter.get_animal_preference(username)
+    result['animalPreference'] = animal_preference
+
+    dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
+    result['dispositions'] = dispositions['dispositions']
 
     if result:
         return jsonify(message=result), 200
@@ -371,25 +389,25 @@ def update_user_details():
         return jsonify(message='User {} detail update failed'.format(username)), 500
 
 
-@app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
-@jwt_required(locations='cookies')
-def get_user_dispositions():
-    """
-    Get dispositions for a specified user
-    :return:
-    """
-    current_user = get_jwt_identity()
-
-    if not current_user:
-        print('uri=/login error="Missing username parameter"')
-        return jsonify({"msg": "Missing username parameter"}), 400
-
-    result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
-
-    if result:
-        return jsonify(message=result), 200
-    else:
-        return jsonify(message='User {} not found'.format(current_user)), 500
+# @app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
+# @jwt_required(locations='cookies')
+# def get_user_dispositions():
+#     """
+#     Get dispositions for a specified user
+#     :return:
+#     """
+#     current_user = get_jwt_identity()
+#
+#     if not current_user:
+#         print('uri=/login error="Missing username parameter"')
+#         return jsonify({"msg": "Missing username parameter"}), 400
+#
+#     result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
+#
+#     if result:
+#         return jsonify(message=result), 200
+#     else:
+#         return jsonify(message='User {} not found'.format(current_user)), 500
 
 
 @app.route('/update-user-dispositions', endpoint='update-user-dispositions', methods=['POST'])
