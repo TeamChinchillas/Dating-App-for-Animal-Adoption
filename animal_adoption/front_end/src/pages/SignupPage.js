@@ -1,10 +1,10 @@
 import React from 'react'
 import SignupFormUser from '../components/SignupFormUser'
-import SignupFormShelter from '../components/SignupFormShelter'
+import SignupFormShelterWorker from '../components/SignupFormShelterWorker'
 
 function SignupPage() {
   const [showAdopter, setAdopterState] = React.useState(false)
-  const [showShelter, setShelterState] = React.useState(false)
+  const [showShelterWorker, setShelterWorkerState] = React.useState(false)
 
   return (
     <div>
@@ -14,7 +14,7 @@ function SignupPage() {
         type="button"
         onClick={() => {
           setAdopterState(true)
-          setShelterState(false)
+          setShelterWorkerState(false)
         }}
       >
         Register as Adopter
@@ -23,7 +23,7 @@ function SignupPage() {
       <button
         type="button"
         onClick={() => {
-          setShelterState(true)
+          setShelterWorkerState(true)
           setAdopterState(false)
         }}
       >
@@ -33,7 +33,7 @@ function SignupPage() {
 
       {showAdopter ? <SignupFormUser /> : null}
 
-      {showShelter ? <SignupFormShelter /> : null}
+      {showShelterWorker ? <SignupFormShelterWorker /> : null}
     </div>
   )
 }
