@@ -223,8 +223,11 @@ def create_user_with_all_details():
         response['create_user_detail_result'] = create_user_detail_result
 
     if user_type == 'adopter':
-        assign_adopter_result = Adopter.assign_user_by_username(username)
-        response['assign user as adopter'] = assign_adopter_result
+        try:
+            assign_adopter_result = Adopter.assign_user_by_username(username)
+            response['assign user as adopter'] = assign_adopter_result
+        except Exception as e:
+            return jsonify(message=e), 500
     elif user_type == 'shelter worker':
         if shelter_name:
             assign_shelter_worker_result = ShelterWorker.assign_user_by_username(username, shelter_name)
@@ -235,9 +238,12 @@ def create_user_with_all_details():
         print('User type {} not found'.format(user_type))
 
     if animal_preference:
-        adopter = Adopter.get_adopter_by_name(username)
-        assign_animal_preference_result = adopter.assign_animal_preference_by_name(animal_preference)
-        response['animal_preference'] = assign_animal_preference_result
+        try:
+            adopter = Adopter.get_adopter_by_name(username)
+            assign_animal_preference_result = adopter.assign_animal_preference_by_name(animal_preference)
+            response['animal_preference'] = assign_animal_preference_result
+        except Exception as e:
+            return jsonify(message=e), 500
 
     if not dispositions:
         dispositions = []
@@ -249,11 +255,14 @@ def create_user_with_all_details():
             dispositions.append('Animal must be leashed at all times')
 
     if UserDetail.get_user_detail(username):
-        dispo_result = UserDetail.update_user_dispositions(
-            username=username,
-            dispositions=dispositions
-        )
-        response['assign_dispositions'] = dispo_result
+        try:
+            dispo_result = UserDetail.update_user_dispositions(
+                username=username,
+                dispositions=dispositions
+            )
+            response['assign_dispositions'] = dispo_result
+        except Exception as e:
+            return jsonify(message=e), 500
     else:
         response['assign_dispositions'] = False
 
@@ -285,8 +294,11 @@ def get_user_details():
     except Exception as e:
         return jsonify(message=e), 500
 
-    dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
-    result['dispositions'] = dispositions['dispositions']
+    try:
+        dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
+        result['dispositions'] = dispositions['dispositions']
+    except Exception as e:
+        return jsonify(message=e), 500
 
     if result:
         return jsonify(message=result), 200

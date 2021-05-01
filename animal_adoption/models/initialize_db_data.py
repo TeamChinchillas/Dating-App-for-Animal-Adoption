@@ -159,15 +159,18 @@ def update_user_details():
         }
     ]
 
-    for user_update in user_updates:
-        UserDetail.update_user_detail(
-            user_update['username'],
-            user_update['first_name'],
-            user_update['last_name'],
-            user_update['dispositions']
-        )
-        print(UserDetail.get_user_detail(user_update['username']))
-        print(UserDetail.get_user_dispositions(user_update['username']))
+    try:
+        for user_update in user_updates:
+            UserDetail.update_user_detail(
+                user_update['username'],
+                user_update['first_name'],
+                user_update['last_name'],
+                user_update['dispositions']
+            )
+            print(UserDetail.get_user_detail(user_update['username']))
+            print(UserDetail.get_user_dispositions(user_update['username']))
+    except Exception as e:
+        print(e)
 
 
 def assign_animal_preferences():

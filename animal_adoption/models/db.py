@@ -160,14 +160,19 @@ class UserDetail(db.Model):
 
     @staticmethod
     def get_user_dispositions(username):
-        disposition_list = []
-        user_detail = UserDetail.get_user_detail(username)
-        if user_detail:
-            for user_disposition in user_detail.user_dispositions:
-                if user_disposition:
-                    disposition_list.append(user_disposition.disposition)
+        try:
+            disposition_list = []
+            user_detail = UserDetail.get_user_detail(username)
+            if user_detail:
+                for user_disposition in user_detail.user_dispositions:
+                    if user_disposition:
+                        disposition_list.append(user_disposition.disposition)
+            else:
+                raise ValueError('No user detail found for {}'.format(username))
 
-        return {'dispositions': disposition_list}
+            return {'dispositions': disposition_list}
+        except Exception as e:
+            raise ValueError('Get user dispositions for {} failed'.format(username))
 
     def create_user_detail(self, username, first_name, last_name, user_type, shelter=None):
         self.user_id = User.get_id_by_username(username)
@@ -306,15 +311,17 @@ class Adopter(db.Model):
     @staticmethod
     def get_adopter_by_name(username):
         adopter_user = Adopter.query.filter_by(user_id=User.get_id_by_username(username)).first()
-        return adopter_user
+        if adopter_user:
+            return adopter_user
+        else:
+            raise ValueError('User {} not found in adopter table'.format(username))
 
     @staticmethod
     def assign_user_by_username(username):
         user = User.query.filter_by(username=username).first()
         if user:
             if Adopter.query.filter_by(user_id=user.id_user).first():
-                print('User {} already assigned as adopter'.format(username))
-                return True
+                raise ValueError('User {} already assigned as adopter'.format(username))
             else:
                 new_adopter = Adopter()
                 new_adopter.user_id = user.id_user
@@ -323,7 +330,7 @@ class Adopter(db.Model):
                 return True
         else:
             print('User {} not found'.format(username))
-            return False
+            raise ValueError('User {} not found'.format(username))
 
     @staticmethod
     def assign_user_by_id(user_id):
@@ -350,7 +357,7 @@ class Adopter(db.Model):
             db.session.commit()
             return True
         else:
-            return False
+            raise ValueError('Animal class {} not found'.format(class_name))
 
     @staticmethod
     def get_animal_preference(username):
@@ -362,8 +369,9 @@ class Adopter(db.Model):
                     return animal_class.animal_class
                 else:
                     raise ValueError('Animal preference id {} not found for user {}'.format(
-                        username, adopter.animal_preference_id)
-                    )
+                        adopter.animal_preference_id,
+                        username
+                    ))
         except Exception as e:
             raise ValueError('No adopter row found for user {}'.format(username))
 
