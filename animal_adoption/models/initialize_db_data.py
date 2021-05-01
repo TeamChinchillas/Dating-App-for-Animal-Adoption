@@ -77,9 +77,9 @@ def create_shelters():
 
 def create_animal_classes():
     animal_classes = [
-        'Dog',
-        'Cat',
-        'Other'
+        'dog',
+        'cat',
+        'other'
     ]
 
     for animal_class in animal_classes:
