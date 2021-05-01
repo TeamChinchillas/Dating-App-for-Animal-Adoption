@@ -354,9 +354,18 @@ class Adopter(db.Model):
 
     @staticmethod
     def get_animal_preference(username):
-        adopter = Adopter.get_adopter_by_name(username)
-        animal_class = AnimalClass.get_animal_class_by_id(adopter.animal_preference_id)
-        return animal_class.animal_class
+        try:
+            adopter = Adopter.get_adopter_by_name(username)
+            if adopter:
+                animal_class = AnimalClass.get_animal_class_by_id(adopter.animal_preference_id)
+                if animal_class:
+                    return animal_class.animal_class
+                else:
+                    raise ValueError('Animal preference id {} not found for user {}'.format(
+                        username, adopter.animal_preference_id)
+                    )
+        except Exception as e:
+            raise ValueError('No adopter row found for user {}'.format(username))
 
 
 class ShelterWorker(db.Model):
