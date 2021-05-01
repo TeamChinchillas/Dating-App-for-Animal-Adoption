@@ -84,7 +84,7 @@ export default class AdopterSettings extends Component {
     console.log(event.target.firstName.value)
     console.log(event.target.lastName.value)
     console.log(event.target.username.value)
-    console.log(event.target.animalType.value)
+    console.log(event.target.animalPreference.value)
     console.log(event.target.goodWithAnimals.checked)
     console.log(event.target.goodWithChildren.checked)
     console.log(event.target.animalLeashed.checked)
@@ -132,7 +132,7 @@ export default class AdopterSettings extends Component {
               />
               <br />
               <label>Select Desired Animal Type:</label>
-              <select name="animalType" value={this.state.animalType} onChange={this.handleDropDown}>
+              <select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
                 <option value="other">Other</option>
