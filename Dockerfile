@@ -18,7 +18,7 @@ RUN pip install gunicorn
 COPY . ./
 COPY --from=build-react /app/build /var/www/animal_adoption/animal_adoption/front_end/build
 # initialize DB
+ENV ENV=prod
 ENV PYTHONPATH=.
-RUN python animal_adoption/models/initialize_db_data.py
 # run server
 CMD gunicorn --workers=2 --bind 0.0.0.0:${PORT} animal_adoption.run:app
