@@ -162,6 +162,7 @@ def update_user_details():
     try:
         for user_update in user_updates:
             UserDetail.update_user_detail(
+                User.get_id_by_username(user_update['username']),
                 user_update['username'],
                 user_update['first_name'],
                 user_update['last_name'],
