@@ -1,10 +1,11 @@
 export default class User {
   constructor(data) {
+    console.log(data);
     this.username = data.username
-    this.firstName = data.first_name
-    this.lastName = data.last_name
+    this.firstName = data.firstName
+    this.lastName = data.lastName
     this.emailAddress = data.username
-    this.userType = data.user_type
+    this.userType = data.userType
   }
 
   get isShelterWorker() {
