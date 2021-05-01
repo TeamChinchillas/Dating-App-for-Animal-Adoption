@@ -1,4 +1,4 @@
-import { Container, Flex } from '@chakra-ui/react'
+import { Button, Input, FormControl, FormLabel, Select} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 export default class SignupFormUser extends Component {
@@ -69,10 +69,11 @@ export default class SignupFormUser extends Component {
   // Add required later
   render() {
     return (
-      <Flex color="red" bg="black">
       <div>
         <h1> Adopter Registration Form</h1>
+        <FormControl>
         <form onSubmit={this.submitForm}>
+          <FormLabel>First Name</FormLabel>
           <input
             type="text"
             name="firstName"
@@ -81,6 +82,7 @@ export default class SignupFormUser extends Component {
             onChange={this.handleChange}
           />
           <br />
+          <FormLabel>Last Name</FormLabel>
           <input
             type="text"
             name="lastName"
@@ -89,6 +91,7 @@ export default class SignupFormUser extends Component {
             onChange={this.handleChange}
           />
           <br />
+          <FormLabel>E-Mail Address</FormLabel>
           <input
             type="email"
             name="username"
@@ -97,6 +100,7 @@ export default class SignupFormUser extends Component {
             onChange={this.handleChange}
           />
           <br />
+          <FormLabel>Password</FormLabel>
           <input
             type="password"
             name="password"
@@ -105,15 +109,14 @@ export default class SignupFormUser extends Component {
             onChange={this.handleChange}
           />
           <br />
-          <label>Select Desired Animal Type:</label>
-          <select name="animalType" value={this.state.animalType} onChange={this.handleDropDown}>
+          <FormLabel>Select Desired Animal Type:</FormLabel>
+          <Select name="animalType" value={this.state.animalType} onChange={this.handleDropDown}>
             <option value="dog">Dog</option>
             <option value="cat">Cat</option>
             <option value="other">Other</option>
-          </select>
+          </Select>
           <br />
-          <label>
-            Select Animal Disposition:
+          <FormLabel>Select Animal Disposition:</FormLabel>
             <br />
             <input
               type="checkbox"
@@ -121,7 +124,7 @@ export default class SignupFormUser extends Component {
               value={this.state.goodWithAnimals}
               onChange={this.handleCheckbox}
             />
-            Good with other animals
+            <FormLabel>Good with other animals</FormLabel>
             <br />
             <input
               type="checkbox"
@@ -129,7 +132,7 @@ export default class SignupFormUser extends Component {
               value={this.state.goodWithChildren}
               onChange={this.handleCheckbox}
             />
-            Good with other children
+            <FormLabel>Good with other children</FormLabel>
             <br />
             <input
               type="checkbox"
@@ -137,13 +140,12 @@ export default class SignupFormUser extends Component {
               value={this.state.animalLeashed}
               onChange={this.handleCheckbox}
             />
-            Animal must be leashed at all times
+            <FormLabel>Animal must be leashed at all times</FormLabel>
             <br />
-          </label>
-          <button type="submit">Register</button>
+          <Button type="submit" colorScheme="green">Register</Button>
         </form>
+        </FormControl>
       </div>
-      </Flex>
     )
   }
 }

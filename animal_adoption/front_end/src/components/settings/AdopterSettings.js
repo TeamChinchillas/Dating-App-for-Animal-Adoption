@@ -7,8 +7,7 @@ export default class AdopterSettings extends Component {
     this.state = {
       firstName: '',
       lastName: '',
-      emailAddress: '',
-      password: '',
+      username: '',
       userRole: 'adopter',
       animalPreference: '',
       goodWithAnimals: false,
@@ -39,12 +38,12 @@ export default class AdopterSettings extends Component {
       let parsedData = JSON.stringify(data)
       parsedData = JSON.parse(parsedData)
       console.log(parsedData)
-      console.log(parsedData.message.first_name)
 
       this.setState({
         firstName: parsedData.message.first_name,
         lastName: parsedData.message.last_name,
-        emailAddress: parsedData.message.username
+        username: parsedData.message.username,
+        animalPreference: parsedData.message.animalPreference
       })
     })
   }
@@ -84,13 +83,13 @@ export default class AdopterSettings extends Component {
     console.log('Adopter Update Form submitted')
     console.log(event.target.firstName.value)
     console.log(event.target.lastName.value)
-    console.log(event.target.emailAddress.value)
+    console.log(event.target.username.value)
     console.log(event.target.animalType.value)
     console.log(event.target.goodWithAnimals.checked)
     console.log(event.target.goodWithChildren.checked)
     console.log(event.target.animalLeashed.checked)
     // Add code to connect to Flask API
-    event.preventDefault()
+    // event.preventDefault()
     fetch('/update-user-details', {
       method: 'POST',
       headers: {
@@ -98,6 +97,8 @@ export default class AdopterSettings extends Component {
       },
       body: JSON.stringify(this.state)
     })
+
+    console.log(this.state)
   }
 
   render() {
@@ -106,7 +107,6 @@ export default class AdopterSettings extends Component {
         <div>
           <h1>Adopter Settings Update</h1>
           <form onSubmit={this.submitForm}>
-            <td>
               <input
                 type="text"
                 name="firstName"
@@ -124,26 +124,10 @@ export default class AdopterSettings extends Component {
               />
               <br />
               <input
-                type="text"
-                name="emailAddress"
-                placeholder={this.state.emailAddress}
-                defaultValue={this.state.emailAddress}
-                onChange={this.handleChange}
-              />
-              <br />
-              <input
-                type="password"
-                name="password"
-                placeholder={this.state.password}
-                defaultValue={this.state.password}
-                onChange={this.handleChange}
-              />
-              <br />
-              <input
-                type="text"
-                name="animalType"
-                placeholder={this.state.animalType}
-                defaultValue={this.state.animalType}
+                type="email"
+                name="username"
+                placeholder={this.state.username}
+                defaultValue={this.state.username}
                 onChange={this.handleChange}
               />
               <br />
@@ -167,7 +151,7 @@ export default class AdopterSettings extends Component {
                 Animal must be leashed at all times
                 <br />
               </label>
-            </td>
+
             <button type="submit">Update</button>
           </form>
         </div>

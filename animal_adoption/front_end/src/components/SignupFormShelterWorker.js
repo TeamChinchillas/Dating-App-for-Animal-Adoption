@@ -1,6 +1,7 @@
+import { Button, Input, FormControl, FormLabel, Select} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
-const shelter_names = []
+let shelter_names = []
 
 export default class SignupFormShelterWorker extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ export default class SignupFormShelterWorker extends Component {
         let parsed_data = JSON.stringify(data)
         parsed_data = JSON.parse(parsed_data)
         const data_length = parsed_data.message.length
-        
+        shelter_names = []
         for(let i = 0; i < data_length; i += 1){
           shelter_names.push(parsed_data.message[i].name)
         }
@@ -89,8 +90,10 @@ export default class SignupFormShelterWorker extends Component {
     return (
       <div>
         <h1>Shelter Worker Signup Form</h1>
+        <FormControl>
         <form onSubmit={this.submitForm}>
-          <input
+          <FormLabel>First Name</FormLabel>
+          <Input
             type="text"
             name="firstName"
             placeholder="First Name"
@@ -98,7 +101,8 @@ export default class SignupFormShelterWorker extends Component {
             onChange={this.handleChange}
           />
           <br />
-          <input
+          <FormLabel>Last Name</FormLabel>
+          <Input
             type="text"
             name="lastName"
             placeholder="Last Name"
@@ -106,7 +110,8 @@ export default class SignupFormShelterWorker extends Component {
             onChange={this.handleChange}
           />
           <br />
-          <input
+          <FormLabel>E-Mail Address</FormLabel>
+          <Input
             type="email"
             name="username"
             placeholder="E-Mail Address"
@@ -114,7 +119,8 @@ export default class SignupFormShelterWorker extends Component {
             onChange={this.handleChange}
           />
           <br />
-          <input
+          <FormLabel>Password</FormLabel>
+          <Input
             type="password"
             name="password"
             placeholder="Password"
@@ -122,18 +128,18 @@ export default class SignupFormShelterWorker extends Component {
             onChange={this.handleChange}
           />
           <br />
-          <label>Select Shelter:</label>
-          
-          <select name="shelterName" value={this.state.shelterName} onChange={this.handleDropDown}>
+          <FormLabel>Select Shelter:</FormLabel>
+          <Select name="shelterName" value={this.state.shelterName} onChange={this.handleDropDown}>
             {this.state.shelterNames.map(item => (
                 <option key={item} value={item} >
                   {item}
                 </option>
             ))}
-            </select>
+            </Select>
           <br />
-          <button type="submit">Register</button>
+          <Button type="submit" colorScheme="green">Register</Button>
         </form>
+        </FormControl>
       </div>
     )
   }

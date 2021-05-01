@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Landing from './pages/Landing'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
+import AdopterSettingsPage from './pages/AdopterSettingsPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import UserContext from './components/users/UserContext'
@@ -44,6 +45,10 @@ function App() {
 
             <Route path="/animals">
               <Animals />
+            </Route>
+
+            <Route path="/AdopterSettings">
+              <AdopterSettingsPage />
             </Route>
 
             <Route path="/">
