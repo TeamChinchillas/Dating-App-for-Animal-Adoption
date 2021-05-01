@@ -164,6 +164,8 @@ def create_user_with_all_details():
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
+    # return jsonify({"msg": str(request)}), 417
+    print(request.json)
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     first_name = request.json.get('firstName', None)
