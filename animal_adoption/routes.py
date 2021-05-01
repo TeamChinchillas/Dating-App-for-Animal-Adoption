@@ -350,7 +350,6 @@ def update_user_details():
     :return:
     """
     current_user = get_jwt_identity()
-
     if not current_user:
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
@@ -367,6 +366,7 @@ def update_user_details():
     good_with_children = request.json.get('goodWithChildren', None)
     animal_leashed = request.json.get('animalLeashed', None)
     animal_preference = request.json.get('animalPreference', None)
+
 
     if not username:
         print('uri=/login error="Missing username parameter"')
