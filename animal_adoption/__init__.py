@@ -10,7 +10,12 @@ static_dir = os.path.join(os.path.dirname(__file__), 'front_end/build')
 app = Flask(__name__, static_folder=static_dir, static_url_path='')
 
 app.config['SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
+DATABASE_URL = os.environ.get('DATABASE_URL', None)
+
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("://", "ql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL if DATABASE_URL else 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

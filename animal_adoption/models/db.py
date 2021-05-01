@@ -523,7 +523,7 @@ class Animal(db.Model):
 class Disposition(db.Model):
     __tablename__ = 'DispositionTable'
     id_disposition = db.Column(db.Integer, primary_key=True)
-    disposition = db.Column(db.String(32))
+    disposition = db.Column(db.String(256))
 
     def __init__(self):
         self.disposition = None
