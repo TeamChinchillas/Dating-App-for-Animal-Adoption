@@ -9,12 +9,12 @@
     "id_animal": 2,
     "name": "Charlie",
     "age": 3,
-    "image_link": "/img/sample/sample01.jpeg"
+    "image_link": "/img/sample/sample02.jpeg"
   },
   {
     "id_animal": 3,
     "name": "Alice",
     "age": 5,
-    "image_link": "/img/sample/sample01.jpeg"
+    "image_link": "/img/sample/sample03.jpeg"
   }
 ]
