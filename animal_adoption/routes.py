@@ -281,8 +281,11 @@ def get_user_details():
     username = User.get_username_by_id(current_user)
     result = UserDetail.get_printable_user_detail(username)
 
-    animal_preference = Adopter.get_animal_preference(username)
-    result['animalPreference'] = animal_preference
+    try:
+        animal_preference = Adopter.get_animal_preference(username)
+        result['animalPreference'] = animal_preference
+    except Exception as e:
+        return jsonify(message=e), 500
 
     dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
     result['dispositions'] = dispositions['dispositions']
