@@ -230,6 +230,16 @@ def create_user_with_all_details():
             response['assign user as adopter'] = assign_adopter_result
         except Exception as e:
             return jsonify(message=e), 500
+
+        if animal_preference:
+            try:
+                adopter = Adopter.get_adopter_by_name(username)
+                assign_animal_preference_result = adopter.assign_animal_preference_by_name(animal_preference)
+                response['animal_preference'] = assign_animal_preference_result
+            except Exception as e:
+                return jsonify(message=e), 501
+        else:
+            return jsonify(message='Animal preference required for adopter'), 502
     elif user_type == 'shelter worker':
         if shelter_name:
             assign_shelter_worker_result = ShelterWorker.assign_user_by_username(username, shelter_name)
@@ -237,15 +247,7 @@ def create_user_with_all_details():
             if assign_shelter_worker_result:
                 print('User {} assigned to shelter {}'.format(username, shelter_name))
     else:
-        print('User type {} not found'.format(user_type))
-
-    if animal_preference:
-        try:
-            adopter = Adopter.get_adopter_by_name(username)
-            assign_animal_preference_result = adopter.assign_animal_preference_by_name(animal_preference)
-            response['animal_preference'] = assign_animal_preference_result
-        except Exception as e:
-            return jsonify(message=e), 500
+        return jsonify(message='User type {} not found'.format(user_type)), 503
 
     if not dispositions:
         dispositions = []
@@ -264,14 +266,14 @@ def create_user_with_all_details():
             )
             response['assign_dispositions'] = dispo_result
         except Exception as e:
-            return jsonify(message=e), 500
+            return jsonify(message=e), 504
     else:
         response['assign_dispositions'] = False
 
     if response['create_user_result'] and response['create_user_detail_result']:
         return jsonify(message=response), 200
     else:
-        return jsonify(message=response), 500
+        return jsonify(message=response), 505
 
 
 @app.route('/get-user-details', endpoint='get-user-details', methods=['GET'])
@@ -288,7 +290,10 @@ def get_user_details():
         return jsonify({"msg": "Missing username parameter"}), 400
 
     username = User.get_username_by_id(current_user)
-    result = UserDetail.get_printable_user_detail(username)
+    try:
+        result = UserDetail.get_printable_user_detail(username)
+    except Exception as e:
+        return jsonify(message=e), 500
 
     try:
         animal_preference = Adopter.get_animal_preference(username)
