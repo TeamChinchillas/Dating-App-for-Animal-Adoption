@@ -174,11 +174,11 @@ def assign_animal_preferences():
     animal_preferences = [
         {
             'name': 'johndoe@abc.com',
-            'preference': 'Dog'
+            'preference': 'dog'
         },
         {
             'name': 'jimdoe@abc.com',
-            'preference': 'Cat'
+            'preference': 'cat'
         }
     ]
 
