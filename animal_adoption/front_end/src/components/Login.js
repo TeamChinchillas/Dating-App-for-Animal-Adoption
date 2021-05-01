@@ -42,7 +42,7 @@ export default function Login() {
 
       redirectToHome()
     } catch (e) {
-      setError('Network error. Please try again later.')
+      setError('Login Failed.')
     }
   }
 
