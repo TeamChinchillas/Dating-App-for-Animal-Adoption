@@ -164,8 +164,7 @@ def create_user_with_all_details():
         print('uri=/login error="Missing JSON in request"')
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    # return jsonify({"msg": str(request)}), 417
-    print(request.json)
+    print('JSON received: {}'.format(request.json))
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     first_name = request.json.get('firstName', None)
@@ -231,6 +230,7 @@ def create_user_with_all_details():
         except Exception as e:
             return jsonify(message=e), 500
 
+        print('Animal preference parsed: {}'.format(animal_preference))
         if animal_preference:
             try:
                 adopter = Adopter.get_adopter_by_name(username)
@@ -289,21 +289,16 @@ def get_user_details():
         print('uri=/login error="Missing username parameter"')
         return jsonify({"msg": "Missing username parameter"}), 400
 
-    username = User.get_username_by_id(current_user)
     try:
+        username = User.get_username_by_id(current_user)
         result = UserDetail.get_printable_user_detail(username)
-    except Exception as e:
-        return jsonify(message=e), 500
 
-    try:
         animal_preference = Adopter.get_animal_preference(username)
         result['animalPreference'] = animal_preference
-    except Exception as e:
-        return jsonify(message=e), 500
 
-    try:
         dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
         result['dispositions'] = dispositions['dispositions']
+
     except Exception as e:
         return jsonify(message=e), 500
 
