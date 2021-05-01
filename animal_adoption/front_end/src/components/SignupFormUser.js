@@ -10,7 +10,7 @@ export default class SignupFormUser extends Component {
       username: '',
       password: '',
       userType: 'adopter',
-      animalPreference: '',
+      animalPreference: 'dog',
       goodWithAnimals: false,
       goodWithChildren: false,
       animalLeashed: false,
@@ -69,6 +69,8 @@ export default class SignupFormUser extends Component {
         // this.state.goodWithChildren.value,
         // this.state.animalLeashed.value
         ),
+    }).then(() => {
+      window.location.href = '/#/login'
     })
     console.log(this.state)
     // console.log('STATE STRINGIFIED')
