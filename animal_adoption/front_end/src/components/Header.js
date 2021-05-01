@@ -86,8 +86,8 @@ export default function Header() {
                 {user.firstName}
               </MenuButton>
               <MenuList>
-                <Link to="/AccountSettings">
-                  <MenuItem>Account Settings</MenuItem>
+                <Link to="/AdopterSettings">
+                  <MenuItem>Adopter Settings</MenuItem>
                 </Link>
                 <MenuItem onClick={logout}>Log out</MenuItem>
               </MenuList>
