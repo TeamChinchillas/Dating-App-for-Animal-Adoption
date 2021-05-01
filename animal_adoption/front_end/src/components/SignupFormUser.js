@@ -10,7 +10,7 @@ export default class SignupFormUser extends Component {
       username: '',
       password: '',
       userType: 'adopter',
-      animalType: '',
+      animalPreference: '',
       goodWithAnimals: false,
       goodWithChildren: false,
       animalLeashed: false,
@@ -48,7 +48,7 @@ export default class SignupFormUser extends Component {
     console.log(event.target.lastName.value)
     console.log(event.target.username.value)
     console.log(event.target.password.value)
-    console.log(event.target.animalType.value)
+    console.log(event.target.animalPreference.value)
     console.log(event.target.goodWithAnimals.checked)
     console.log(event.target.goodWithChildren.checked)
     console.log(event.target.animalLeashed.checked)
@@ -58,11 +58,21 @@ export default class SignupFormUser extends Component {
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(this.state),
+      body: JSON.stringify(
+        this.state
+        // this.state.firstName.value,
+        // this.state.lastName.value,
+        // this.state.username.value,
+        // this.state.password.value,
+        // this.state.animalType.value,
+        // this.state.goodWithAnimals.value,
+        // this.state.goodWithChildren.value,
+        // this.state.animalLeashed.value
+        ),
     })
-
-    console.log('STATE STRINGIFIED')
-    console.log(JSON.stringify(this.state))
+    console.log(this.state)
+    // console.log('STATE STRINGIFIED')
+    // console.log(JSON.stringify(this.state))
     // Add code to connect to Flask API
   }
 
@@ -110,7 +120,7 @@ export default class SignupFormUser extends Component {
           />
           <br />
           <FormLabel>Select Desired Animal Type:</FormLabel>
-          <Select name="animalType" value={this.state.animalType} onChange={this.handleDropDown}>
+          <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
             <option value="dog">Dog</option>
             <option value="cat">Cat</option>
             <option value="other">Other</option>
