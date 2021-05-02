@@ -40,8 +40,8 @@ export default class AdopterSettings extends Component {
       console.log(parsedData)
 
       this.setState({
-        firstName: parsedData.message.first_name,
-        lastName: parsedData.message.last_name,
+        firstName: parsedData.message.firstName,
+        lastName: parsedData.message.lastName,
         username: parsedData.message.username,
         animalPreference: parsedData.message.animalPreference
       })
