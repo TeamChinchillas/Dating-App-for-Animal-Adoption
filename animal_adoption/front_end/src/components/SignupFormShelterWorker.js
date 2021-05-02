@@ -74,12 +74,7 @@ export default class SignupFormShelterWorker extends Component {
         'Content-type': 'application/json',
       },
       body: JSON.stringify(
-        this.state.firstName,
-        this.state.lastName,
-        this.state.username,
-        this.state.password,
-        this.state.userType,
-        this.state.shelterName
+        this.state
       ),
     })
 
