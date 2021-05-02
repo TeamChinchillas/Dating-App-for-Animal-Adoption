@@ -165,17 +165,20 @@ def create_user_with_all_details():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     print('JSON received: {}'.format(request.json))
-    username = request.json.get('username', None)
-    password = request.json.get('password', None)
-    first_name = request.json.get('firstName', None)
-    last_name = request.json.get('lastName', None)
-    user_type = request.json.get('userType', None)
-    shelter_name = request.json.get('shelterName', None)
-    dispositions = request.json.get('dispositions', None)
-    good_with_animals = request.json.get('goodWithAnimals', None)
-    good_with_children = request.json.get('goodWithChildren', None)
-    animal_leashed = request.json.get('animalLeashed', None)
-    animal_preference = request.json.get('animalPreference', None)
+    try:
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+        first_name = request.json.get('firstName', None)
+        last_name = request.json.get('lastName', None)
+        user_type = request.json.get('userType', None)
+        shelter_name = request.json.get('shelterName', None)
+        dispositions = request.json.get('dispositions', None)
+        good_with_animals = request.json.get('goodWithAnimals', None)
+        good_with_children = request.json.get('goodWithChildren', None)
+        animal_leashed = request.json.get('animalLeashed', None)
+        animal_preference = request.json.get('animalPreference', None)
+    except Exception as e:
+        return jsonify({"msg": '{}'.format(request.json)}), 499
 
     if not username:
         print('uri=/login error="Missing username parameter"')
