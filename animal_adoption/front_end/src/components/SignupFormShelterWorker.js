@@ -67,6 +67,7 @@ export default class SignupFormShelterWorker extends Component {
     console.log(event.target.shelterName.value)
     // To view any field we enter "event.target.{field_name}.value"
     // Add code to connect to Flask API
+    event.preventDefault()
     fetch('/create-user-with-all-details', {
       method: 'POST',
       headers: {
