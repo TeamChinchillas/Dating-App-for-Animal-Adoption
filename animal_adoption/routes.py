@@ -296,19 +296,20 @@ def get_user_details():
         username = User.get_username_by_id(current_user)
         result = UserDetail.get_printable_user_detail(username)
 
-        animal_preference = Adopter.get_animal_preference(username)
-        result['animalPreference'] = animal_preference
+        if result['userType'] == 'adopter':
+            animal_preference = Adopter.get_animal_preference(username)
+            result['animalPreference'] = animal_preference
 
-        dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
-        result['dispositions'] = dispositions['dispositions']
+            dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
+            result['dispositions'] = dispositions['dispositions']
 
     except Exception as e:
-        return jsonify(message=e), 500
+        return jsonify(message=e), 510
 
     if result:
         return jsonify(message=result), 200
     else:
-        return jsonify(message='User {} not found'.format(username)), 500
+        return jsonify(message='User {} not found'.format(username)), 511
 
 
 # @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
