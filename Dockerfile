@@ -10,6 +10,8 @@ COPY ./animal_adoption/front_end ./
 RUN npm run build
 
 FROM python:3.9.4
+RUN apt-get update -y
+RUN apt-get install -y vim
 RUN mkdir -p /var/www/animal_adoption
 WORKDIR /var/www/animal_adoption
 COPY requirements.txt requirements.txt
@@ -17,7 +19,7 @@ RUN pip install -r requirements.txt
 RUN pip install gunicorn
 COPY . ./
 COPY --from=build-react /app/build /var/www/animal_adoption/animal_adoption/front_end/build
-# initialize DB
+# env variables
 ENV ENV=prod
 ENV PYTHONPATH=.
 # run server

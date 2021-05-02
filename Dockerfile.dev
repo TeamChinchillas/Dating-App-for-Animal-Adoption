@@ -1,4 +1,6 @@
 FROM python:3.9.4
+RUN apt-get update -y
+RUN apt-get install -y vim
 RUN mkdir -p /var/www/animal_adoption
 WORKDIR /var/www/animal_adoption
 COPY requirements.txt requirements.txt
