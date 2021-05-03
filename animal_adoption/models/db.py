@@ -396,6 +396,16 @@ class ShelterWorker(db.Model):
         self.shelter_id = None
 
     @staticmethod
+    def get_shelter_by_username(username):
+        try:
+            user = User.query.filter_by(username=username).first()
+            shelter_worker = ShelterWorker.query.filter_by(user_id=user.id_user).first()
+            shelter_name = Shelter.query.filter_by(id_shelter=shelter_worker.shelter_id).first()
+            return shelter_name.name
+        except Exception as e:
+            raise ValueError('{}'.format(e))
+
+    @staticmethod
     def assign_user_by_username(username, shelter_name):
         user = User.query.filter_by(username=username).first()
         user_detail = UserDetail.get_user_detail(username)
