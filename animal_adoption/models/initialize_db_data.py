@@ -1,7 +1,7 @@
 from animal_adoption import (
     app, User, UserType, UserDetail,
     Disposition, Shelter, Adopter, ShelterWorker,
-    Administrator, AnimalClass
+    Administrator, AnimalClass, AdoptionStatus
 )
 
 
@@ -85,6 +85,19 @@ def create_animal_classes():
     for animal_class in animal_classes:
         new_animal_class = AnimalClass()
         new_animal_class.add_animal_class(animal_class)
+
+
+def create_adoption_status():
+    adoption_statuses = [
+        'Not Available',
+        'Available',
+        'Pending',
+        'Adopted'
+    ]
+
+    for adoption_status in adoption_statuses:
+        new_adoption_status = AdoptionStatus()
+        new_adoption_status.create_adoption_status(adoption_status)
 
 
 def create_user_details():
@@ -216,6 +229,8 @@ def initialize_db():
     create_shelters()
     print('Creating animal classes')
     create_animal_classes()
+    print('Creating adoption statuses')
+    create_adoption_status()
     print('Creating user details')
     create_user_details()
     print('Updating user details')
