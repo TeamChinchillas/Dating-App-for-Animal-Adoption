@@ -2,7 +2,7 @@ import datetime
 from flask.helpers import send_from_directory
 from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
-    Adopter, UserType
+    Adopter, UserType, Animal
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -412,12 +412,82 @@ def create_animal():
 
     try:
         username = User.get_username_by_id(current_user)
+        animal_name = request.json.get('name', None)
+        animal_age = request.json.get('age', None)
+        description_link = request.json.get('descriptionLink', None)
+        image_link = request.json.get('imageLink', None)
+        animal_class = request.json.get('animalClass', None)
+        dispositions = request.json.get('dispositions', None)
+        adoption_status = request.json.get('adoptionStatus', None)
+        adopter = request.json.get('adopter', None)
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 500
+
+    try:
         user_detail = UserDetail.get_printable_user_detail(username)
         user_type = UserType.get_user_type_name_by_id(user_type_id=user_detail['userType'])
         print(user_type)
     except Exception as e:
         print(e)
-        return jsonify(message="{}".format(e)), 500
+        return jsonify(message="{}".format(e)), 501
 
     if user_detail['userType'] != 'shelter worker':
         return jsonify(message="User is not a shelter worker"), 401
+    else:
+        try:
+            shelter_name = ShelterWorker.get_shelter_by_username(username)
+        except Exception as e:
+            print(e)
+            return jsonify(message='{}'.format(e)), 502
+
+    if not animal_name:
+        message = 'Missing animal name'
+        print(message)
+        return jsonify(message=message), 499
+    if not animal_age:
+        message = 'Missing animal age'
+        print(message)
+        return jsonify(message=message), 499
+    if not description_link:
+        message = 'Missing description link'
+        print(message)
+        return jsonify(message=message), 499
+    if not image_link:
+        message = 'Missing image link'
+        print(message)
+        return jsonify(message=message), 499
+    if not animal_class:
+        message = 'Missing animal class'
+        print(message)
+        return jsonify(message=message), 499
+    if not dispositions:
+        message = 'Missing dispositions'
+        print(message)
+        return jsonify(message=message), 499
+    if not adoption_status:
+        message = 'Missing adoption status'
+        print(message)
+        return jsonify(message=message), 499
+    if not shelter_name:
+        message = 'Missing shelter name'
+        print(message)
+        return jsonify(message=message), 499
+
+    try:
+        new_animal = Animal()
+        result = new_animal.create_animal(
+            animal_name,
+            animal_age,
+            description_link,
+            image_link,
+            animal_class,
+            adoption_status,
+            shelter_name,
+            dispositions
+        )
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 504
+
+    return jsonify(message='{}'.format(result)), 200
