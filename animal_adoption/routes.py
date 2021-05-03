@@ -1,6 +1,9 @@
 import datetime
 from flask.helpers import send_from_directory
-from animal_adoption import app, Shelter, User, UserDetail, ShelterWorker, Adopter
+from animal_adoption import (
+    app, Shelter, User, UserDetail, ShelterWorker,
+    Adopter, UserType
+)
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -64,94 +67,6 @@ def logout():
     response = jsonify(message='Logout Succeeded')
     unset_access_cookies(response)
     return response
-
-
-# @app.route('/create-user', endpoint='create-user', methods=['POST'])
-# def create_user():
-#     """
-#     Create a new user with the provided credentials
-#     :return:
-#     """
-#     if not request.is_json:
-#         print('uri=/login error="Missing JSON in request"')
-#         return jsonify({"msg": "Missing JSON in request"}), 400
-#
-#     username = request.json.get('username', None)
-#     password = request.json.get('password', None)
-#
-#     if not username:
-#         print('uri=/login error="Missing username parameter"')
-#         return jsonify({"msg": "Missing username parameter"}), 400
-#     if not password:
-#         print('uri=/login error="Missing password parameter"')
-#         return jsonify({"msg": "Missing password parameter"}), 400
-#
-#     new_user = User()
-#     result = new_user.create_user(username=username, password=password)
-#     if result:
-#         return jsonify(message='User {} creation successful'.format(username)), 200
-#     else:
-#         return jsonify(message='User {} creation failed'.format(username)), 500
-
-
-# @app.route('/create-user-with-details', endpoint='create_user_with_details', methods=['POST'])
-# def create_user_with_details():
-#     """
-#     Create a new user with the provided credentials and details
-#     :return:
-#     """
-#     if not request.is_json:
-#         print('uri=/login error="Missing JSON in request"')
-#         return jsonify({"msg": "Missing JSON in request"}), 400
-#
-#     username = request.json.get('username', None)
-#     password = request.json.get('password', None)
-#     first_name = request.json.get('first_name', None)
-#     last_name = request.json.get('last_name', None)
-#     user_type = request.json.get('user_type', None)
-#     shelter_name = request.json.get('shelter_name', None)
-#
-#     if not username:
-#         print('uri=/login error="Missing username parameter"')
-#         return jsonify({"msg": "Missing username parameter"}), 400
-#     if not password:
-#         print('uri=/login error="Missing password parameter"')
-#         return jsonify({"msg": "Missing password parameter"}), 400
-#     if not first_name:
-#         print('uri=/login error="Missing first name parameter"')
-#         return jsonify({"msg": "Missing first name parameter"}), 400
-#     if not last_name:
-#         print('uri=/login error="Missing last name parameter"')
-#         return jsonify({"msg": "Missing last name parameter"}), 400
-#     if not user_type:
-#         print('uri=/login error="Missing user type parameter"')
-#         return jsonify({"msg": "Missing user type parameter"}), 400
-#     if user_type == 'shelter worker':
-#         if not shelter_name:
-#             print('uri=/login error="Missing shelter name parameter for shelter worker"')
-#             return jsonify({"msg": "Missing shelter name parameter for shelter worker"}), 400
-#
-#     new_user = User()
-#     create_user_result = new_user.create_user(username=username, password=password)
-#
-#     existing_user_detail = UserDetail.get_user_detail(username)
-#
-#     if not existing_user_detail:
-#         new_user_detail = UserDetail()
-#         create_user_detail_result = new_user_detail.create_user_detail(
-#             username=username,
-#             first_name=first_name,
-#             last_name=last_name,
-#             user_type=user_type
-#         )
-#
-#         if user_type == 'shelter worker':
-#             pass
-#
-#         if create_user_result and create_user_detail_result:
-#             return jsonify(message='User account and details for {} created successfully'.format(username)), 200
-#     else:
-#         return jsonify(message='User account and details for {} failed'.format(username)), 500
 
 
 @app.route('/create-user-with-all-details', endpoint='create_user_with_all_details', methods=['POST'])
@@ -302,65 +217,16 @@ def get_user_details():
 
             dispositions = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
             result['dispositions'] = dispositions['dispositions']
+        elif result['userType'] == 'shelter worker':
+            result['shelter'] = ShelterWorker.get_shelter_by_username(username)
 
     except Exception as e:
-        return jsonify(message=e), 510
+        return jsonify(message='{}'.format(e)), 510
 
     if result:
         return jsonify(message=result), 200
     else:
         return jsonify(message='User {} not found'.format(username)), 511
-
-
-# @app.route('/create-user-details', endpoint='create-user-details', methods=['POST'])
-# @jwt_required(locations='cookies')
-# def create_user_details():
-#     """
-#     Create user details for new user
-#     :return:
-#     """
-#     current_user = get_jwt_identity()
-#
-#     if not current_user:
-#         print('uri=/login error="Missing username parameter"')
-#         return jsonify({"msg": "Missing username parameter"}), 400
-#
-#     if not request.is_json:
-#         print('uri=/login error="Missing JSON in request"')
-#         return jsonify({"msg": "Missing JSON in request"}), 400
-#
-#     username = User.get_username_by_id(current_user)
-#     first_name = request.json.get('first_name', None)
-#     last_name = request.json.get('last_name', None)
-#     user_type = request.json.get('user_type', None)
-#
-#     if not username:
-#         print('uri=/login error="User {} not found"'.format(username))
-#         return jsonify({"msg": "User {} not found".format(username)}), 400
-#     if not first_name:
-#         print('uri=/login error="Missing first name parameter"')
-#         return jsonify({"msg": "Missing first name parameter"}), 400
-#     if not last_name:
-#         print('uri=/login error="Missing last name parameter"')
-#         return jsonify({"msg": "Missing last name parameter"}), 400
-#     if not user_type:
-#         print('uri=/login error="Missing user type parameter"')
-#         return jsonify({"msg": "Missing user type parameter"}), 400
-#
-#     existing_user_detail = UserDetail.get_user_detail(username)
-#
-#     if not existing_user_detail:
-#         new_user_detail = UserDetail()
-#         result = new_user_detail.create_user_detail(
-#             username=username,
-#             first_name=first_name,
-#             last_name=last_name,
-#             user_type=user_type
-#         )
-#         if result:
-#             return jsonify(message='User details for {} created successfully'.format(username)), 200
-#     else:
-#         return jsonify(message='User details for {} failed'.format(username)), 500
 
 
 @app.route('/update-user-details', endpoint='update-user-details', methods=['POST'])
@@ -387,7 +253,6 @@ def update_user_details():
     good_with_children = request.json.get('goodWithChildren', None)
     animal_leashed = request.json.get('animalLeashed', None)
     animal_preference = request.json.get('animalPreference', None)
-
 
     if not username:
         print('uri=/login error="Missing username parameter"')
@@ -442,27 +307,6 @@ def update_user_details():
         return jsonify(message=response), 200
     else:
         return jsonify(message=response), 500
-
-
-# @app.route('/get-user-dispositions', endpoint='get-user-dispositions', methods=['GET'])
-# @jwt_required(locations='cookies')
-# def get_user_dispositions():
-#     """
-#     Get dispositions for a specified user
-#     :return:
-#     """
-#     current_user = get_jwt_identity()
-#
-#     if not current_user:
-#         print('uri=/login error="Missing username parameter"')
-#         return jsonify({"msg": "Missing username parameter"}), 400
-#
-#     result = UserDetail.get_user_dispositions(User.get_username_by_id(current_user))
-#
-#     if result:
-#         return jsonify(message=result), 200
-#     else:
-#         return jsonify(message='User {} not found'.format(current_user)), 500
 
 
 @app.route('/update-user-dispositions', endpoint='update-user-dispositions', methods=['POST'])
@@ -547,3 +391,33 @@ def assign_user_to_shelter():
         return jsonify(message='User {} assigned to shelter {} successfully'.format(username, shelter_name)), 200
     else:
         return jsonify(message='User {} assignment to shelter {} failed'.format(username, shelter_name)), 500
+
+
+@app.route('/create-animal', endpoint='create_animal', methods=['POST'])
+@jwt_required(locations='cookies')
+def create_animal():
+    """
+    Route for an authenticated shelter worker to add a new animal to their shelter
+    :return:
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    if not request.is_json:
+        print('uri=/login error="Missing JSON in request"')
+        return jsonify(message="Missing JSON in request"), 400
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+        user_type = UserType.get_user_type_name_by_id(user_type_id=user_detail['userType'])
+        print(user_type)
+    except Exception as e:
+        print(e)
+        return jsonify(message="{}".format(e)), 500
+
+    if user_detail['userType'] != 'shelter worker':
+        return jsonify(message="User is not a shelter worker"), 401
