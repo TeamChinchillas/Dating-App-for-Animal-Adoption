@@ -87,7 +87,7 @@ export default function Header() {
               </MenuButton>
               <MenuList>
                 <Link to="/AdopterSettings">
-                  <MenuItem>Adopter Settings</MenuItem>
+                  <MenuItem>User Settings</MenuItem>
                 </Link>
                 <MenuItem onClick={logout}>Log out</MenuItem>
               </MenuList>

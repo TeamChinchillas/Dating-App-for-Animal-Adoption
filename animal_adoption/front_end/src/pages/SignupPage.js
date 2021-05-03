@@ -1,4 +1,4 @@
-import { Container, Flex } from '@chakra-ui/react'
+import { Flex, Center, Button, Divider} from '@chakra-ui/react'
 import React from 'react'
 import SignupFormUser from '../components/SignupFormUser'
 import SignupFormShelterWorker from '../components/SignupFormShelterWorker'
@@ -10,9 +10,10 @@ function SignupPage() {
   return (
     <Flex justifyContent="center" mt="5">
       <div>
-        <h1> Sign up Page </h1>
-
-        <button
+        <Center><b> Sign up Page </b></Center>
+        <br/>
+        <Center>
+          <Button colorScheme="green"
           type="button"
           onClick={() => {
             setAdopterState(true)
@@ -20,9 +21,11 @@ function SignupPage() {
           }}
         >
           Register as Adopter
-        </button>
-        <br />
-        <button
+        </Button>
+        </Center>
+        <br/>
+        <Center>
+        <Button colorScheme="green"
           type="button"
           onClick={() => {
             setShelterWorkerState(true)
@@ -30,7 +33,8 @@ function SignupPage() {
           }}
         >
           Register as Shelter Worker
-        </button>
+        </Button>
+        </Center>
         <br />
 
         {showAdopter ? <SignupFormUser /> : null}

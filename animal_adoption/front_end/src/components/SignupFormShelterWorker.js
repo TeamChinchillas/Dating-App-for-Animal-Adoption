@@ -1,4 +1,4 @@
-import { Button, Input, FormControl, FormLabel, Select} from '@chakra-ui/react'
+import { Center, Button, Input, FormControl, FormLabel, Select} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 let shelter_names = []
@@ -85,7 +85,7 @@ export default class SignupFormShelterWorker extends Component {
   render() {
     return (
       <div>
-        <h1>Shelter Worker Signup Form</h1>
+        <FormLabel>Shelter Worker Signup Form</FormLabel>
         <FormControl>
         <form onSubmit={this.submitForm}>
           <FormLabel>First Name</FormLabel>
@@ -126,6 +126,7 @@ export default class SignupFormShelterWorker extends Component {
           <br />
           <FormLabel>Select Shelter:</FormLabel>
           <Select name="shelterName" value={this.state.shelterName} onChange={this.handleDropDown}>
+          <option>Select Shelter</option> 
             {this.state.shelterNames.map(item => (
                 <option key={item} value={item} >
                   {item}
@@ -133,7 +134,7 @@ export default class SignupFormShelterWorker extends Component {
             ))}
             </Select>
           <br />
-          <Button type="submit" colorScheme="green">Register</Button>
+          <Center><Button type="submit" colorScheme="green">Register</Button></Center>
         </form>
         </FormControl>
       </div>

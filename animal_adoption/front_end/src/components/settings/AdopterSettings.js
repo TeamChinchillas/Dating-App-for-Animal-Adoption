@@ -1,4 +1,4 @@
-import { Container, Flex } from '@chakra-ui/react'
+import { Center,Divider, Checkbox, Button, Input, FormControl, FormLabel, Stack, Flex, Select} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 export default class AdopterSettings extends Component {
@@ -105,9 +105,11 @@ export default class AdopterSettings extends Component {
     return (
       <Flex justifyContent="center" mt="5">
         <div>
-          <h1>Adopter Settings Update</h1>
+          <Center><b>User Settings Update</b></Center>
+          <FormControl>
           <form onSubmit={this.submitForm}>
-              <input
+              <FormLabel>First Name</FormLabel>
+              <Input
                 type="text"
                 name="firstName"
                 placeholder={this.state.firstName}
@@ -115,7 +117,8 @@ export default class AdopterSettings extends Component {
                 onChange={this.handleChange}
               />
               <br />
-              <input
+              <FormLabel>Last Name</FormLabel>
+              <Input
                 type="text"
                 name="lastName"
                 placeholder={this.state.lastName}
@@ -123,7 +126,8 @@ export default class AdopterSettings extends Component {
                 onChange={this.handleChange}
               />
               <br />
-              <input
+              <FormLabel>Username</FormLabel>
+              <Input
                 type="email"
                 name="username"
                 placeholder={this.state.username}
@@ -131,29 +135,31 @@ export default class AdopterSettings extends Component {
                 onChange={this.handleChange}
               />
               <br />
-              <label>Select Desired Animal Type:</label>
-              <select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
+              <FormLabel>Desired Animal Type</FormLabel>
+              <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
+                <option>Select Animal </option>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
                 <option value="other">Other</option>
-              </select>
+              </Select>
               <br />
-              <label>
-                Select Animal Disposition:
-                <br />
-                <input type="checkbox" name="goodWithAnimals" onChange={this.handleCheckbox} />
+              <Divider/>
+              <Stack spacing={0} direction="column">
+                <FormLabel>Animal Disposition</FormLabel>
+                <Checkbox input type="checkbox" name="goodWithAnimals" onChange={this.handleCheckbox}>
                 Good with other animals
-                <br />
-                <input type="checkbox" name="goodWithChildren" onChange={this.handleCheckbox} />
+                </Checkbox>
+                <Checkbox input type="checkbox" name="goodWithChildren" onChange={this.handleCheckbox}>
                 Good with other children
-                <br />
-                <input type="checkbox" name="animalLeashed" onChange={this.handleCheckbox} />
+                </Checkbox>
+                <Checkbox input type="checkbox" name="animalLeashed" onChange={this.handleCheckbox}>
                 Animal must be leashed at all times
-                <br />
-              </label>
-
-            <button type="submit">Update</button>
+                </Checkbox>
+              </Stack>
+            <br/>
+            <Center><Button type="submit" colorScheme="green">Update</Button></Center>
           </form>
+          </FormControl>
         </div>
       </Flex>
     )
