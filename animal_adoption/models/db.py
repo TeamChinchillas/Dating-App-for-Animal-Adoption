@@ -523,7 +523,7 @@ class Animal(db.Model):
     name = db.Column(db.String(32))
     age = db.Column(db.String(32))
     description_link = db.Column(db.String(32))
-    image_link = db.Column(db.String(32))
+    image = db.Column(db.BLOB)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
@@ -537,7 +537,7 @@ class Animal(db.Model):
         self.name = None
         self.age = None
         self.description_link = None
-        self.image_link = None
+        self.image = None
         self.animal_class_id = None
         self.adoption_status_id = None
         self.shelter_id = None
@@ -545,19 +545,18 @@ class Animal(db.Model):
         self.animal_dispositions = []
 
     def __repr__(self):
-        return '<Name: {} age: {} descriptionLink: {} imageLink: {} classId: {} statusId: {} shelterId: {}' \
+        return '<Name: {} age: {} descriptionLink: {} classId: {} statusId: {} shelterId: {}' \
                ' dispositions: {}>'.format(
                     self.name,
                     self.age,
                     self.description_link,
-                    self.image_link,
                     self.animal_class_id,
                     self.adoption_status_id,
                     self.shelter_id,
                     self.animal_dispositions
                 )
 
-    def create_animal(self, name, age, description_link, image_link, animal_class,
+    def create_animal(self, name, age, description_link, image, animal_class,
                       adoption_status, shelter, dispositions):
         """
         Method to create a new animal for a shelter #todo add duplicate checking
@@ -565,7 +564,7 @@ class Animal(db.Model):
         self.name = name
         self.age = age
         self.description_link = description_link
-        self.image_link = image_link
+        self.image = image
         self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
         self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
         self.shelter_id = Shelter.get_shelter_by_name(shelter).id_shelter
