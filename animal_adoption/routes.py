@@ -491,3 +491,30 @@ def create_animal():
         return jsonify(message='{}'.format(e)), 504
 
     return jsonify(message='{}'.format(result)), 200
+
+
+@app.route('/get-matching-animals', endpoint='get_matching_animals', methods=['GET'])
+@jwt_required(locations='cookies')
+def get_matching_animals():
+    """
+    Route to return a list of animals available for adoption that match the criteria of
+    the logged in user
+    """
+    pass
+
+
+@app.route('/get-animal-details-by-id', endpoint='get_animal_details_by_id', methods=['GET'])
+def get_animal_details_by_id():
+    """
+    Route to get the details of the specified animal by id
+    """
+    pass
+
+
+@app.route('/update-adoption-status', endpoint='update_adoption_status', methods=['POST'])
+@jwt_required(locations='cookies')
+def update_adoption_status():
+    """
+    Route for a shelter worker to update the adoption status of an animal belonging to thir shelter
+    """
+    pass
