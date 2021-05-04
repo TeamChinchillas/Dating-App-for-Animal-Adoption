@@ -646,6 +646,56 @@ class AnimalClass(db.Model):
             return None
 
 
+class AnimalBreed(db.Model):
+    __tablename__ = 'AnimalBreedTable'
+    id_animal_breed = db.Column(db.Integer, primary_key=True)
+    animal_breed = db.Column(db.String(32))
+    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
+
+    def __init__(self):
+        self.animal_breed = None
+        self.animal_class_id = None
+
+    def add_animal_breed(self, class_name, breed_name):
+        class_id = AnimalClass.get_animal_class_by_name(class_name)
+        if class_id:
+            self.animal_class_id = class_id.id_animal_class
+            self.animal_breed = breed_name
+            db.session.add(self)
+            db.session.commit()
+
+    @staticmethod
+    def get_animal_breed_by_name(breed_name):
+        breed = AnimalBreed.query.filter_by(animal_breed=breed_name).first()
+        if breed:
+            return breed
+        else:
+            print('Breed name {} not found'.format(breed_name))
+            return None
+
+    @staticmethod
+    def get_all_animal_breeds():
+        breed_list = []
+        breeds = AnimalBreed.query.all()
+        if breeds:
+            for breed in breeds:
+                breed_list.append(breed.animal_breed)
+            return breed_list
+
+        return None
+
+    @staticmethod
+    def get_all_animal_breeds_by_class(class_name):
+        breed_list = []
+        breeds = AnimalBreed.query.filter_by(
+            animal_class_id=AnimalClass.get_animal_class_by_name(class_name).id_animal_class
+        )
+        for breed in breeds:
+            breed_list.append(breed.animal_breed)
+
+        return breed_list
+
+
 class AdoptionStatus(db.Model):
     __tablename__ = 'AdoptionStatusTable'
     id_adoption_status = db.Column(db.Integer, primary_key=True)
