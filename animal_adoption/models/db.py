@@ -606,9 +606,7 @@ class Disposition(db.Model):
 
     @staticmethod
     def get_disposition_by_name(disposition_name):
-        print(disposition_name)
         disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
-        print(disposition_record)
         if disposition_record:
             return disposition_record
         else:
