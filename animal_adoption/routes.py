@@ -414,8 +414,8 @@ def create_animal():
         username = User.get_username_by_id(current_user)
         animal_name = request.json.get('name', None)
         animal_age = request.json.get('age', None)
-        description_link = request.json.get('descriptionLink', None)
-        image_link = request.json.get('imageLink', None)
+        description = request.json.get('descriptionLink', None)
+        image = request.json.get('imageLink', None)
         animal_class = request.json.get('animalClass', None)
         dispositions = request.json.get('dispositions', None)
         adoption_status = request.json.get('adoptionStatus', None)
@@ -449,11 +449,11 @@ def create_animal():
         message = 'Missing animal age'
         print(message)
         return jsonify(message=message), 499
-    if not description_link:
+    if not description:
         message = 'Missing description link'
         print(message)
         return jsonify(message=message), 499
-    if not image_link:
+    if not image:
         message = 'Missing image link'
         print(message)
         return jsonify(message=message), 499
@@ -479,8 +479,8 @@ def create_animal():
         result = new_animal.create_animal(
             animal_name,
             animal_age,
-            description_link,
-            image_link,
+            description,
+            image,
             animal_class,
             adoption_status,
             shelter_name,

@@ -522,7 +522,7 @@ class Animal(db.Model):
     id_animal = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
     age = db.Column(db.String(32))
-    description_link = db.Column(db.String(32))
+    description = db.Column(db.TEXT)
     image = db.Column(db.BLOB)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
@@ -536,7 +536,7 @@ class Animal(db.Model):
     def __init__(self):
         self.name = None
         self.age = None
-        self.description_link = None
+        self.description = None
         self.image = None
         self.animal_class_id = None
         self.adoption_status_id = None
@@ -549,21 +549,21 @@ class Animal(db.Model):
                ' dispositions: {}>'.format(
                     self.name,
                     self.age,
-                    self.description_link,
+                    self.description,
                     self.animal_class_id,
                     self.adoption_status_id,
                     self.shelter_id,
                     self.animal_dispositions
                 )
 
-    def create_animal(self, name, age, description_link, image, animal_class,
+    def create_animal(self, name, age, description, image, animal_class,
                       adoption_status, shelter, dispositions):
         """
         Method to create a new animal for a shelter #todo add duplicate checking
         """
         self.name = name
         self.age = age
-        self.description_link = description_link
+        self.description = description
         self.image = image
         self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
         self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
