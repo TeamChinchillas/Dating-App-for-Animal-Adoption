@@ -258,7 +258,7 @@ def create_animals():
             'age': '2',
             'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
                            'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            'image': ''.encode(),
+            'image': '',
             'animal_class': 'dog',
             'animal_breed': 'golden retriever',
             'adoption_status': 'Available',
@@ -273,7 +273,7 @@ def create_animals():
             'age': '5',
             'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
                            'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            'image': ''.encode(),
+            'image': '',
             'animal_class': 'cat',
             'animal_breed': 'tabby',
             'adoption_status': 'Pending',
@@ -290,7 +290,8 @@ def create_animals():
             animal['name'],
             animal['age'],
             animal['description'],
-            # animal['image'],
+            # animal['image'].encode(),
+            animal['image'],
             animal['animal_class'],
             animal['animal_breed'],
             animal['adoption_status'],
