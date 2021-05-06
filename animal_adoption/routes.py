@@ -521,6 +521,15 @@ def get_animal_details_by_id():
 @jwt_required(locations='cookies')
 def update_adoption_status():
     """
-    Route for a shelter worker to update the adoption status of an animal belonging to thir shelter
+    Route for a shelter worker to update the adoption status of an animal belonging to their shelter
+    """
+    pass
+
+
+@app.route('/adopt-animal', endpoint='adopt_animal', methods=['POST'])
+@jwt_required(locations='cookies')
+def adopt_animal():
+    """
+    Route for an adopter to adopt an animal
     """
     pass
