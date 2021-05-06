@@ -414,8 +414,8 @@ def create_animal():
         username = User.get_username_by_id(current_user)
         animal_name = request.json.get('name', None)
         animal_age = request.json.get('age', None)
-        description = request.json.get('descriptionLink', None)
-        image = request.json.get('imageLink', None)
+        description = request.json.get('description', None)
+        # image = request.files['image']
         animal_class = request.json.get('animalClass', None)
         animal_breed = request.json.get('animalBreed', None)
         dispositions = request.json.get('dispositions', None)
@@ -454,10 +454,10 @@ def create_animal():
         message = 'Missing description link'
         print(message)
         return jsonify(message=message), 499
-    if not image:
-        message = 'Missing image link'
-        print(message)
-        return jsonify(message=message), 499
+    # if not image:
+    #     message = 'Missing image link'
+    #     print(message)
+    #     return jsonify(message=message), 499
     if not animal_class:
         message = 'Missing animal class'
         print(message)
@@ -485,7 +485,6 @@ def create_animal():
             animal_name,
             animal_age,
             description,
-            image,
             animal_class,
             animal_breed,
             adoption_status,
@@ -497,6 +496,38 @@ def create_animal():
         return jsonify(message='{}'.format(e)), 504
 
     return jsonify(message='{}'.format(result)), 200
+
+
+@app.route('/add-animal-image', endpoint='add_animal_image', methods=['PST'])
+@jwt_required(locations='cookies')
+def add_animal_image():
+    """
+    Route to return a list of animals available for adoption that match the criteria of
+    the logged in user
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+
+        if user_detail['userType'] != 'shelter worker':
+            return jsonify(message="User is not a shelter worker"), 401
+
+        animal_name = request.json.get('name', None)
+        animal_age = request.json.get('age', None)
+        image = request.files['image']
+        shelter_name = ShelterWorker.get_shelter_by_username(username)
+        shelter_animal = Animal.get_animal_by_name_shelter_age(animal_name, shelter_name, animal_age)
+        if shelter_animal:
+            shelter_animal.add_image_to_animal(image)
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 505
 
 
 @app.route('/get-matching-animals', endpoint='get_matching_animals', methods=['GET'])
