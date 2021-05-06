@@ -525,6 +525,7 @@ class Animal(db.Model):
     description = db.Column(db.TEXT)
     image = db.Column(db.BLOB)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
+    animal_breed_id = db.Column(db.Integer, db.ForeignKey('AnimalBreedTable.id_animal_breed'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
     adopter_id = db.Column(db.Integer, db.ForeignKey('AdopterTable.id_adopter'))
@@ -539,24 +540,26 @@ class Animal(db.Model):
         self.description = None
         self.image = None
         self.animal_class_id = None
+        self.animal_breed_id = None
         self.adoption_status_id = None
         self.shelter_id = None
         self.adopter_id = None
         self.animal_dispositions = []
 
     def __repr__(self):
-        return '<Name: {} age: {} descriptionLink: {} classId: {} statusId: {} shelterId: {}' \
+        return '<Name: {} age: {} descriptionLink: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
                ' dispositions: {}>'.format(
                     self.name,
                     self.age,
                     self.description,
                     self.animal_class_id,
+                    self.animal_breed_id,
                     self.adoption_status_id,
                     self.shelter_id,
                     self.animal_dispositions
                 )
 
-    def create_animal(self, name, age, description, image, animal_class,
+    def create_animal(self, name, age, description, image, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
         """
         Method to create a new animal for a shelter #todo add duplicate checking
@@ -566,6 +569,7 @@ class Animal(db.Model):
         self.description = description
         self.image = image
         self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
+        self.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
         self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
         self.shelter_id = Shelter.get_shelter_by_name(shelter).id_shelter
         for disposition in dispositions:
