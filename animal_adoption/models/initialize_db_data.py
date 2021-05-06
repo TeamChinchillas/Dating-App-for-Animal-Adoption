@@ -290,7 +290,7 @@ def create_animals():
             animal['name'],
             animal['age'],
             animal['description'],
-            animal['image'],
+            # animal['image'],
             animal['animal_class'],
             animal['animal_breed'],
             animal['adoption_status'],
