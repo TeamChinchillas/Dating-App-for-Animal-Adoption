@@ -2,7 +2,7 @@ from animal_adoption import (
     app, User, UserType, UserDetail,
     Disposition, Shelter, Adopter, ShelterWorker,
     Administrator, AnimalClass, AdoptionStatus,
-    AnimalBreed
+    AnimalBreed, Animal
 )
 
 
@@ -251,6 +251,54 @@ def assign_administrators():
     Administrator.assign_user_by_username('admin@abc.com')
 
 
+def create_animals():
+    animals = [
+        {
+            'name': 'fido',
+            'age': '2',
+            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'image': ''.encode(),
+            'animal_class': 'dog',
+            'animal_breed': 'golden retriever',
+            'adoption_status': 'Available',
+            'shelter': 'Creature Comforts',
+            'dispositions': [
+                'Good with other animals',
+                'Good with children'
+            ]
+        },
+        {
+            'name': 'boots',
+            'age': '5',
+            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'image': ''.encode(),
+            'animal_class': 'cat',
+            'animal_breed': 'tabby',
+            'adoption_status': 'Pending',
+            'shelter': 'Critters and Creatures',
+            'dispositions': [
+                'Animal must be leashed at all times'
+            ]
+        }
+    ]
+
+    for animal in animals:
+        new_animal = Animal()
+        new_animal.create_animal(
+            animal['name'],
+            animal['age'],
+            animal['description'],
+            animal['image'],
+            animal['animal_class'],
+            animal['animal_breed'],
+            animal['adoption_status'],
+            animal['shelter'],
+            animal['dispositions']
+        )
+
+
 def initialize_db():
     print('Creating users')
     create_users()
@@ -276,6 +324,8 @@ def initialize_db():
     assign_shelter_workers()
     print('Assigning animal preferences to adopters')
     assign_animal_preferences()
+    print('Creating animals')
+    create_animals()
 
 
 if __name__ == '__main__':
