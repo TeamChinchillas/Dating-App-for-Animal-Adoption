@@ -523,7 +523,7 @@ class Animal(db.Model):
     name = db.Column(db.String(32))
     age = db.Column(db.String(32))
     description = db.Column(db.TEXT)
-    image = db.Column(db.BLOB)
+    image_path = db.Column(db.TEXT)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
     animal_breed_id = db.Column(db.Integer, db.ForeignKey('AnimalBreedTable.id_animal_breed'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
@@ -538,7 +538,7 @@ class Animal(db.Model):
         self.name = None
         self.age = None
         self.description = None
-        self.image = None
+        self.image_path = None
         self.animal_class_id = None
         self.animal_breed_id = None
         self.adoption_status_id = None
@@ -547,7 +547,7 @@ class Animal(db.Model):
         self.animal_dispositions = []
 
     def __repr__(self):
-        return '<Name: {} age: {} descriptionLink: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
+        return '<Name: {} age: {} description: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
                ' dispositions: {}>'.format(
                     self.name,
                     self.age,
@@ -560,17 +560,45 @@ class Animal(db.Model):
                 )
 
     @staticmethod
+    def object_as_dict(obj):
+        try:
+            return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+        except Exception as e:
+            raise ValueError(e)
+
+    @staticmethod
     def get_animal_by_name_shelter_age(animal_name, animal_shelter, animal_age):
         animals_with_name = Animal.query.filter_by(name=animal_name)
         for animal in animals_with_name:
-            if animal.shelter_id == Shelter.get_shelter_by_name(animal_shelter).first().id_animal_shelter:
+            if animal.shelter_id == Shelter.get_shelter_by_name(animal_shelter).id_shelter:
                 if animal.age == animal_age:
                     return animal
 
         return None
 
-    def create_animal(self, name, age, description, animal_class, animal_breed,
+    def create_animal(self, name, age, description, image_path, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
+        """
+        Method to create a new animal for a shelter #todo add duplicate checking
+        """
+        self.name = name
+        self.age = age
+        self.description = description
+        self.image_path = image_path
+        self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
+        self.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
+        self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+        self.shelter_id = Shelter.get_shelter_by_name(shelter).id_shelter
+        for disposition in dispositions:
+            self.animal_dispositions.append(Disposition.get_disposition_by_name(disposition))
+
+        db.session.add(self)
+        db.session.commit()
+
+        return True
+
+    def create_animal2(self, name, age, description, animal_class, animal_breed,
+                       adoption_status, shelter, dispositions):
         """
         Method to create a new animal for a shelter #todo add duplicate checking
         """
