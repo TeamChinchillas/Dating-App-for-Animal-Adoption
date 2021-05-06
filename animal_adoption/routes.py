@@ -417,6 +417,7 @@ def create_animal():
         description = request.json.get('descriptionLink', None)
         image = request.json.get('imageLink', None)
         animal_class = request.json.get('animalClass', None)
+        animal_breed = request.json.get('animalBreed', None)
         dispositions = request.json.get('dispositions', None)
         adoption_status = request.json.get('adoptionStatus', None)
         adopter = request.json.get('adopter', None)
@@ -461,6 +462,10 @@ def create_animal():
         message = 'Missing animal class'
         print(message)
         return jsonify(message=message), 499
+    if not animal_breed:
+        message = 'Missing animal breed'
+        print(message)
+        return jsonify(message=message), 499
     if not dispositions:
         message = 'Missing dispositions'
         print(message)
@@ -482,6 +487,7 @@ def create_animal():
             description,
             image,
             animal_class,
+            animal_breed,
             adoption_status,
             shelter_name,
             dispositions
