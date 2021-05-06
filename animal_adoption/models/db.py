@@ -559,7 +559,17 @@ class Animal(db.Model):
                     self.animal_dispositions
                 )
 
-    def create_animal(self, name, age, description, image, animal_class, animal_breed,
+    @staticmethod
+    def get_animal_by_name_shelter_age(animal_name, animal_shelter, animal_age):
+        animals_with_name = Animal.query.filter_by(name=animal_name)
+        for animal in animals_with_name:
+            if animal.shelter_id == Shelter.get_shelter_by_name(animal_shelter).first().id_animal_shelter:
+                if animal.age == animal_age:
+                    return animal
+
+        return None
+
+    def create_animal(self, name, age, description, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
         """
         Method to create a new animal for a shelter #todo add duplicate checking
@@ -567,7 +577,7 @@ class Animal(db.Model):
         self.name = name
         self.age = age
         self.description = description
-        self.image = image
+        # self.image = image
         self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
         self.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
         self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
@@ -579,6 +589,11 @@ class Animal(db.Model):
         db.session.commit()
 
         return True
+
+    def add_image_to_animal(self, image):
+        self.image = image
+        db.session.add(self)
+        db.session.commit()
 
 
 class Disposition(db.Model):
