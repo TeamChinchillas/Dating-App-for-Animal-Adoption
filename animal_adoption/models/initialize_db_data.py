@@ -265,7 +265,8 @@ def create_animals():
             'shelter': 'Creature Comforts',
             'dispositions': [
                 'Good with other animals',
-                'Good with children'
+                'Good with children',
+                'Animal must be leashed at all times'
             ]
         },
         {
@@ -279,6 +280,8 @@ def create_animals():
             'adoption_status': 'Pending',
             'shelter': 'Critters and Creatures',
             'dispositions': [
+                'Good with other animals',
+                'Good with children',
                 'Animal must be leashed at all times'
             ]
         }
