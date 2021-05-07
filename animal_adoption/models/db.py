@@ -547,11 +547,12 @@ class Animal(db.Model):
         self.animal_dispositions = []
 
     def __repr__(self):
-        return '<Name: {} age: {} description: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
+        return '<Name: {} age: {} description: {} imagePath: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
                ' dispositions: {}>'.format(
                     self.name,
                     self.age,
                     self.description,
+                    self.image_path,
                     self.animal_class_id,
                     self.animal_breed_id,
                     self.adoption_status_id,
@@ -621,7 +622,7 @@ class Animal(db.Model):
             # print('Matching dispositions {}'.format(matching_dispositions))
             if matching_dispositions:
                 # print('Animal matched: {}'.format(animal))
-                matching_animals.append(animal)
+                matching_animals.append(Animal.object_as_dict(animal))
 
         return matching_animals
 

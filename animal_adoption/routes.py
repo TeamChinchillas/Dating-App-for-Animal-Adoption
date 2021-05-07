@@ -103,7 +103,7 @@ def create_user_with_all_details():
         animal_leashed = request.json.get('animalLeashed', None)
         animal_preference = request.json.get('animalPreference', None)
     except Exception as e:
-        return jsonify({"msg": '{}'.format(request.json)}), 499
+        return jsonify({"msg": '{}'.format(e)}), 499
 
     if not username:
         print('uri=/login error="Missing username parameter"')
@@ -539,7 +539,6 @@ def get_matching_animals():
         user_detail = UserDetail.get_printable_user_detail(username)
         dispositions = UserDetail.get_user_dispositions(username)
         animal_preference = AnimalClass.get_animal_class_by_name(Adopter.get_animal_preference(username))
-        printable_details = {'details': user_detail, 'animal_preference': animal_preference.animal_class}
         print('User detail {}'.format(user_detail))
         print('Dispositions {}'.format(dispositions))
         print('Animal preference {}'.format(animal_preference.animal_class))
