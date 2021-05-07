@@ -576,6 +576,12 @@ class Animal(db.Model):
 
         return None
 
+    @staticmethod
+    def get_animal_dispositions_as_list(animal_obj):
+        dispositions = []
+        for disposition in animal_obj.animal_dispositions:
+            dispositions.append(Disposition)
+
     def create_animal(self, name, age, description, image_path, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
         """
@@ -596,6 +602,28 @@ class Animal(db.Model):
         db.session.commit()
 
         return True
+
+    @staticmethod
+    def get_animals_by_type_and_disposition(animal_class, dispositions):
+        matching_animals = []
+        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
+        for animal in animals:
+            # print(animal)
+            animal_dispositions = []
+            for animal_disposition in animal.animal_dispositions:
+                # print(animal_disposition)
+                animal_dispositions.append(animal_disposition.disposition)
+
+            # print('User dispositions {}'.format(dispositions['dispositions']))
+            # print('Animal dispositions {}'.format(animal_dispositions))
+
+            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
+            # print('Matching dispositions {}'.format(matching_dispositions))
+            if matching_dispositions:
+                # print('Animal matched: {}'.format(animal))
+                matching_animals.append(animal)
+
+        return matching_animals
 
 
 class Disposition(db.Model):
@@ -627,6 +655,14 @@ class Disposition(db.Model):
     @staticmethod
     def get_disposition_by_name(disposition_name):
         disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
+        if disposition_record:
+            return disposition_record
+        else:
+            return None
+
+    @staticmethod
+    def get_disposition_by_id(disposition_id):
+        disposition_record = Disposition.query.filter_by(id_disposition=disposition_id).first()
         if disposition_record:
             return disposition_record
         else:

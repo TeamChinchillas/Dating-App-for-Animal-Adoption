@@ -4,7 +4,8 @@ from pathlib import Path
 from flask.helpers import send_from_directory
 from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
-    Adopter, UserType, Animal, ALLOWED_EXTENSIONS
+    Adopter, UserType, Animal, AnimalClass,
+    ALLOWED_EXTENSIONS
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -527,7 +528,28 @@ def get_matching_animals():
     Route to return a list of animals available for adoption that match the criteria of
     the logged in user
     """
-    pass
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+        dispositions = UserDetail.get_user_dispositions(username)
+        animal_preference = AnimalClass.get_animal_class_by_name(Adopter.get_animal_preference(username))
+        printable_details = {'details': user_detail, 'animal_preference': animal_preference.animal_class}
+        print('User detail {}'.format(user_detail))
+        print('Dispositions {}'.format(dispositions))
+        print('Animal preference {}'.format(animal_preference.animal_class))
+
+        matching_animals = Animal.get_animals_by_type_and_disposition(animal_preference, dispositions)
+
+        return jsonify(message='{}'.format(matching_animals)), 200
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
 
 
 @app.route('/get-animal-details-by-id', endpoint='get_animal_details_by_id', methods=['GET'])
