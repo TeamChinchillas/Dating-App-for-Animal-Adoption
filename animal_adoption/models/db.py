@@ -597,32 +597,6 @@ class Animal(db.Model):
 
         return True
 
-    def create_animal2(self, name, age, description, animal_class, animal_breed,
-                       adoption_status, shelter, dispositions):
-        """
-        Method to create a new animal for a shelter #todo add duplicate checking
-        """
-        self.name = name
-        self.age = age
-        self.description = description
-        # self.image = image
-        self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
-        self.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
-        self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
-        self.shelter_id = Shelter.get_shelter_by_name(shelter).id_shelter
-        for disposition in dispositions:
-            self.animal_dispositions.append(Disposition.get_disposition_by_name(disposition))
-
-        db.session.add(self)
-        db.session.commit()
-
-        return True
-
-    def add_image_to_animal(self, image):
-        self.image = image
-        db.session.add(self)
-        db.session.commit()
-
 
 class Disposition(db.Model):
     __tablename__ = 'DispositionTable'
