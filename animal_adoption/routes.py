@@ -16,9 +16,9 @@ from werkzeug.utils import secure_filename
 
 
 app.config['JWT_SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
-JWT_TOKEN_LOCATION = ['cookies']
-JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(seconds=86400)
-JWT_COOKIE_NAME = "ACCESS-COOKIE"
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(seconds=86400)
+app.config['JWT_COOKIE_NAME'] = "ACCESS-COOKIE"
 jwt = JWTManager(app)
 
 
@@ -542,6 +542,26 @@ def get_animals_of_shelter():
         return jsonify(message='{}'.format(e)), 501
 
 
+@app.route('/get-animals', endpoint='get_animals', methods=['GET'])
+@jwt_required(locations='cookies')
+def get_animals():
+    """
+    Route to return a list of all animals
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        animals = Animal.get_animals()
+        return jsonify(message='{}'.format(json.dumps(animals))), 200
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
 @app.route('/get-matching-animals', endpoint='get_matching_animals', methods=['GET'])
 @jwt_required(locations='cookies')
 def get_matching_animals():
@@ -566,7 +586,7 @@ def get_matching_animals():
 
         matching_animals = Animal.get_animals_by_type_and_disposition(animal_preference, dispositions)
 
-        return jsonify(message='{}'.format(matching_animals)), 200
+        return jsonify(message='{}'.format(json.dumps(matching_animals))), 200
     except Exception as e:
         print(e)
         return jsonify(message='{}'.format(e)), 501

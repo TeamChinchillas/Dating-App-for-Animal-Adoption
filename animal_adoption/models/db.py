@@ -125,6 +125,7 @@ class UserDetail(db.Model):
         self.last_name = None
         self.user_id = None
         self.user_type_id = None
+        self.user_dispositions = []
 
     def __repr__(self):
         return '<Name: {} {} id: {} type: {} dispositions: {}>'.format(
@@ -537,6 +538,8 @@ class Animal(db.Model):
         'Disposition',
         secondary=animal_disposition_relationship
     )
+    animal_class = db.relationship('AnimalClass')
+    animal_breed = db.relationship('AnimalBreed')
 
     def __init__(self):
         self.name = None
@@ -570,6 +573,17 @@ class Animal(db.Model):
             return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
         except Exception as e:
             raise ValueError(e)
+
+    @staticmethod
+    def get_animals():
+        result = []
+        for animal in Animal.query:
+            data = Animal.object_as_dict(animal)
+            data['animal_class'] = animal.animal_class.animal_class
+            data['animal_breed'] = animal.animal_breed.animal_breed
+            data['dispositions'] = list(map(lambda x: x.disposition, animal.animal_dispositions))
+            result.append(data)
+        return result
 
     @staticmethod
     def get_animal_by_name_shelter_age(animal_name, animal_shelter, animal_age):
