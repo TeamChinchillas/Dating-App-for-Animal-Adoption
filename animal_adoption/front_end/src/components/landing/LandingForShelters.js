@@ -21,15 +21,20 @@ import Animal from '../../models/Animal'
 import Drawer from '../common/Drawer'
 import FormEditAnimal from '../animals/FormEditAnimal'
 
-const data = require('../../sample_data/animals.json')
-
 export default function LandingForShelters() {
   const [animals, setAnimals] = useState(null)
   const [selectedAnimal, setSelectedAnimal] = useState()
   const { isOpen, onOpen, onClose: _onClose } = useDisclosure()
 
-  useEffect(() => {
-    setAnimals(data.map((e) => new Animal(e)))
+  useEffect(async () => {
+    try {
+      const { message } = await fetch('/get-animals-of-shelter').then((res) => res.json())
+      if (message) {
+        setAnimals(JSON.parse(message).map((e) => new Animal(e)))
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }, [])
 
   const editAnimal = (animal) => {
@@ -89,6 +94,8 @@ export default function LandingForShelters() {
               <Th border="1px">Name</Th>
               <Th border="1px">Age</Th>
               <Th border="1px">Description</Th>
+              <Th border="1px">class</Th>
+              <Th border="1px">breed</Th>
               <Th border="1px">Status</Th>
               <Th border="1px">Action</Th>
             </Tr>
@@ -104,7 +111,9 @@ export default function LandingForShelters() {
                 <Td border="1px"> {animal.name} </Td>
                 <Td border="1px"> {animal.age} </Td>
                 <Td border="1px"> {animal.description} </Td>
-                <Td border="1px"> {animal.status} </Td>
+                <Td border="1px"> {animal.animalClass} </Td>
+                <Td border="1px"> {animal.animalBreed} </Td>
+                <Td border="1px"> {animal.adoptionStatus} </Td>
                 <Td border="1px">
                   <Button mr="2" colorScheme="teal" onClick={() => editAnimal(animal)}>
                     Edit

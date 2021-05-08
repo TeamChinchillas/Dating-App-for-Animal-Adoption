@@ -1,4 +1,4 @@
-import { Input, FormControl, FormLabel, Image } from '@chakra-ui/react'
+import { Input, FormControl, FormLabel, Image, Select, Checkbox, Stack } from '@chakra-ui/react'
 
 function PreviewImage({ animal }) {
   if (animal?.imageLink) {
@@ -12,8 +12,8 @@ export default function FormEditAnimal({ animal, setAnimal }) {
     const file = event.target.files[0]
     setAnimal({
       ...animal,
+      imageData: file,
       imageLink: URL.createObjectURL(file),
-      file,
     })
   }
 
@@ -24,19 +24,69 @@ export default function FormEditAnimal({ animal, setAnimal }) {
     })
   }
 
+  const handleCheckbox = (event) => {
+    let { dispositions } = animal
+    if (event.target.checked) {
+      dispositions = dispositions.concat([event.target.name])
+    } else {
+      dispositions = dispositions.filter(e => e !== event.target.name)
+    }
+    setAnimal({
+      ...animal,
+      dispositions: [...new Set(dispositions)]
+    })
+  }
+
+  const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
+  const animalClasses = ['dog', 'cat', 'other']
+
   return (
     <FormControl>
       <FormLabel>Name</FormLabel>
       <Input type="text" name="name" defaultValue={animal?.name} onChange={handleChange} />
+
       <FormLabel>Age</FormLabel>
       <Input type="number" name="age" defaultValue={animal?.age} onChange={handleChange} />
+
       <FormLabel>Description</FormLabel>
       <Input
-        type="number"
+        type="text"
         name="description"
         defaultValue={animal?.description}
         onChange={handleChange}
       />
+
+      <FormLabel>Animal Class</FormLabel>
+      <Select name="animalClass" onChange={handleChange}>
+        {animalClasses.map((e) => (
+          <option key={e} value={e}>
+            {e}
+          </option>
+        ))}
+      </Select>
+
+      <FormLabel>Animal Breed</FormLabel>
+      <Select name="animalBreed" onChange={handleChange}>
+        {animalBreeds.map((e) => (
+          <option key={e} value={e}>
+            {e}
+          </option>
+        ))}
+      </Select>
+
+      <FormLabel>Animal Disposition</FormLabel>
+      <Stack spacing={2} direction="column">
+        <Checkbox type="checkbox" name="Good with other animals" onChange={handleCheckbox}>
+          Good with other animals
+        </Checkbox>
+        <Checkbox type="checkbox" name="Good with children" onChange={handleCheckbox}>
+          Good with other children
+        </Checkbox>
+        <Checkbox type="checkbox" name="Animal must be leashed at all times" onChange={handleCheckbox}>
+          Animal must be leashed at all times
+        </Checkbox>
+      </Stack>
+
       <FormLabel>Image</FormLabel>
       <Input type="file" name="image" mb="1" onChange={handleImageFile} />
       <PreviewImage animal={animal} />
