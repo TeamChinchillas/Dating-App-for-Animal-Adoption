@@ -33,6 +33,7 @@ export default function LandingForShelters() {
         setAnimals(JSON.parse(message).map((e) => new Animal(e)))
       }
     } catch (e) {
+      setAnimals([])
       console.error(e)
     }
   }, [])

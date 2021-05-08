@@ -1,4 +1,15 @@
-import { Center,Divider, Checkbox, Button, Input, FormControl, FormLabel, Stack, Flex, Select} from '@chakra-ui/react'
+import {
+  Center,
+  Divider,
+  Checkbox,
+  Button,
+  Input,
+  FormControl,
+  FormLabel,
+  Stack,
+  Flex,
+  Select,
+} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 export default class AdopterSettings extends Component {
@@ -25,27 +36,26 @@ export default class AdopterSettings extends Component {
     // API GET Method
     // Make API call to get the user's information
     // setState the user's information
-    fetch('/get-user-details',
-    {
-      method:'GET',
-      headers:{
+    fetch('/get-user-details', {
+      method: 'GET',
+      headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
     })
-    .then((results) => results.json())
-    .then((data) => {
-      let parsedData = JSON.stringify(data)
-      parsedData = JSON.parse(parsedData)
-      console.log(parsedData)
+      .then((results) => results.json())
+      .then((data) => {
+        let parsedData = JSON.stringify(data)
+        parsedData = JSON.parse(parsedData)
+        console.log(parsedData)
 
-      this.setState({
-        firstName: parsedData.message.firstName,
-        lastName: parsedData.message.lastName,
-        username: parsedData.message.username,
-        animalPreference: parsedData.message.animalPreference
+        this.setState({
+          firstName: parsedData.message.firstName,
+          lastName: parsedData.message.lastName,
+          username: parsedData.message.username,
+          animalPreference: parsedData.message.animalPreference,
+        })
       })
-    })
   }
 
   handleDropDown(event) {
@@ -93,9 +103,9 @@ export default class AdopterSettings extends Component {
     fetch('/update-user-details', {
       method: 'POST',
       headers: {
-        'Content-type' : 'application/json',
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify(this.state)
+      body: JSON.stringify(this.state),
     })
 
     console.log(this.state)
@@ -105,9 +115,11 @@ export default class AdopterSettings extends Component {
     return (
       <Flex justifyContent="center" mt="5">
         <div>
-          <Center><b>User Settings Update</b></Center>
+          <Center>
+            <b>User Settings Update</b>
+          </Center>
           <FormControl>
-          <form onSubmit={this.submitForm}>
+            <form onSubmit={this.submitForm}>
               <FormLabel>First Name</FormLabel>
               <Input
                 type="text"
@@ -136,29 +148,47 @@ export default class AdopterSettings extends Component {
               />
               <br />
               <FormLabel>Desired Animal Type</FormLabel>
-              <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
+              <Select
+                name="animalPreference"
+                value={this.state.animalPreference}
+                onChange={this.handleDropDown}
+              >
                 <option>Select Animal </option>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
                 <option value="other">Other</option>
               </Select>
               <br />
-              <Divider/>
+              <Divider />
               <Stack spacing={0} direction="column">
                 <FormLabel>Animal Disposition</FormLabel>
-                <Checkbox input type="checkbox" name="goodWithAnimals" onChange={this.handleCheckbox}>
-                Good with other animals
+                <Checkbox
+                  input
+                  type="checkbox"
+                  name="goodWithAnimals"
+                  onChange={this.handleCheckbox}
+                >
+                  Good with other animals
                 </Checkbox>
-                <Checkbox input type="checkbox" name="goodWithChildren" onChange={this.handleCheckbox}>
-                Good with other children
+                <Checkbox
+                  input
+                  type="checkbox"
+                  name="goodWithChildren"
+                  onChange={this.handleCheckbox}
+                >
+                  Good with other children
                 </Checkbox>
                 <Checkbox input type="checkbox" name="animalLeashed" onChange={this.handleCheckbox}>
-                Animal must be leashed at all times
+                  Animal must be leashed at all times
                 </Checkbox>
               </Stack>
-            <br/>
-            <Center><Button type="submit" colorScheme="green">Update</Button></Center>
-          </form>
+              <br />
+              <Center>
+                <Button type="submit" colorScheme="green">
+                  Update
+                </Button>
+              </Center>
+            </form>
           </FormControl>
         </div>
       </Flex>

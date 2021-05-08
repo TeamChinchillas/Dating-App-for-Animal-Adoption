@@ -10,8 +10,7 @@ export default function CreateAnimal() {
   const history = useHistory()
 
   const submit = async () => {
-
-    const {imageData, ...data} = animal
+    const { imageData, ...data } = animal
 
     const formData = new FormData()
     formData.append('data', JSON.stringify(data))
@@ -19,8 +18,8 @@ export default function CreateAnimal() {
 
     const response = await fetch('/create-animal', {
       method: 'POST',
-      body: formData
-    }).then(res => res.json())
+      body: formData,
+    }).then((res) => res.json())
 
     history.push('/') // back to home page
   }
