@@ -3,6 +3,7 @@ Manages the creation of flask objects
 """
 
 import os
+from pathlib import Path
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -18,6 +19,10 @@ if DATABASE_URL:
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL if DATABASE_URL else 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+UPLOAD_FOLDER = Path('front_end/public/img')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy()
 db.init_app(app)

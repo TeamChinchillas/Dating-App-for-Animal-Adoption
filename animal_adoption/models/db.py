@@ -396,6 +396,16 @@ class ShelterWorker(db.Model):
         self.shelter_id = None
 
     @staticmethod
+    def get_shelter_by_username(username):
+        try:
+            user = User.query.filter_by(username=username).first()
+            shelter_worker = ShelterWorker.query.filter_by(user_id=user.id_user).first()
+            shelter_name = Shelter.query.filter_by(id_shelter=shelter_worker.shelter_id).first()
+            return shelter_name.name
+        except Exception as e:
+            raise ValueError('{}'.format(e))
+
+    @staticmethod
     def assign_user_by_username(username, shelter_name):
         user = User.query.filter_by(username=username).first()
         user_detail = UserDetail.get_user_detail(username)
@@ -487,7 +497,11 @@ class Shelter(db.Model):
 
     @staticmethod
     def get_shelter_by_name(name):
-        return Shelter.query.filter_by(name=name).first()
+        shelter = Shelter.query.filter_by(name=name).first()
+        if shelter:
+            return shelter
+        else:
+            print('Shelter {} not found'.format(name))
 
     def create_new_shelter(self, name, physical_address, phone_number, email_address):
         existing_shelter = Shelter.get_shelter_by_name(name)
@@ -508,9 +522,10 @@ class Animal(db.Model):
     id_animal = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
     age = db.Column(db.String(32))
-    description_link = db.Column(db.String(32))
-    image_link = db.Column(db.String(32))
-    animal_species_id = db.Column(db.Integer, db.ForeignKey('AnimalSpeciesTable.id_animal_species'))
+    description = db.Column(db.TEXT)
+    image_path = db.Column(db.TEXT)
+    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
+    animal_breed_id = db.Column(db.Integer, db.ForeignKey('AnimalBreedTable.id_animal_breed'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
     shelter_id = db.Column(db.Integer, db.ForeignKey('ShelterTable.id_shelter'))
     adopter_id = db.Column(db.Integer, db.ForeignKey('AdopterTable.id_adopter'))
@@ -518,6 +533,98 @@ class Animal(db.Model):
         'Disposition',
         secondary=animal_disposition_relationship
     )
+
+    def __init__(self):
+        self.name = None
+        self.age = None
+        self.description = None
+        self.image_path = None
+        self.animal_class_id = None
+        self.animal_breed_id = None
+        self.adoption_status_id = None
+        self.shelter_id = None
+        self.adopter_id = None
+        self.animal_dispositions = []
+
+    def __repr__(self):
+        return '<Name: {} age: {} description: {} imagePath: {} classId: {} breedId: {} statusId: {} shelterId: {}' \
+               ' dispositions: {}>'.format(
+                    self.name,
+                    self.age,
+                    self.description,
+                    self.image_path,
+                    self.animal_class_id,
+                    self.animal_breed_id,
+                    self.adoption_status_id,
+                    self.shelter_id,
+                    self.animal_dispositions
+                )
+
+    @staticmethod
+    def object_as_dict(obj):
+        try:
+            return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+        except Exception as e:
+            raise ValueError(e)
+
+    @staticmethod
+    def get_animal_by_name_shelter_age(animal_name, animal_shelter, animal_age):
+        animals_with_name = Animal.query.filter_by(name=animal_name)
+        for animal in animals_with_name:
+            if animal.shelter_id == Shelter.get_shelter_by_name(animal_shelter).id_shelter:
+                if animal.age == animal_age:
+                    return animal
+
+        return None
+
+    @staticmethod
+    def get_animal_dispositions_as_list(animal_obj):
+        dispositions = []
+        for disposition in animal_obj.animal_dispositions:
+            dispositions.append(Disposition)
+
+    def create_animal(self, name, age, description, image_path, animal_class, animal_breed,
+                      adoption_status, shelter, dispositions):
+        """
+        Method to create a new animal for a shelter #todo add duplicate checking
+        """
+        self.name = name
+        self.age = age
+        self.description = description
+        self.image_path = image_path
+        self.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
+        self.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
+        self.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+        self.shelter_id = Shelter.get_shelter_by_name(shelter).id_shelter
+        for disposition in dispositions:
+            self.animal_dispositions.append(Disposition.get_disposition_by_name(disposition))
+
+        db.session.add(self)
+        db.session.commit()
+
+        return True
+
+    @staticmethod
+    def get_animals_by_type_and_disposition(animal_class, dispositions):
+        matching_animals = []
+        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
+        for animal in animals:
+            # print(animal)
+            animal_dispositions = []
+            for animal_disposition in animal.animal_dispositions:
+                # print(animal_disposition)
+                animal_dispositions.append(animal_disposition.disposition)
+
+            # print('User dispositions {}'.format(dispositions['dispositions']))
+            # print('Animal dispositions {}'.format(animal_dispositions))
+
+            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
+            # print('Matching dispositions {}'.format(matching_dispositions))
+            if matching_dispositions:
+                # print('Animal matched: {}'.format(animal))
+                matching_animals.append(Animal.object_as_dict(animal))
+
+        return matching_animals
 
 
 class Disposition(db.Model):
@@ -548,20 +655,19 @@ class Disposition(db.Model):
 
     @staticmethod
     def get_disposition_by_name(disposition_name):
-        print(disposition_name)
         disposition_record = Disposition.query.filter_by(disposition=disposition_name).first()
-        print(disposition_record)
         if disposition_record:
             return disposition_record
         else:
             return None
 
-
-class AnimalSpecies(db.Model):
-    __tablename__ = 'AnimalSpeciesTable'
-    id_animal_species = db.Column(db.Integer, primary_key=True)
-    animal_species = db.Column(db.String(32))
-    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
+    @staticmethod
+    def get_disposition_by_id(disposition_id):
+        disposition_record = Disposition.query.filter_by(id_disposition=disposition_id).first()
+        if disposition_record:
+            return disposition_record
+        else:
+            return None
 
 
 class AnimalClass(db.Model):
@@ -597,6 +703,74 @@ class AnimalClass(db.Model):
             return None
 
 
+class AnimalBreed(db.Model):
+    __tablename__ = 'AnimalBreedTable'
+    id_animal_breed = db.Column(db.Integer, primary_key=True)
+    animal_breed = db.Column(db.String(32))
+    animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
+
+    def __init__(self):
+        self.animal_breed = None
+        self.animal_class_id = None
+
+    def add_animal_breed(self, class_name, breed_name):
+        class_id = AnimalClass.get_animal_class_by_name(class_name)
+        if class_id:
+            self.animal_class_id = class_id.id_animal_class
+            self.animal_breed = breed_name
+            db.session.add(self)
+            db.session.commit()
+
+    @staticmethod
+    def get_animal_breed_by_name(breed_name):
+        breed = AnimalBreed.query.filter_by(animal_breed=breed_name).first()
+        if breed:
+            return breed
+        else:
+            print('Breed name {} not found'.format(breed_name))
+            return None
+
+    @staticmethod
+    def get_all_animal_breeds():
+        breed_list = []
+        breeds = AnimalBreed.query.all()
+        if breeds:
+            for breed in breeds:
+                breed_list.append(breed.animal_breed)
+            return breed_list
+
+        return None
+
+    @staticmethod
+    def get_all_animal_breeds_by_class(class_name):
+        breed_list = []
+        breeds = AnimalBreed.query.filter_by(
+            animal_class_id=AnimalClass.get_animal_class_by_name(class_name).id_animal_class
+        )
+        for breed in breeds:
+            breed_list.append(breed.animal_breed)
+
+        return breed_list
+
+
 class AdoptionStatus(db.Model):
     __tablename__ = 'AdoptionStatusTable'
     id_adoption_status = db.Column(db.Integer, primary_key=True)
+    adoption_status = db.Column(db.String(32))
+
+    def __init__(self):
+        self.adoption_status = None
+
+    @staticmethod
+    def get_adoption_status_by_name(name):
+        adoption_status = AdoptionStatus.query.filter_by(adoption_status=name).first()
+        if adoption_status:
+            return adoption_status
+        else:
+            print('Adoption status {} not found'.format(name))
+
+    def create_adoption_status(self, adoption_status_name):
+        if not AdoptionStatus.get_adoption_status_by_name(adoption_status_name):
+            self.adoption_status = adoption_status_name
+            db.session.add(self)
+            db.session.commit()

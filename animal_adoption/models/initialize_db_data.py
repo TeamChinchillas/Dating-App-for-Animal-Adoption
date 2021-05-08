@@ -1,7 +1,8 @@
 from animal_adoption import (
     app, User, UserType, UserDetail,
     Disposition, Shelter, Adopter, ShelterWorker,
-    Administrator, AnimalClass
+    Administrator, AnimalClass, AdoptionStatus,
+    AnimalBreed, Animal
 )
 
 
@@ -85,6 +86,51 @@ def create_animal_classes():
     for animal_class in animal_classes:
         new_animal_class = AnimalClass()
         new_animal_class.add_animal_class(animal_class)
+
+
+def create_animal_breeds():
+    breeds = [
+        {
+            'name': 'golden retriever',
+            'class': 'dog'
+        },
+        {
+            'name': 'border collie',
+            'class': 'dog'
+        },
+        {
+            'name': 'tabby',
+            'class': 'cat'
+        },
+        {
+            'name': 'bengal',
+            'class': 'cat'
+        },
+        {
+            'name': 'other',
+            'class': 'other'
+        }
+    ]
+
+    for breed in breeds:
+        new_breed = AnimalBreed()
+        new_breed.add_animal_breed(breed['class'], breed['name'])
+
+    print(AnimalBreed.get_all_animal_breeds())
+    print(AnimalBreed.get_all_animal_breeds_by_class('dog'))
+
+
+def create_adoption_status():
+    adoption_statuses = [
+        'Not Available',
+        'Available',
+        'Pending',
+        'Adopted'
+    ]
+
+    for adoption_status in adoption_statuses:
+        new_adoption_status = AdoptionStatus()
+        new_adoption_status.create_adoption_status(adoption_status)
 
 
 def create_user_details():
@@ -205,6 +251,58 @@ def assign_administrators():
     Administrator.assign_user_by_username('admin@abc.com')
 
 
+def create_animals():
+    animals = [
+        {
+            'name': 'fido',
+            'age': '2',
+            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'image': '',
+            'animal_class': 'dog',
+            'animal_breed': 'golden retriever',
+            'adoption_status': 'Available',
+            'shelter': 'Creature Comforts',
+            'dispositions': [
+                'Good with other animals',
+                'Good with children',
+                'Animal must be leashed at all times'
+            ]
+        },
+        {
+            'name': 'boots',
+            'age': '5',
+            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'image': '',
+            'animal_class': 'cat',
+            'animal_breed': 'tabby',
+            'adoption_status': 'Pending',
+            'shelter': 'Critters and Creatures',
+            'dispositions': [
+                'Good with other animals',
+                'Good with children',
+                'Animal must be leashed at all times'
+            ]
+        }
+    ]
+
+    for animal in animals:
+        new_animal = Animal()
+        new_animal.create_animal(
+            animal['name'],
+            animal['age'],
+            animal['description'],
+            # animal['image'].encode(),
+            animal['image'],
+            animal['animal_class'],
+            animal['animal_breed'],
+            animal['adoption_status'],
+            animal['shelter'],
+            animal['dispositions']
+        )
+
+
 def initialize_db():
     print('Creating users')
     create_users()
@@ -216,6 +314,10 @@ def initialize_db():
     create_shelters()
     print('Creating animal classes')
     create_animal_classes()
+    print('Creating animal breeds')
+    create_animal_breeds()
+    print('Creating adoption statuses')
+    create_adoption_status()
     print('Creating user details')
     create_user_details()
     print('Updating user details')
@@ -226,6 +328,8 @@ def initialize_db():
     assign_shelter_workers()
     print('Assigning animal preferences to adopters')
     assign_animal_preferences()
+    print('Creating animals')
+    create_animals()
 
 
 if __name__ == '__main__':
