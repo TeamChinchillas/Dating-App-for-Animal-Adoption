@@ -396,6 +396,10 @@ class ShelterWorker(db.Model):
         self.shelter_id = None
 
     @staticmethod
+    def get_shelter_id_by_user_id(user_id):
+        return ShelterWorker.query.filter_by(user_id=user_id).first().shelter_id
+
+    @staticmethod
     def get_shelter_by_username(username):
         try:
             user = User.query.filter_by(username=username).first()
@@ -576,6 +580,11 @@ class Animal(db.Model):
                     return animal
 
         return None
+
+    @staticmethod
+    def get_animals_by_shelter_id(shelter_id):
+        animals = Animal.query.filter_by(shelter_id=shelter_id).all()
+        return list(map(lambda x: Animal.object_as_dict(x), animals))
 
     @staticmethod
     def get_animal_dispositions_as_list(animal_obj):

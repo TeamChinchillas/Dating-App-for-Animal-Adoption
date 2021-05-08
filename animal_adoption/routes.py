@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 
 app.config['JWT_SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
 JWT_TOKEN_LOCATION = ['cookies']
-JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(seconds=1800)
+JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(seconds=86400)
 JWT_COOKIE_NAME = "ACCESS-COOKIE"
 jwt = JWTManager(app)
 
@@ -61,7 +61,7 @@ def login():
     if result:
         access_token = create_access_token(identity=User.get_id_by_username(username))
         response = jsonify(message='Login Succeeded!')
-        set_access_cookies(response, access_token)
+        set_access_cookies(response, access_token, 86400)
         return response
     else:
         return jsonify(message='Bad username or password'), 401
@@ -516,6 +516,27 @@ def get_animal_by_details():
             message = 'Animal {} not found'.format(animal_name)
             print(message)
         return jsonify(message='{}'.format(message)), 500
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
+@app.route('/get-animals-of-shelter', endpoint='get_animals_of_shelter', methods=['GET'])
+@jwt_required(locations='cookies')
+def get_animals_of_shelter():
+    """
+    Route to return a list of all animals of the shelter
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        shelter_id = ShelterWorker.get_shelter_id_by_user_id(current_user)
+        animals = Animal.get_animals_by_shelter_id(shelter_id)
+        return jsonify(message='{}'.format(json.dumps(animals))), 200
     except Exception as e:
         print(e)
         return jsonify(message='{}'.format(e)), 501
