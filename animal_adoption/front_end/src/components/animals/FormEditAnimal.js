@@ -1,4 +1,4 @@
-import { Input, FormControl, FormLabel, Image, Select, Checkbox, Stack } from '@chakra-ui/react'
+import { Input, Textarea, FormControl, FormLabel, Image, Select, Checkbox, Stack } from '@chakra-ui/react'
 
 function PreviewImage({ animal }) {
   if (animal?.imageLink) {
@@ -36,6 +36,8 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       dispositions: [...new Set(dispositions)]
     })
   }
+  
+  const isDispositionChecked = (disposition) => !!animal.dispositions.find(e => e === disposition)
 
   const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
   const animalClasses = ['dog', 'cat', 'other']
@@ -49,7 +51,7 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       <Input type="number" name="age" defaultValue={animal?.age} onChange={handleChange} />
 
       <FormLabel>Description</FormLabel>
-      <Input
+      <Textarea
         type="text"
         name="description"
         defaultValue={animal?.description}
@@ -59,7 +61,7 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       <FormLabel>Animal Class</FormLabel>
       <Select name="animalClass" onChange={handleChange}>
         {animalClasses.map((e) => (
-          <option key={e} value={e}>
+          <option key={`class-${e}`} value={e}>
             {e}
           </option>
         ))}
@@ -68,7 +70,7 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       <FormLabel>Animal Breed</FormLabel>
       <Select name="animalBreed" onChange={handleChange}>
         {animalBreeds.map((e) => (
-          <option key={e} value={e}>
+          <option key={`breed-${e}`} value={e}>
             {e}
           </option>
         ))}
@@ -76,13 +78,13 @@ export default function FormEditAnimal({ animal, setAnimal }) {
 
       <FormLabel>Animal Disposition</FormLabel>
       <Stack spacing={2} direction="column">
-        <Checkbox type="checkbox" name="Good with other animals" onChange={handleCheckbox}>
+        <Checkbox type="checkbox" name="Good with other animals" isChecked={isDispositionChecked('Good with other animals')} onChange={handleCheckbox}>
           Good with other animals
         </Checkbox>
-        <Checkbox type="checkbox" name="Good with children" onChange={handleCheckbox}>
+        <Checkbox type="checkbox" name="Good with children" isChecked={isDispositionChecked('Good with children')} onChange={handleCheckbox}>
           Good with other children
         </Checkbox>
-        <Checkbox type="checkbox" name="Animal must be leashed at all times" onChange={handleCheckbox}>
+        <Checkbox type="checkbox" name="Animal must be leashed at all times" isChecked={isDispositionChecked('Animal must be leashed at all times')} onChange={handleCheckbox}>
           Animal must be leashed at all times
         </Checkbox>
       </Stack>
