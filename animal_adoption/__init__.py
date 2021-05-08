@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL if DATABASE_URL else 'sqlit
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-UPLOAD_FOLDER = Path('front_end/public/img')
+UPLOAD_FOLDER = Path('animal_adoption/front_end/public/img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
