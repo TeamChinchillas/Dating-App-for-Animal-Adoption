@@ -16,7 +16,6 @@ from werkzeug.utils import secure_filename
 
 
 app.config['JWT_SECRET_KEY'] = 'JofJtRHKzQmFRXGI4v60'
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(seconds=86400)
 app.config['JWT_COOKIE_NAME'] = "ACCESS-COOKIE"
 jwt = JWTManager(app)
