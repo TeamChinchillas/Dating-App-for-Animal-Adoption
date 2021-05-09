@@ -8,11 +8,19 @@ export default function CreateAnimal() {
   const [animal, setAnimal] = useState(new Animal())
 
   const history = useHistory()
-  /**
-   * TODO: Send new animal profile to the server
-   * TODO: Validation
-   */
-  const submit = () => {
+
+  const submit = async () => {
+    const { imageData, ...data } = animal
+
+    const formData = new FormData()
+    formData.append('data', JSON.stringify(data))
+    formData.append('image', imageData)
+
+    const response = await fetch('/create-animal', {
+      method: 'POST',
+      body: formData,
+    }).then((res) => res.json())
+
     history.push('/') // back to home page
   }
 

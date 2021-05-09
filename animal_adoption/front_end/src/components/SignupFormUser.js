@@ -1,4 +1,14 @@
-import { Input, Center, Button, Checkbox, FormControl, FormLabel, Select, Divider, Stack} from '@chakra-ui/react'
+import {
+  Input,
+  Center,
+  Button,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Select,
+  Divider,
+  Stack,
+} from '@chakra-ui/react'
 import React, { Component } from 'react'
 
 export default class SignupFormUser extends Component {
@@ -68,7 +78,7 @@ export default class SignupFormUser extends Component {
         // this.state.goodWithAnimals.value,
         // this.state.goodWithChildren.value,
         // this.state.animalLeashed.value
-        ),
+      ),
     }).then(() => {
       window.location.href = '/#/login'
     })
@@ -84,86 +94,98 @@ export default class SignupFormUser extends Component {
       <div>
         <FormLabel> Adopter Registration Form</FormLabel>
         <FormControl>
-        <form onSubmit={this.submitForm}>
-          <FormLabel>First Name</FormLabel>
-          <Input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={this.state.firstName}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Last Name</FormLabel>
-          <Input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={this.state.lastName}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>E-Mail Address</FormLabel>
-          <Input
-            type="email"
-            name="username"
-            placeholder="Email Address"
-            value={this.state.username}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Select Desired Animal Type:</FormLabel>
-          <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown} required>
-            <option value="">Select Animal</option>
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="other">Other</option>
-          </Select>
-          <br />
-          <Divider/>
-          <Stack spacing={0} direction="column">
-          <FormLabel>Animal Disposition</FormLabel>
-            <Checkbox input
-              type="checkbox"
-              name="goodWithAnimals"
-              value={this.state.goodWithAnimals}
-              onChange={this.handleCheckbox}
+          <form onSubmit={this.submitForm}>
+            <FormLabel>First Name</FormLabel>
+            <Input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={this.state.firstName}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Last Name</FormLabel>
+            <Input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={this.state.lastName}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>E-Mail Address</FormLabel>
+            <Input
+              type="email"
+              name="username"
+              placeholder="Email Address"
+              value={this.state.username}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Select Desired Animal Type:</FormLabel>
+            <Select
+              name="animalPreference"
+              value={this.state.animalPreference}
+              onChange={this.handleDropDown}
+              required
             >
-            Good with other animals
-            </Checkbox>
-            <Checkbox input
-              type="checkbox"
-              name="goodWithChildren"
-              value={this.state.goodWithChildren}
-              onChange={this.handleCheckbox}
-            >
-            Good with other children
-            </Checkbox>
-            <Checkbox input
-              type="checkbox"
-              name="animalLeashed"
-              value={this.state.animalLeashed}
-              onChange={this.handleCheckbox}
-            >
-            Animal must be leashed at all times
-            </Checkbox>
+              <option value="">Select Animal</option>
+              <option value="dog">Dog</option>
+              <option value="cat">Cat</option>
+              <option value="other">Other</option>
+            </Select>
+            <br />
+            <Divider />
+            <Stack spacing={0} direction="column">
+              <FormLabel>Animal Disposition</FormLabel>
+              <Checkbox
+                input
+                type="checkbox"
+                name="goodWithAnimals"
+                value={this.state.goodWithAnimals}
+                onChange={this.handleCheckbox}
+              >
+                Good with other animals
+              </Checkbox>
+              <Checkbox
+                input
+                type="checkbox"
+                name="goodWithChildren"
+                value={this.state.goodWithChildren}
+                onChange={this.handleCheckbox}
+              >
+                Good with other children
+              </Checkbox>
+              <Checkbox
+                input
+                type="checkbox"
+                name="animalLeashed"
+                value={this.state.animalLeashed}
+                onChange={this.handleCheckbox}
+              >
+                Animal must be leashed at all times
+              </Checkbox>
             </Stack>
             <br />
-          <Center><Button type="submit" colorScheme="green">Register</Button></Center>
-        </form>
+            <Center>
+              <Button type="submit" colorScheme="green">
+                Register
+              </Button>
+            </Center>
+          </form>
         </FormControl>
       </div>
     )

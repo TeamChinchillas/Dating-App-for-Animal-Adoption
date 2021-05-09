@@ -125,6 +125,7 @@ class UserDetail(db.Model):
         self.last_name = None
         self.user_id = None
         self.user_type_id = None
+        self.user_dispositions = []
 
     def __repr__(self):
         return '<Name: {} {} id: {} type: {} dispositions: {}>'.format(
@@ -396,6 +397,10 @@ class ShelterWorker(db.Model):
         self.shelter_id = None
 
     @staticmethod
+    def get_shelter_id_by_user_id(user_id):
+        return ShelterWorker.query.filter_by(user_id=user_id).first().shelter_id
+
+    @staticmethod
     def get_shelter_by_username(username):
         try:
             user = User.query.filter_by(username=username).first()
@@ -533,6 +538,8 @@ class Animal(db.Model):
         'Disposition',
         secondary=animal_disposition_relationship
     )
+    animal_class = db.relationship('AnimalClass')
+    animal_breed = db.relationship('AnimalBreed')
 
     def __init__(self):
         self.name = None
@@ -568,6 +575,17 @@ class Animal(db.Model):
             raise ValueError(e)
 
     @staticmethod
+    def get_animals():
+        result = []
+        for animal in Animal.query:
+            data = Animal.object_as_dict(animal)
+            data['animal_class'] = animal.animal_class.animal_class
+            data['animal_breed'] = animal.animal_breed.animal_breed
+            data['dispositions'] = list(map(lambda x: x.disposition, animal.animal_dispositions))
+            result.append(data)
+        return result
+
+    @staticmethod
     def get_animal_by_name_shelter_age(animal_name, animal_shelter, animal_age):
         animals_with_name = Animal.query.filter_by(name=animal_name)
         for animal in animals_with_name:
@@ -576,6 +594,11 @@ class Animal(db.Model):
                     return animal
 
         return None
+
+    @staticmethod
+    def get_animals_by_shelter_id(shelter_id):
+        animals = Animal.query.filter_by(shelter_id=shelter_id).all()
+        return list(map(lambda x: Animal.object_as_dict(x), animals))
 
     @staticmethod
     def get_animal_dispositions_as_list(animal_obj):
