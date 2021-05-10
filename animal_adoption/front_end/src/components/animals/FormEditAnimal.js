@@ -9,6 +9,8 @@ import {
   Stack,
 } from '@chakra-ui/react'
 
+import { animalClasses, animalBreeds } from '../../models/Animal'
+
 function PreviewImage({ animal }) {
   if (animal?.imageLink) {
     return <Image src={animal.imageLink} />
@@ -47,9 +49,6 @@ export default function FormEditAnimal({ animal, setAnimal }) {
   }
 
   const isDispositionChecked = (disposition) => !!animal.dispositions.find((e) => e === disposition)
-
-  const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
-  const animalClasses = ['dog', 'cat', 'other']
 
   return (
     <FormControl>

@@ -1,3 +1,6 @@
+export const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
+export const animalClasses = ['dog', 'cat', 'other']
+
 export default class Animal {
   constructor(data) {
     this.id = data?.id_animal ?? ''
