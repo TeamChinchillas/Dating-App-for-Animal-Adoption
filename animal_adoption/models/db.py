@@ -599,9 +599,30 @@ class Animal(db.Model):
         return None
 
     @staticmethod
+    def get_animal_by_id(animal_id):
+        animal = Animal.query.filter_by(id_animal=int(animal_id)).first()
+
+        return animal
+
+    @staticmethod
     def get_animals_by_shelter_id(shelter_id):
         animals = Animal.query.filter_by(shelter_id=shelter_id).all()
         return list(map(lambda x: Animal.object_as_dict(x), animals))
+
+    @staticmethod
+    def get_animals_by_type_and_disposition(animal_class, dispositions):
+        matching_animals = []
+        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
+        for animal in animals:
+            animal_dispositions = []
+            for animal_disposition in animal.animal_dispositions:
+                animal_dispositions.append(animal_disposition.disposition)
+
+            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
+            if matching_dispositions:
+                matching_animals.append(Animal.object_as_dict(animal))
+
+        return matching_animals
 
     @staticmethod
     def get_animal_dispositions_as_list(animal_obj):
@@ -629,21 +650,6 @@ class Animal(db.Model):
         db.session.commit()
 
         return True
-
-    @staticmethod
-    def get_animals_by_type_and_disposition(animal_class, dispositions):
-        matching_animals = []
-        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
-        for animal in animals:
-            animal_dispositions = []
-            for animal_disposition in animal.animal_dispositions:
-                animal_dispositions.append(animal_disposition.disposition)
-
-            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
-            if matching_dispositions:
-                matching_animals.append(Animal.object_as_dict(animal))
-
-        return matching_animals
 
 
 class AnimalNews(db.Model):

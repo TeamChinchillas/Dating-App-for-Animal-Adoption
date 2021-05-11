@@ -588,7 +588,12 @@ def get_animal_details_by_id():
     """
     Route to get the details of the specified animal by id
     """
-    pass
+    animal_id = request.args.get('animalId')
+    try:
+        return jsonify(Animal.object_as_dict(Animal.get_animal_by_id(animal_id)))
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
 
 
 @app.route('/update-adoption-status', endpoint='update_adoption_status', methods=['POST'])
