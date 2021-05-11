@@ -448,8 +448,6 @@ def create_animal():
     try:
         user_detail = UserDetail.get_printable_user_detail(username)
         print(user_detail, flush=True)
-        user_type = UserType.get_user_type_name_by_id(user_type_id=user_detail['userType'])
-        print(user_type, flush=True)
     except Exception as e:
         print(e, flush=True)
         return jsonify(message="{}".format(e)), 501
