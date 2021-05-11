@@ -1,3 +1,4 @@
+from datetime import datetime
 from animal_adoption import db
 from flask_sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, \
@@ -648,6 +649,42 @@ class Animal(db.Model):
                 matching_animals.append(Animal.object_as_dict(animal))
 
         return matching_animals
+
+
+class AnimalNews(db.Model):
+    __tablename__ = 'AnimalNewsTable'
+    id_animal_news = db.Column(db.Integer, primary_key=True)
+    news_item = db.Column(db.TEXT)
+    creation_date = db.Column(db.DATE)
+    animal_id = db.Column(db.Integer, db.ForeignKey('AnimalTable.id_animal'))
+
+    def __init__(self):
+        self.news_item = None
+        self.creation_date = datetime.now()
+
+    def create_news_item_for_animal_id(self, news_text, animal_id):
+        self.news_item = news_text
+        self.animal_id = animal_id
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_news_items_by_animal_id(animal_id):
+        news_items = AnimalNews.query.filter_by(animal_id=animal_id)
+        return news_items
+
+    @staticmethod
+    def get_printable_news_items_by_animal_id(animal_id):
+        printable_news = []
+        current_printable_item = {}
+        news_items = AnimalNews.query.filter_by(animal_id=animal_id)
+
+        for news in news_items:
+            current_printable_item['text'] = news.news_item
+            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+            printable_news.append(current_printable_item)
+
+        return printable_news
 
 
 class Disposition(db.Model):

@@ -2,7 +2,7 @@ from animal_adoption import (
     app, User, UserType, UserDetail,
     Disposition, Shelter, Adopter, ShelterWorker,
     Administrator, AnimalClass, AdoptionStatus,
-    AnimalBreed, Animal
+    AnimalBreed, Animal, AnimalNews
 )
 
 
@@ -303,6 +303,40 @@ def create_animals():
         )
 
 
+def create_news_items():
+    news_items = [
+        {
+            'animal_id': '1',
+            'text': 'news item 1 for animal 1'
+        },
+        {
+            'animal_id': '1',
+            'text': 'news item 2 for animal 1'
+        },
+        {
+            'animal_id': '2',
+            'text': 'news item 1 for animal 2'
+        },
+        {
+            'animal_id': '3',
+            'text': 'news item 1 for animal 3'
+        },
+    ]
+
+    for news_item in news_items:
+        print(news_item)
+        new_animal_news = AnimalNews()
+        new_animal_news.create_news_item_for_animal_id(news_item['text'], news_item['animal_id'])
+
+    animal_news = AnimalNews.get_news_items_by_animal_id(1)
+    for i in animal_news:
+        print(i.news_item)
+
+    printable_animal_news = AnimalNews.get_printable_news_items_by_animal_id(1)
+    for i in printable_animal_news:
+        print(i)
+
+
 def initialize_db():
     print('Creating users')
     create_users()
@@ -330,6 +364,8 @@ def initialize_db():
     assign_animal_preferences()
     print('Creating animals')
     create_animals()
+    print('Creating animal news items')
+    create_news_items()
 
 
 if __name__ == '__main__':
