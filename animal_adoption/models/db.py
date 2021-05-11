@@ -530,6 +530,7 @@ class Animal(db.Model):
     age = db.Column(db.String(32))
     description = db.Column(db.TEXT)
     image_path = db.Column(db.TEXT)
+    creation_date = db.Column(db.DATE)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
     animal_breed_id = db.Column(db.Integer, db.ForeignKey('AnimalBreedTable.id_animal_breed'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
@@ -547,6 +548,7 @@ class Animal(db.Model):
         self.age = None
         self.description = None
         self.image_path = None
+        self.creation_date = datetime.now()
         self.animal_class_id = None
         self.animal_breed_id = None
         self.adoption_status_id = None
@@ -605,7 +607,7 @@ class Animal(db.Model):
     def get_animal_dispositions_as_list(animal_obj):
         dispositions = []
         for disposition in animal_obj.animal_dispositions:
-            dispositions.append(Disposition)
+            dispositions.append(disposition)
 
     def create_animal(self, name, age, description, image_path, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
@@ -633,19 +635,12 @@ class Animal(db.Model):
         matching_animals = []
         animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
         for animal in animals:
-            # print(animal)
             animal_dispositions = []
             for animal_disposition in animal.animal_dispositions:
-                # print(animal_disposition)
                 animal_dispositions.append(animal_disposition.disposition)
 
-            # print('User dispositions {}'.format(dispositions['dispositions']))
-            # print('Animal dispositions {}'.format(animal_dispositions))
-
             matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
-            # print('Matching dispositions {}'.format(matching_dispositions))
             if matching_dispositions:
-                # print('Animal matched: {}'.format(animal))
                 matching_animals.append(Animal.object_as_dict(animal))
 
         return matching_animals
