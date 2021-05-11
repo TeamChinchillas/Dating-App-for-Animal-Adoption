@@ -171,6 +171,7 @@ export default class SignupFormUser extends Component {
               value={this.state.animalLeashed}
               onChange={this.handleCheckbox}
             >
+            Animal Leashed
             </Checkbox>
             </Stack>
             <br/>
