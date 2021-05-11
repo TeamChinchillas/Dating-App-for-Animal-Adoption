@@ -468,8 +468,6 @@ def create_animal():
     else:
         return jsonify(message='Image not found'), 503
 
-    # print('Image path {}'.format(image_path))
-
     try:
         new_animal = Animal()
         result = new_animal.create_animal(
@@ -493,16 +491,11 @@ def create_animal():
 @app.route('/get-animal-by-details', endpoint='get_animal_by_details', methods=['GET'])
 def get_animal_by_details():
     """
-    Route to return a list of animals available for adoption that match the criteria of
-    the logged in user
+    Route to search for and return an animal based on the provided parameters
     """
-    if not request.is_json:
-        print('uri=/login error="Missing JSON in request"')
-        return jsonify({"msg": "Missing JSON in request"}), 400
-
-    animal_name = request.json.get('animalName', None)
-    shelter_name = request.json.get('shelterName', None)
-    animal_age = request.json.get('animalAge', None)
+    animal_name = request.args.get('animalName', None)
+    shelter_name = request.args.get('shelterName', None)
+    animal_age = request.args.get('animalAge', None)
 
     try:
         animal = Animal.get_animal_by_name_shelter_age(animal_name, shelter_name, animal_age)
