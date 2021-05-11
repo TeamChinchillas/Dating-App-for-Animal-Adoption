@@ -602,7 +602,31 @@ def update_adoption_status():
     """
     Route for a shelter worker to update the adoption status of an animal belonging to their shelter
     """
-    pass
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    animal_id = request.json.get('animalId', None)
+    adoption_status = request.json.get('adoptionStatus')
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+
+        if user_detail['userType'] == 'shelter worker':
+            animal = Animal.get_animal_by_id(animal_id)
+            if user_detail['shelter_id'] == animal.shelter_id:
+                result = Animal.update_adoption_status(animal_id, adoption_status)
+                return jsonify(message='{}'.format(result)), 200
+            else:
+                message = 'Animal {} does not belong to shelter worker {} shelter'.format(animal_id, username)
+                print(message)
+
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
 
 
 @app.route('/adopt-animal', endpoint='adopt_animal', methods=['POST'])

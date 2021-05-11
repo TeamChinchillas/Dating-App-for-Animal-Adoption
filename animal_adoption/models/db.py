@@ -651,6 +651,13 @@ class Animal(db.Model):
 
         return True
 
+    @staticmethod
+    def update_adoption_status(animal_id, adoption_status):
+        animal = Animal.get_animal_by_id(animal_id)
+        animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+        db.session.add(animal)
+        db.session.commit()
+
 
 class AnimalNews(db.Model):
     __tablename__ = 'AnimalNewsTable'
