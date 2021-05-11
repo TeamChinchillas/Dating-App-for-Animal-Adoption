@@ -144,36 +144,6 @@ export default class SignupFormUser extends Component {
           </Select>
           <br />
           <Divider/>
-          <Stack spacing={0} direction="column">
-          <FormLabel>Animal Disposition</FormLabel>
-            <Checkbox
-              type="checkbox"
-              name="goodWithAnimals"
-              defaultChecked={this.state.goodWithAnimals}
-              value={this.state.goodWithAnimals}
-              onChange={this.handleCheckbox}
-            >
-            Good with other animals
-            </Checkbox>
-            <Checkbox
-              type="checkbox"
-              name="goodWithChildren"
-              defaultChecked={this.state.goodWithChildren}
-              value={this.state.goodWithChildren}
-              onChange={this.handleCheckbox}
-            >
-            Good with other children
-            </Checkbox>
-            <Checkbox
-              type="checkbox"
-              name="animalLeashed"
-              defaultChecked={this.state.animalLeashed}
-              value={this.state.animalLeashed}
-              onChange={this.handleCheckbox}
-            >
-            Animal Leashed
-            </Checkbox>
-            </Stack>
             <br/>
             <Select>
             <option value="">Select Animal</option>
