@@ -24,6 +24,7 @@ export default class AdopterSettings extends Component {
       goodWithAnimals: false,
       goodWithChildren: false,
       animalLeashed: false,
+  
     }
 
     this.submitForm = this.submitForm.bind(this)
@@ -148,12 +149,8 @@ export default class AdopterSettings extends Component {
               />
               <br />
               <FormLabel>Desired Animal Type</FormLabel>
-              <Select
-                name="animalPreference"
-                value={this.state.animalPreference}
-                onChange={this.handleDropDown}
-              >
-                <option>Select Animal </option>
+              <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown}>
+                <option value=''> Select Animal </option>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
                 <option value="other">Other</option>
@@ -162,24 +159,14 @@ export default class AdopterSettings extends Component {
               <Divider />
               <Stack spacing={0} direction="column">
                 <FormLabel>Animal Disposition</FormLabel>
-                <Checkbox
-                  input
-                  type="checkbox"
-                  name="goodWithAnimals"
-                  onChange={this.handleCheckbox}
-                >
-                  Good with other animals
+                <Checkbox type="checkbox" name="goodWithAnimals" onChange={this.handleCheckbox}>
+                Good with other animals
                 </Checkbox>
-                <Checkbox
-                  input
-                  type="checkbox"
-                  name="goodWithChildren"
-                  onChange={this.handleCheckbox}
-                >
-                  Good with other children
+                <Checkbox type="checkbox" name="goodWithChildren" onChange={this.handleCheckbox}>
+                Good with other children
                 </Checkbox>
-                <Checkbox input type="checkbox" name="animalLeashed" onChange={this.handleCheckbox}>
-                  Animal must be leashed at all times
+                <Checkbox type="checkbox" name="animalLeashed" onChange={this.handleCheckbox}>
+                Animal must be leashed at all times
                 </Checkbox>
               </Stack>
               <br />
