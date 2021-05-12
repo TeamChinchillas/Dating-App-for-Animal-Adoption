@@ -74,6 +74,8 @@ export default class SignupFormShelterWorker extends Component {
         'Content-type': 'application/json',
       },
       body: JSON.stringify(this.state),
+    }).then(() => {
+      window.location.href = '/#/login'
     })
 
     console.log('STATE STRINGIFIED')
