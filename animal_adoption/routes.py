@@ -442,15 +442,14 @@ def create_animal():
         dispositions = data['dispositions']
         adoption_status = data['adoptionStatus']
     except Exception as e:
-        print(e)
+        print(e, flush=True)
         return jsonify(message='{}'.format(e)), 500
 
     try:
         user_detail = UserDetail.get_printable_user_detail(username)
-        user_type = UserType.get_user_type_name_by_id(user_type_id=user_detail['userType'])
-        print(user_type)
+        print(user_detail, flush=True)
     except Exception as e:
-        print(e)
+        print(e, flush=True)
         return jsonify(message="{}".format(e)), 501
 
     if user_detail['userType'] != 'shelter worker':
@@ -459,7 +458,7 @@ def create_animal():
         try:
             shelter_name = ShelterWorker.get_shelter_by_username(username)
         except Exception as e:
-            print(e)
+            print(e, flush=True)
             return jsonify(message='{}'.format(e)), 502
 
     if image and allowed_file(image.filename):
@@ -485,7 +484,7 @@ def create_animal():
             dispositions
         )
     except Exception as e:
-        print(e)
+        print(e, flush=True)
         return jsonify(message='{}'.format(e)), 504
 
     return jsonify(message='{}'.format(result)), 200

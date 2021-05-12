@@ -94,58 +94,62 @@ export default class SignupFormUser extends Component {
       <div>
         <FormLabel> Adopter Registration Form</FormLabel>
         <FormControl>
-          <form onSubmit={this.submitForm}>
-            <FormLabel>First Name</FormLabel>
-            <Input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              value={this.state.firstName}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <FormLabel>Last Name</FormLabel>
-            <Input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={this.state.lastName}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <FormLabel>E-Mail Address</FormLabel>
-            <Input
-              type="email"
-              name="username"
-              placeholder="Email Address"
-              value={this.state.username}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={this.state.password}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <FormLabel>Select Desired Animal Type:</FormLabel>
-            <Select
-              name="animalPreference"
-              value={this.state.animalPreference}
-              onChange={this.handleDropDown}
-              required
-            >
-              <option value="">Select Animal</option>
-              <option value="dog">Dog</option>
-              <option value="cat">Cat</option>
-              <option value="other">Other</option>
+        <form onSubmit={this.submitForm}>
+          <FormLabel>First Name</FormLabel>
+          <Input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={this.state.firstName}
+            onChange={this.handleChange}
+            required
+          />
+          <br />
+          <FormLabel>Last Name</FormLabel>
+          <Input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={this.state.lastName}
+            onChange={this.handleChange}
+            required
+          />
+          <br />
+          <FormLabel>E-Mail Address</FormLabel>
+          <Input
+            type="email"
+            name="username"
+            placeholder="Email Address"
+            value={this.state.username}
+            onChange={this.handleChange}
+            required
+          />
+          <br />
+          <FormLabel>Password</FormLabel>
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={this.state.password}
+            onChange={this.handleChange}
+            required
+          />
+          <br />
+          <FormLabel>Select Desired Animal Type:</FormLabel>
+          <Select name="animalPreference" value={this.state.animalPreference} onChange={this.handleDropDown} required>
+            <option value=''>Select Animal</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="other">Other</option>
+          </Select>
+          <br />
+          <Divider/>
+            <br/>
+            <Select>
+            <option value="">Select Animal</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="other">Other</option>
             </Select>
             <br />
             <Divider />
@@ -186,7 +190,7 @@ export default class SignupFormUser extends Component {
               </Button>
             </Center>
           </form>
-        </FormControl>
+          </FormControl>
       </div>
     )
   }
