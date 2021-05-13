@@ -1,7 +1,6 @@
 import {
   InputGroup,
   Input,
-  InputRightAddon,
   Button,
   Image,
   Box,
@@ -10,19 +9,17 @@ import {
   Badge,
   Spinner,
   Container,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   Grid,
+  Switch,
+  FormControl,
+  FormLabel,
+  Spacer,
 } from '@chakra-ui/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Animal from '../../models/Animal'
+import SearchConditions from '../../models/SearchConditions'
+import SearchModal from './SearchModal'
 
 const AnimalCard = ({ animal }) => (
   <Box borderWidth="1px" borderRadius="lg" overflow="hidden" m="2" cursor="pointer">
@@ -56,10 +53,29 @@ const AnimalCard = ({ animal }) => (
   </Box>
 )
 
+const AnimalGrid = ({ animals }) => {
+  if (animals.length === 0) {
+    return (
+      <Box textAlign="center" mt="4" color="red">
+        <Heading size="md">Animals not found</Heading>
+      </Box>
+    )
+  }
+  return (
+    <Grid templateColumns="repeat(auto-fit, minmax(160px, 270px))" justifyContent="center">
+      {animals.map((animal) => (
+        <Link to={`/animals/${animal.id}`} key={animal.id}>
+          <AnimalCard animal={animal} />
+        </Link>
+      ))}
+    </Grid>
+  )
+}
+
 export default function LandingForAdopters() {
   const [animals, setAnimals] = useState(null)
 
-  useEffect(async () => {
+  const fetchAllAnimals = async () => {
     try {
       const { message } = await fetch('/get-animals').then((res) => res.json())
       if (message) {
@@ -69,7 +85,7 @@ export default function LandingForAdopters() {
       setAnimals([])
       console.error(e)
     }
-  }, [])
+  }
 
   const fetchMatchingAnimals = async () => {
     try {
@@ -83,16 +99,50 @@ export default function LandingForAdopters() {
     }
   }
 
-  const [searchWord, setSearchWord] = useState('')
+  useEffect(async () => {
+    fetchAllAnimals()
+  }, [])
 
-  const filteredAnimals = () => {
-    if (searchWord === '') {
-      return animals
+  const handleSwitch = (event) => {
+    if (event.target.checked) {
+      fetchMatchingAnimals()
+    } else {
+      fetchAllAnimals()
     }
-    return animals.filter((e) => e.name.toLowerCase().includes(searchWord))
   }
 
-  const handleSearchWordChange = (event) => setSearchWord(event.target.value.toLowerCase())
+  const [searchConditions, setSearchConditions] = useState(new SearchConditions())
+  const handleSearchWordChange = (event) => {
+    console.log(searchConditions)
+    setSearchConditions({
+      ...searchConditions,
+      keyword: event.target.value.toLowerCase(),
+    })
+  }
+
+  const applySearchConditions = (animal) => {
+    const keywordMatched =
+      searchConditions.keyword === '' ||
+      animal.name.toLowerCase().includes(searchConditions.keyword)
+    const classMatched =
+      searchConditions.animalClass === 'all' || animal.animalClass === searchConditions.animalClass
+    const breedMatched =
+      searchConditions.animalBreed === 'all' || animal.animalBreed === searchConditions.animalBreed
+
+    let hasDispositions = true
+    searchConditions.dispositions.forEach((disposition) => {
+      hasDispositions = hasDispositions && !!animal.dispositions.find((e) => e === disposition)
+    })
+
+    return keywordMatched && classMatched && breedMatched && hasDispositions
+  }
+
+  const filteredAnimals = () => {
+    if (!animals) {
+      return []
+    }
+    return animals.filter((e) => applySearchConditions(e))
+  }
 
   if (animals === null) {
     return (
@@ -106,31 +156,29 @@ export default function LandingForAdopters() {
     <Container centerContent>
       <InputGroup m="5" size="md">
         <Input placeholder="Find a pet" rounded="xl" onChange={handleSearchWordChange} />
+        <SearchModal
+          searchConditions={searchConditions}
+          setSearchConditions={setSearchConditions}
+        />
       </InputGroup>
 
-      <Stack w="60vw">
-        <Grid templateColumns="repeat(auto-fit, minmax(180px, 1fr))">
-          <Box>
-            <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
-              Animal Profiles
-            </Heading>
-          </Box>
-          <Box
-            mt={{ sm: 5, md: 0, base: 0 }}
-            mr={{ sm: 0, base: 10 }}
-            textAlign={{ base: 'right', sm: 'center' }}
-          >
-            <Button colorScheme="green" onClick={fetchMatchingAnimals}>Find Matching animals</Button>
-          </Box>
-        </Grid>
+      <Stack w="70vw">
+        <Box>
+          <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
+            Animal Profiles
+          </Heading>
+        </Box>
+        <Box justifyContent="right">
+          <FormControl display="flex" alignItems="center">
+            <Spacer />
+            <FormLabel htmlFor="show-matching-animals" mb="0">
+              Show matching animals
+            </FormLabel>
+            <Switch id="show-matching-animals" onChange={handleSwitch} />
+          </FormControl>
+        </Box>
 
-        <Grid templateColumns="repeat(auto-fit, minmax(160px, 270px))" justifyContent="center">
-          {filteredAnimals().map((animal) => (
-            <Link to={`/animals/${animal.id}`} key={animal.id}>
-              <AnimalCard animal={animal} />
-            </Link>
-          ))}
-        </Grid>
+        <AnimalGrid animals={filteredAnimals()} />
       </Stack>
     </Container>
   )

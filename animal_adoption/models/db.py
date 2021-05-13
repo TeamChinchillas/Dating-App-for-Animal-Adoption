@@ -108,6 +108,26 @@ class User(db.Model):
         db.session.add(existing_user)
         db.session.commit()
 
+    @staticmethod
+    def delete(user_id):
+        user = User.query.filter_by(id_user=user_id).first()
+        db.session.delete(user)
+        db.session.commit()
+
+    @staticmethod
+    def get_users():
+        users = User.query.all()
+        result = []
+        for user in users:
+            print(user, flush=True)
+            obj = {
+                column.key: getattr(user, column.key) for column in inspect(user).mapper.column_attrs if column.key != 'password_hash'
+            }
+            user_detail = UserDetail.get_printable_user_detail(user.username)
+            obj.update(user_detail)
+            result.append(obj)
+        return result
+
 
 class UserDetail(db.Model):
     __tablename__ = 'UserDetailTable'
@@ -156,6 +176,8 @@ class UserDetail(db.Model):
     def get_printable_user_detail(username):
         try:
             user_detail = UserDetail.query.filter_by(user_id=User.get_id_by_username(username)).first()
+            if not user_detail:
+                return {}
             user_detail_dict = UserDetail.object_as_dict(user_detail)
             name = User.query.filter_by(id_user=user_detail_dict['user_id']).first().username
             user_type = UserType.query.filter_by(id_user_type=user_detail_dict['user_type_id']).first().user_type
@@ -473,6 +495,14 @@ class Administrator(db.Model):
                 db.session.commit()
         else:
             print('User {} not found'.format(username))
+
+    @staticmethod
+    def is_administrator(user_id):
+        user_detail = UserDetail.query.filter_by(user_id=user_id).first()
+        if user_detail and user_detail.user_type_id == 3:
+            return True
+        else:
+            return False
 
 
 class Shelter(db.Model):

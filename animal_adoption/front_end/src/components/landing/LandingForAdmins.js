@@ -16,27 +16,53 @@ import {
 import { useEffect, useState } from 'react'
 import User from '../../models/User'
 
-const data = require('../../sample_data/users.json')
-
 export default function LandingForAdmins() {
   const [users, setUsers] = useState(null)
+
+  const fetchUsers = async () => {
+    try {
+      const { message } = await fetch('/users').then((res) => res.json())
+      if (message) {
+        setUsers(JSON.parse(message).map((e) => new User(e)))
+      }
+    } catch (e) {
+      setUsers([])
+      console.error(e)
+    }
+  }
 
   /**
    * Delete user
    *
    * @param {number} userId
    */
-  const deleteUser = (userId) => {
-    // TODO: pseudo implementation.
-    // Send request to server-side
+  const deleteUser = async (userId) => {
     const ans = window.confirm('Are you sure to delete this user?')
     if (ans) {
-      setUsers(users.filter((e) => e.id !== userId))
+      try {
+        const response = await fetch(`/users/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+
+        if (response.status < 200 || response.status >= 300) {
+          const { msg } = await response.json()
+          console.log(msg)
+          return
+        }
+
+        setUsers(users.filter((e) => e.id !== userId))
+
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
-  useEffect(() => {
-    setUsers(data.map((e) => new User(e)))
+  useEffect(async () => {
+    await fetchUsers()
   }, [])
 
   if (users === null) {
@@ -74,9 +100,6 @@ export default function LandingForAdmins() {
                   <Td border="1px"> {user.emailAddress} </Td>
                   <Td border="1px"> {user.userType} </Td>
                   <Td border="1px">
-                    <Button mr="2" colorScheme="teal">
-                      Edit
-                    </Button>
                     <Button colorScheme="red" onClick={() => deleteUser(user.id)}>
                       Delete
                     </Button>

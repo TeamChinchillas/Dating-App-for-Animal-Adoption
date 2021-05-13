@@ -1,6 +1,6 @@
 export default class User {
   constructor(data) {
-    console.log(data)
+    this.id = data.id_user
     this.username = data.username
     this.firstName = data.firstName
     this.lastName = data.lastName
