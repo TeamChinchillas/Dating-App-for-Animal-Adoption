@@ -6,6 +6,7 @@ from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
     Adopter, UserType, Animal, AnimalClass,
     AnimalNews, ALLOWED_EXTENSIONS
+    ALLOWED_EXTENSIONS, Administrator, AnimalNews
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -716,3 +717,55 @@ def adopt_animal():
     Route for an adopter to adopt an animal
     """
     pass
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required(locations='cookies')
+def delete_user(user_id):
+    """
+    Route for deleting a user by admin
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"', flush=True)
+        return jsonify(message="Missing user"), 400
+
+    if not Administrator.is_administrator(current_user):
+        print('non-admin user error', flush=True)
+        return jsonify(message="You are not allowed to delete other users"), 403
+
+    if user_id == current_user:
+        return jsonify(message="You are not allowed to delete yourself"), 403
+
+    try:
+        User.delete(user_id)
+        return jsonify(message="Delete succeeded"), 200
+
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 501
+
+@app.route('/users', methods=['GET'])
+@jwt_required(locations='cookies')
+def get_users():
+    """
+    Route for deleting a user by admin
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"', flush=True)
+        return jsonify(message="Missing user"), 400
+
+    if not Administrator.is_administrator(current_user):
+        print('non-admin user error', flush=True)
+        return jsonify(message="Forbidden"), 403
+
+    try:
+        users = User.get_users()
+        print(users, flush=True)
+        return jsonify(message='{}'.format(json.dumps(users))), 200
+
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 501

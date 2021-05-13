@@ -1,3 +1,26 @@
+export const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
+export const animalClasses = ['dog', 'cat', 'other']
+
+/**
+ * @param {string|null} imagePath 
+ * @returns {string}
+ */
+function getImageLink(imagePath) {
+  if (!imagePath) {
+    return ''
+  }
+
+  if (imagePath.startsWith('animal_adoption/front_end/public')) {
+    return imagePath.replace('animal_adoption/front_end/public', '')
+  }
+
+  if (imagePath.startsWith('animal_adoption/front_end/build')) {
+    return imagePath.replace('animal_adoption/front_end/build', '')
+  }
+
+  return ''
+}
+
 export default class Animal {
   constructor(data) {
     this.id = data?.id_animal ?? ''
@@ -12,6 +35,6 @@ export default class Animal {
     this.shelter = data?.shelter
 
     this.imageData = null // for submit an image file
-    this.imageLink = data?.image_path?.replace('animal_adoption/front_end/public', '') ?? ''
+    this.imageLink = getImageLink(data?.image_path)
   }
 }
