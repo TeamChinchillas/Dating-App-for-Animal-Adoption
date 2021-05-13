@@ -5,8 +5,7 @@ from flask.helpers import send_from_directory
 from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
     Adopter, UserType, Animal, AnimalClass,
-    AnimalNews, ALLOWED_EXTENSIONS
-    ALLOWED_EXTENSIONS, Administrator, AnimalNews
+    AnimalNews, ALLOWED_EXTENSIONS, Administrator
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
