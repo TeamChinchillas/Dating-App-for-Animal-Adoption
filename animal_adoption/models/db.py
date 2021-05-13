@@ -658,6 +658,8 @@ class Animal(db.Model):
         db.session.add(animal)
         db.session.commit()
 
+        return True
+
 
 class AnimalNews(db.Model):
     __tablename__ = 'AnimalNewsTable'

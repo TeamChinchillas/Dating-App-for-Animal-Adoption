@@ -596,6 +596,54 @@ def get_animal_details_by_id():
         return jsonify(message='{}'.format(e)), 501
 
 
+@app.route('/create-animal-news-item', endpoint='create_animal_news_item', methods=['POST'])
+@jwt_required(locations='cookies')
+def create_animal_news_item():
+    """
+    Route for an authenticated shelter worker to add a new animal to their shelter
+    :return:
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        username = User.get_username_by_id(current_user)
+        animal_id = request.json.get('animalId', None)
+        news_text = request.json.get('newsText', None)
+        shelter_id = ShelterWorker.get_shelter_id_by_user_id(current_user)
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 500
+
+    try:
+        user_detail = UserDetail.get_printable_user_detail(username)
+        print(user_detail, flush=True)
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message="{}".format(e)), 501
+
+    if user_detail['userType'] != 'shelter worker':
+        return jsonify(message="User is not a shelter worker"), 401
+
+    try:
+        animal = Animal.get_animal_by_id(animal_id)
+        if animal.shelter_id == shelter_id:
+            new_animal_news = AnimalNews()
+            result = new_animal_news.create_news_item_for_animal_id(news_text, animal_id)
+        else:
+            message = 'Animal does not belong to same shelter as shelter worker'
+            print(message)
+            return jsonify(message='{}'.format(message)), 502
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message="{}".format(e)), 503
+
+    return jsonify(message='{}'.format(result)), 200
+
+
 @app.route('/get-animal-news-by-id', endpoint='get_animal_news_by_id', methods=['GET'])
 def get_animal_news_by_id():
     """
@@ -645,10 +693,11 @@ def update_adoption_status():
     try:
         username = User.get_username_by_id(current_user)
         user_detail = UserDetail.get_printable_user_detail(username)
+        shelter_id = ShelterWorker.get_shelter_id_by_user_id(current_user)
 
         if user_detail['userType'] == 'shelter worker':
             animal = Animal.get_animal_by_id(animal_id)
-            if user_detail['shelter_id'] == animal.shelter_id:
+            if shelter_id == animal.shelter_id:
                 result = Animal.update_adoption_status(animal_id, adoption_status)
                 return jsonify(message='{}'.format(result)), 200
             else:
