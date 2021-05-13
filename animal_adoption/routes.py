@@ -5,7 +5,7 @@ from flask.helpers import send_from_directory
 from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
     Adopter, UserType, Animal, AnimalClass,
-    ALLOWED_EXTENSIONS
+    AnimalNews, ALLOWED_EXTENSIONS
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -591,6 +591,37 @@ def get_animal_details_by_id():
     animal_id = request.args.get('animalId')
     try:
         return jsonify(Animal.object_as_dict(Animal.get_animal_by_id(animal_id)))
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
+@app.route('/get-animal-news-by-id', endpoint='get_animal_news_by_id', methods=['GET'])
+def get_animal_news_by_id():
+    """
+    Get all news items for an animal by animal id
+    :return:
+    """
+    animal_id = request.args.get('animalId')
+    try:
+        animal_news = AnimalNews.get_printable_news_items_by_animal_id(animal_id)
+        return jsonify(message=animal_news), 200
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
+@app.route('/get-recent-news-items', endpoint='get_recent_news_items', methods=['GET'])
+def get_recent_news_items():
+    """
+    Get recent news items for all animal. Number of news items specified by newsItemCount
+    parameter
+    :return:
+    """
+    news_item_count = request.args.get('newsItemCount')
+    try:
+        animal_news = AnimalNews.get_printable_news_items_all_animals(news_item_count)
+        return jsonify(message=animal_news), 200
     except Exception as e:
         print(e)
         return jsonify(message='{}'.format(e)), 501

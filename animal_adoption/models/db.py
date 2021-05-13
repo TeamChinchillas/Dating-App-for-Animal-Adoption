@@ -694,6 +694,20 @@ class AnimalNews(db.Model):
 
         return printable_news
 
+    @staticmethod
+    def get_printable_news_items_all_animals(news_item_count):
+        printable_news = []
+        news_items = AnimalNews.query.order_by('creation_date').limit(int(news_item_count))
+
+        for news in news_items:
+            current_printable_item = {
+                'text': news.news_item,
+                'date': news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+            }
+            printable_news.append(current_printable_item)
+
+        return printable_news
+
 
 class Disposition(db.Model):
     __tablename__ = 'DispositionTable'
