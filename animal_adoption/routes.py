@@ -5,7 +5,7 @@ from flask.helpers import send_from_directory
 from animal_adoption import (
     app, Shelter, User, UserDetail, ShelterWorker,
     Adopter, UserType, Animal, AnimalClass,
-    ALLOWED_EXTENSIONS, Administrator
+    AnimalNews, ALLOWED_EXTENSIONS, Administrator
 )
 from flask import jsonify, make_response, redirect, request
 from flask_jwt_extended import (
@@ -468,8 +468,6 @@ def create_animal():
     else:
         return jsonify(message='Image not found'), 503
 
-    # print('Image path {}'.format(image_path))
-
     try:
         new_animal = Animal()
         result = new_animal.create_animal(
@@ -493,16 +491,11 @@ def create_animal():
 @app.route('/get-animal-by-details', endpoint='get_animal_by_details', methods=['GET'])
 def get_animal_by_details():
     """
-    Route to return a list of animals available for adoption that match the criteria of
-    the logged in user
+    Route to search for and return an animal based on the provided parameters
     """
-    if not request.is_json:
-        print('uri=/login error="Missing JSON in request"')
-        return jsonify({"msg": "Missing JSON in request"}), 400
-
-    animal_name = request.json.get('animalName', None)
-    shelter_name = request.json.get('shelterName', None)
-    animal_age = request.json.get('animalAge', None)
+    animal_name = request.args.get('animalName', None)
+    shelter_name = request.args.get('shelterName', None)
+    animal_age = request.args.get('animalAge', None)
 
     try:
         animal = Animal.get_animal_by_name_shelter_age(animal_name, shelter_name, animal_age)
@@ -595,7 +588,91 @@ def get_animal_details_by_id():
     """
     Route to get the details of the specified animal by id
     """
-    pass
+    animal_id = request.args.get('animalId')
+    try:
+        return jsonify(Animal.object_as_dict(Animal.get_animal_by_id(animal_id)))
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
+@app.route('/create-animal-news-item', endpoint='create_animal_news_item', methods=['POST'])
+@jwt_required(locations='cookies')
+def create_animal_news_item():
+    """
+    Route for an authenticated shelter worker to add a new animal to their shelter
+    :return:
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    try:
+        username = User.get_username_by_id(current_user)
+        animal_id = request.json.get('animalId', None)
+        news_text = request.json.get('newsText', None)
+        shelter_id = ShelterWorker.get_shelter_id_by_user_id(current_user)
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 500
+
+    try:
+        user_detail = UserDetail.get_printable_user_detail(username)
+        print(user_detail, flush=True)
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message="{}".format(e)), 501
+
+    if user_detail['userType'] != 'shelter worker':
+        return jsonify(message="User is not a shelter worker"), 401
+
+    try:
+        animal = Animal.get_animal_by_id(animal_id)
+        if animal.shelter_id == shelter_id:
+            new_animal_news = AnimalNews()
+            result = new_animal_news.create_news_item_for_animal_id(news_text, animal_id)
+        else:
+            message = 'Animal does not belong to same shelter as shelter worker'
+            print(message)
+            return jsonify(message='{}'.format(message)), 502
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message="{}".format(e)), 503
+
+    return jsonify(message='{}'.format(result)), 200
+
+
+@app.route('/get-animal-news-by-id', endpoint='get_animal_news_by_id', methods=['GET'])
+def get_animal_news_by_id():
+    """
+    Get all news items for an animal by animal id
+    :return:
+    """
+    animal_id = request.args.get('animalId')
+    try:
+        animal_news = AnimalNews.get_printable_news_items_by_animal_id(animal_id)
+        return jsonify(message=animal_news), 200
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
+
+@app.route('/get-recent-news-items', endpoint='get_recent_news_items', methods=['GET'])
+def get_recent_news_items():
+    """
+    Get recent news items for all animal. Number of news items specified by newsItemCount
+    parameter
+    :return:
+    """
+    news_item_count = request.args.get('newsItemCount')
+    try:
+        animal_news = AnimalNews.get_printable_news_items_all_animals(news_item_count)
+        return jsonify(message=animal_news), 200
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
 
 
 @app.route('/update-adoption-status', endpoint='update_adoption_status', methods=['POST'])
@@ -604,7 +681,32 @@ def update_adoption_status():
     """
     Route for a shelter worker to update the adoption status of an animal belonging to their shelter
     """
-    pass
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    animal_id = request.json.get('animalId', None)
+    adoption_status = request.json.get('adoptionStatus')
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+        shelter_id = ShelterWorker.get_shelter_id_by_user_id(current_user)
+
+        if user_detail['userType'] == 'shelter worker':
+            animal = Animal.get_animal_by_id(animal_id)
+            if shelter_id == animal.shelter_id:
+                result = Animal.update_adoption_status(animal_id, adoption_status)
+                return jsonify(message='{}'.format(result)), 200
+            else:
+                message = 'Animal {} does not belong to shelter worker {} shelter'.format(animal_id, username)
+                print(message)
+
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
 
 
 @app.route('/adopt-animal', endpoint='adopt_animal', methods=['POST'])

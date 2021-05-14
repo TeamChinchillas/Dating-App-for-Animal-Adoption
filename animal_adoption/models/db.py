@@ -1,3 +1,4 @@
+from datetime import datetime
 from animal_adoption import db
 from flask_sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, \
@@ -559,6 +560,7 @@ class Animal(db.Model):
     age = db.Column(db.String(32))
     description = db.Column(db.TEXT)
     image_path = db.Column(db.TEXT)
+    creation_date = db.Column(db.DATE)
     animal_class_id = db.Column(db.Integer, db.ForeignKey('AnimalClassTable.id_animal_class'))
     animal_breed_id = db.Column(db.Integer, db.ForeignKey('AnimalBreedTable.id_animal_breed'))
     adoption_status_id = db.Column(db.Integer, db.ForeignKey('AdoptionStatusTable.id_adoption_status'))
@@ -576,6 +578,7 @@ class Animal(db.Model):
         self.age = None
         self.description = None
         self.image_path = None
+        self.creation_date = datetime.now()
         self.animal_class_id = None
         self.animal_breed_id = None
         self.adoption_status_id = None
@@ -626,15 +629,36 @@ class Animal(db.Model):
         return None
 
     @staticmethod
+    def get_animal_by_id(animal_id):
+        animal = Animal.query.filter_by(id_animal=int(animal_id)).first()
+
+        return animal
+
+    @staticmethod
     def get_animals_by_shelter_id(shelter_id):
         animals = Animal.query.filter_by(shelter_id=shelter_id).all()
         return list(map(lambda x: Animal.object_as_dict(x), animals))
 
     @staticmethod
+    def get_animals_by_type_and_disposition(animal_class, dispositions):
+        matching_animals = []
+        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
+        for animal in animals:
+            animal_dispositions = []
+            for animal_disposition in animal.animal_dispositions:
+                animal_dispositions.append(animal_disposition.disposition)
+
+            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
+            if matching_dispositions:
+                matching_animals.append(Animal.object_as_dict(animal))
+
+        return matching_animals
+
+    @staticmethod
     def get_animal_dispositions_as_list(animal_obj):
         dispositions = []
         for disposition in animal_obj.animal_dispositions:
-            dispositions.append(Disposition)
+            dispositions.append(disposition)
 
     def create_animal(self, name, age, description, image_path, animal_class, animal_breed,
                       adoption_status, shelter, dispositions):
@@ -658,26 +682,63 @@ class Animal(db.Model):
         return True
 
     @staticmethod
-    def get_animals_by_type_and_disposition(animal_class, dispositions):
-        matching_animals = []
-        animals = Animal.query.filter_by(animal_class_id=animal_class.id_animal_class)
-        for animal in animals:
-            # print(animal)
-            animal_dispositions = []
-            for animal_disposition in animal.animal_dispositions:
-                # print(animal_disposition)
-                animal_dispositions.append(animal_disposition.disposition)
+    def update_adoption_status(animal_id, adoption_status):
+        animal = Animal.get_animal_by_id(animal_id)
+        animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+        db.session.add(animal)
+        db.session.commit()
 
-            # print('User dispositions {}'.format(dispositions['dispositions']))
-            # print('Animal dispositions {}'.format(animal_dispositions))
+        return True
 
-            matching_dispositions = [x for x in dispositions['dispositions'] if x in animal_dispositions]
-            # print('Matching dispositions {}'.format(matching_dispositions))
-            if matching_dispositions:
-                # print('Animal matched: {}'.format(animal))
-                matching_animals.append(Animal.object_as_dict(animal))
 
-        return matching_animals
+class AnimalNews(db.Model):
+    __tablename__ = 'AnimalNewsTable'
+    id_animal_news = db.Column(db.Integer, primary_key=True)
+    news_item = db.Column(db.TEXT)
+    creation_date = db.Column(db.DATE)
+    animal_id = db.Column(db.Integer, db.ForeignKey('AnimalTable.id_animal'))
+
+    def __init__(self):
+        self.news_item = None
+        self.creation_date = datetime.now()
+
+    def create_news_item_for_animal_id(self, news_text, animal_id):
+        self.news_item = news_text
+        self.animal_id = animal_id
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_news_items_by_animal_id(animal_id):
+        news_items = AnimalNews.query.filter_by(animal_id=animal_id)
+        return news_items
+
+    @staticmethod
+    def get_printable_news_items_by_animal_id(animal_id):
+        printable_news = []
+        current_printable_item = {}
+        news_items = AnimalNews.query.filter_by(animal_id=animal_id)
+
+        for news in news_items:
+            current_printable_item['text'] = news.news_item
+            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+            printable_news.append(current_printable_item)
+
+        return printable_news
+
+    @staticmethod
+    def get_printable_news_items_all_animals(news_item_count):
+        printable_news = []
+        news_items = AnimalNews.query.order_by('creation_date').limit(int(news_item_count))
+
+        for news in news_items:
+            current_printable_item = {
+                'text': news.news_item,
+                'date': news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+            }
+            printable_news.append(current_printable_item)
+
+        return printable_news
 
 
 class Disposition(db.Model):
