@@ -44,7 +44,7 @@ export default function LandingForAdmins() {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
         })
 
         if (response.status < 200 || response.status >= 300) {
@@ -54,7 +54,6 @@ export default function LandingForAdmins() {
         }
 
         setUsers(users.filter((e) => e.id !== userId))
-
       } catch (err) {
         console.error(err)
       }

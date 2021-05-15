@@ -48,10 +48,20 @@ export default function LandingForShelters() {
     _onClose()
   }
 
-  const onSave = () => {
-    // TODO: actually send request to the server
+  const onSave = async () => {
+    const { imageData, ...data } = selectedAnimal
+
+    const formData = new FormData()
+    formData.append('data', JSON.stringify(data))
+    formData.append('image', imageData)
+
+    const response = await fetch(`/animals/${selectedAnimal.id}`, {
+      method: 'PUT',
+      body: formData,
+    }).then((res) => res.json())
+
     setAnimals(animals.map((e) => (e.id === selectedAnimal.id ? selectedAnimal : e)))
-    setSelectedAnimal()
+
     _onClose()
   }
 
@@ -60,11 +70,22 @@ export default function LandingForShelters() {
    *
    * @param {Animal} animal
    */
-  const deleteAnimal = (animal) => {
-    // TODO: pseudo implementation. Send request to server-side
+  const deleteAnimal = async (animal) => {
     const ans = window.confirm('Are you sure to delete this animal from your profiles?')
     if (ans) {
-      setAnimals(animals.filter((e) => e.id !== animal.id))
+      try {
+        const response = await fetch(`/animals/${animal.id}`, { method: 'DELETE' })
+
+        if (response.status < 200 || response.status >= 300) {
+          const { msg } = await response.json()
+          console.log(msg)
+          return
+        }
+
+        setAnimals(animals.filter((e) => e.id !== animal.id))
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
@@ -78,7 +99,7 @@ export default function LandingForShelters() {
 
   return (
     <Flex justifyContent="center" mt="5">
-      <Stack>
+      <Stack w="90vw">
         <Heading alignSelf="center" size="lg">
           Animal Profiles
         </Heading>

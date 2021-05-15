@@ -87,52 +87,57 @@ export default class SignupFormShelterWorker extends Component {
       <div>
         <FormLabel>Shelter Worker Signup Form</FormLabel>
         <FormControl>
-        <form onSubmit={this.submitForm}>
-          <FormLabel>First Name</FormLabel>
-          <Input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={this.state.firstName}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Last Name</FormLabel>
-          <Input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={this.state.lastName}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>E-Mail Address</FormLabel>
-          <Input
-            type="email"
-            name="username"
-            placeholder="E-Mail Address"
-            value={this.state.username}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-            required
-          />
-          <br />
-          <FormLabel>Select Shelter:</FormLabel>
-          <Select name="shelterName" value={this.state.shelterName} onChange={this.handleDropDown} required>
-          <option value=''>Select Shelter</option> 
-            {this.state.shelterNames.map(item => (
-                <option key={item} value={item} >
+          <form onSubmit={this.submitForm}>
+            <FormLabel>First Name</FormLabel>
+            <Input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={this.state.firstName}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Last Name</FormLabel>
+            <Input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={this.state.lastName}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>E-Mail Address</FormLabel>
+            <Input
+              type="email"
+              name="username"
+              placeholder="E-Mail Address"
+              value={this.state.username}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handleChange}
+              required
+            />
+            <br />
+            <FormLabel>Select Shelter:</FormLabel>
+            <Select
+              name="shelterName"
+              value={this.state.shelterName}
+              onChange={this.handleDropDown}
+              required
+            >
+              <option value="">Select Shelter</option>
+              {this.state.shelterNames.map((item) => (
+                <option key={item} value={item}>
                   {item}
                 </option>
               ))}

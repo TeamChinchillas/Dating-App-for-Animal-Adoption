@@ -49,6 +49,9 @@ const AnimalCard = ({ animal }) => (
           </ul>
         </Box>
       </Box>
+      <Box textAlign="right" color="gray.500" fontSize="sm">
+        date: {animal.creationDate}
+      </Box>
     </Box>
   </Box>
 )
