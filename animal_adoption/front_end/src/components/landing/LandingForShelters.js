@@ -7,19 +7,109 @@ import {
   Flex,
   Spinner,
   Container,
-  useDisclosure,
   Table,
   Thead,
   Th,
   Tr,
   Td,
   Tbody,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  Text,
 } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Animal from '../../models/Animal'
 import Drawer from '../common/Drawer'
 import FormEditAnimal from '../animals/FormEditAnimal'
+import useAnimalNews from '../animals/useAnimalNews'
+
+function NewsItemModal({ animal }) {
+  const { onOpen: _onOpen, isOpen, onClose } = useDisclosure()
+
+  const {news, fetchAnimalNews} = useAnimalNews(`/get-animal-news-by-id?animalId=${animal.id}`)
+
+  const [newsText, setNewsText] = useState('')
+
+  function handleChange(event) {
+    setNewsText(event.target.value)
+  }
+
+  async function postNewsItem() {
+    try {
+      await fetch('/create-animal-news-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ animalId: animal.id, newsText }),
+      })
+
+      setNewsText('')
+
+      await fetchAnimalNews()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async function onOpen() {
+    await fetchAnimalNews()
+    _onOpen()
+  }
+
+  return (
+    <>
+      <Button mt="1" colorScheme="gray" onClick={onOpen}>
+        + Add news item
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>News Items: {animal.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Box ml="5">
+              <ul>
+                {news.map((e) => (
+                  <li key={`${e.id}`}>
+                    {e.text} - {e.date}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+            <FormControl mt="5">
+              <FormLabel>Add news item</FormLabel>
+              <InputGroup>
+                <Input onChange={handleChange} placeholder="news item" value={newsText} />
+                <Button disabled={newsText === ''} ml="1" colorScheme="blue" onClick={postNewsItem}>
+                  Add
+                </Button>
+              </InputGroup>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button color="gray.800" onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  )
+}
 
 export default function LandingForShelters() {
   const [animals, setAnimals] = useState(null)
@@ -48,10 +138,20 @@ export default function LandingForShelters() {
     _onClose()
   }
 
-  const onSave = () => {
-    // TODO: actually send request to the server
+  const onSave = async () => {
+    const { imageData, ...data } = selectedAnimal
+
+    const formData = new FormData()
+    formData.append('data', JSON.stringify(data))
+    formData.append('image', imageData)
+
+    const response = await fetch(`/animals/${selectedAnimal.id}`, {
+      method: 'PUT',
+      body: formData,
+    }).then((res) => res.json())
+
     setAnimals(animals.map((e) => (e.id === selectedAnimal.id ? selectedAnimal : e)))
-    setSelectedAnimal()
+
     _onClose()
   }
 
@@ -60,11 +160,22 @@ export default function LandingForShelters() {
    *
    * @param {Animal} animal
    */
-  const deleteAnimal = (animal) => {
-    // TODO: pseudo implementation. Send request to server-side
+  const deleteAnimal = async (animal) => {
     const ans = window.confirm('Are you sure to delete this animal from your profiles?')
     if (ans) {
-      setAnimals(animals.filter((e) => e.id !== animal.id))
+      try {
+        const response = await fetch(`/animals/${animal.id}`, { method: 'DELETE' })
+
+        if (response.status < 200 || response.status >= 300) {
+          const { msg } = await response.json()
+          console.log(msg)
+          return
+        }
+
+        setAnimals(animals.filter((e) => e.id !== animal.id))
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
@@ -78,7 +189,7 @@ export default function LandingForShelters() {
 
   return (
     <Flex justifyContent="center" mt="5">
-      <Stack>
+      <Stack w="90vw">
         <Heading alignSelf="center" size="lg">
           Animal Profiles
         </Heading>
@@ -116,10 +227,11 @@ export default function LandingForShelters() {
                 <Td border="1px"> {animal.animalBreed} </Td>
                 <Td border="1px"> {animal.adoptionStatus} </Td>
                 <Td border="1px">
-                  <Button mr="2" colorScheme="teal" onClick={() => editAnimal(animal)}>
+                  <NewsItemModal animal={animal} />
+                  <Button mt="1" mr="2" colorScheme="teal" onClick={() => editAnimal(animal)}>
                     Edit
                   </Button>
-                  <Button colorScheme="red" onClick={() => deleteAnimal(animal)}>
+                  <Button mt="1" colorScheme="red" onClick={() => deleteAnimal(animal)}>
                     Delete
                   </Button>
                 </Td>

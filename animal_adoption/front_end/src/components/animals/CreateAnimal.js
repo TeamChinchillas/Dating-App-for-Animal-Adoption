@@ -21,7 +21,7 @@ export default function CreateAnimal() {
       body: formData,
     }).then((res) => res.json())
 
-    history.push('/') // back to home page
+    history.push('/')
   }
 
   return (

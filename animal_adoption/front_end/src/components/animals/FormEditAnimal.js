@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@chakra-ui/react'
 
-import { animalClasses, animalBreeds } from '../../models/Animal'
+import { animalClasses, animalBreeds, adoptionStatuses } from '../../models/Animal'
 
 function PreviewImage({ animal }) {
   if (animal?.imageLink) {
@@ -67,7 +67,7 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       />
 
       <FormLabel>Animal Class</FormLabel>
-      <Select name="animalClass" onChange={handleChange}>
+      <Select name="animalClass" onChange={handleChange} defaultValue={animal.animalClass}>
         {animalClasses.map((e) => (
           <option key={`class-${e}`} value={e}>
             {e}
@@ -76,7 +76,7 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       </Select>
 
       <FormLabel>Animal Breed</FormLabel>
-      <Select name="animalBreed" onChange={handleChange}>
+      <Select name="animalBreed" onChange={handleChange} defaultValue={animal.animalBreed}>
         {animalBreeds.map((e) => (
           <option key={`breed-${e}`} value={e}>
             {e}
@@ -115,6 +115,15 @@ export default function FormEditAnimal({ animal, setAnimal }) {
       <FormLabel>Image</FormLabel>
       <Input type="file" name="image" mb="1" onChange={handleImageFile} />
       <PreviewImage animal={animal} />
+
+      <FormLabel mt="5">Adoption Status</FormLabel>
+      <Select name="adoptionStatus" onChange={handleChange} defaultValue={animal.adoptionStatus}>
+        {adoptionStatuses.map((e) => (
+          <option key={`adoption-${e}`} value={e}>
+            {e}
+          </option>
+        ))}
+      </Select>
     </FormControl>
   )
 }

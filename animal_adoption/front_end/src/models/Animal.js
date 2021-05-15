@@ -1,8 +1,9 @@
 export const animalBreeds = ['golden retriever', 'border collie', 'tabby', 'bengal', 'other']
 export const animalClasses = ['dog', 'cat', 'other']
+export const adoptionStatuses = ['Not Available', 'Available', 'Pending', 'Adopted']
 
 /**
- * @param {string|null} imagePath 
+ * @param {string|null} imagePath
  * @returns {string}
  */
 function getImageLink(imagePath) {
@@ -21,16 +22,38 @@ function getImageLink(imagePath) {
   return ''
 }
 
+function setAnimalClass(id) {
+  if (!id || id >= animalClasses.length) {
+    return animalClasses[0]
+  }
+  return animalClasses[id - 1]
+}
+
+function setAnimalBreed(id) {
+  if (!id || id >= animalBreeds.length) {
+    return animalBreeds[0]
+  }
+  return animalBreeds[id - 1]
+}
+
+function setAdoptionStatus(id) {
+  if (!id || id >= adoptionStatuses.length) {
+    return 'Available'
+  }
+  return adoptionStatuses[id - 1]
+}
+
 export default class Animal {
   constructor(data) {
     this.id = data?.id_animal ?? ''
     this.name = data?.name ?? ''
     this.age = data?.age
     this.description = data?.description ?? ''
-    this.animalClass = data?.animal_class ?? 'other'
-    this.animalBreed = data?.animal_breed ?? 'other'
+    this.animalClass = setAnimalClass(data?.animal_class_id)
+    this.animalBreed = setAnimalBreed(data?.animal_breed_id)
     this.dispositions = data?.dispositions ?? []
-    this.adoptionStatus = data?.adoption_status ?? 'Available'
+    this.adoptionStatus = setAdoptionStatus(data?.adoption_status_id)
+    this.creationDate = data?.creation_date
 
     this.shelter = data?.shelter
 
