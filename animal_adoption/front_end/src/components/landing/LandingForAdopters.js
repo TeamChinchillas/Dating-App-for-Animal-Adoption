@@ -84,7 +84,7 @@ const NewsItems = () => {
   }, [])
 
   return (
-    <Stack w="50vw">
+    <Stack w="70vw">
       <Box>
         <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
           News
@@ -92,7 +92,7 @@ const NewsItems = () => {
       </Box>
 
       {news ? (
-        <Grid mt="2" templateColumns="repeat(3, 1fr)" gap={5} justifyContent="center">
+        <Grid templateColumns="repeat(auto-fit, minmax(120px, 240px))" justifyContent="center">
           {news.map((e) => (
             <Box
               key={e.id}
@@ -161,7 +161,6 @@ export default function LandingForAdopters() {
 
   const [searchConditions, setSearchConditions] = useState(new SearchConditions())
   const handleSearchWordChange = (event) => {
-    console.log(searchConditions)
     setSearchConditions({
       ...searchConditions,
       keyword: event.target.value.toLowerCase(),
