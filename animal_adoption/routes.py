@@ -1,4 +1,5 @@
 import datetime
+import uuid
 import json
 from pathlib import Path
 from flask.helpers import send_from_directory
@@ -436,7 +437,9 @@ def create_animal():
         animal_name = data['name']
         animal_age = data['age']
         description = data['description']
-        image = request.files['image']
+        image = ''
+        if 'images' in request.files:
+            image = request.files['image']
         animal_class = data['animalClass']
         animal_breed = data['animalBreed']
         dispositions = data['dispositions']
@@ -462,11 +465,12 @@ def create_animal():
             return jsonify(message='{}'.format(e)), 502
 
     if image and allowed_file(image.filename):
-        filename = secure_filename(image.filename)
+        filename = str(uuid.uuid4()) + secure_filename(image.filename)
         image_path = Path.joinpath(app.config['UPLOAD_FOLDER'], filename)
         image.save(image_path)
     else:
-        return jsonify(message='Image not found'), 503
+        image_path = ''
+        print("Image not found", flush=True)
 
     try:
         new_animal = Animal()
@@ -549,7 +553,7 @@ def get_animals():
         animals = Animal.get_animals()
         return jsonify(message='{}'.format(json.dumps(animals))), 200
     except Exception as e:
-        print(e)
+        print(e, flush=True)
         return jsonify(message='{}'.format(e)), 501
 
 
@@ -590,7 +594,8 @@ def get_animal_details_by_id():
     """
     animal_id = request.args.get('animalId')
     try:
-        return jsonify(Animal.object_as_dict(Animal.get_animal_by_id(animal_id)))
+        animal = Animal.object_as_dict(Animal.get_animal_by_id(animal_id))
+        return jsonify(animal)
     except Exception as e:
         print(e)
         return jsonify(message='{}'.format(e)), 501
@@ -764,6 +769,74 @@ def get_users():
         users = User.get_users()
         print(users, flush=True)
         return jsonify(message='{}'.format(json.dumps(users))), 200
+
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 501
+
+@app.route('/animals/<int:animal_id>', methods=['DELETE'])
+@jwt_required(locations='cookies')
+def delete_animal(animal_id):
+    """
+    Route for deleting an animal
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"', flush=True)
+        return jsonify(message="Missing user"), 400
+
+    # TODO: check the user is valid shelter worker
+
+    try:
+        Animal.delete(animal_id)
+        return jsonify(message="Delete succeeded"), 200
+
+    except Exception as e:
+        print(e, flush=True)
+        return jsonify(message='{}'.format(e)), 501
+
+@app.route('/animals/<int:animal_id>', methods=['PUT'])
+@jwt_required(locations='cookies')
+def update_animal(animal_id):
+    """
+    Route for updating an animal profile
+    """
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"', flush=True)
+        return jsonify(message="Missing user"), 400
+
+    try:
+        animal = Animal.get_animal_by_id(animal_id)
+
+        data = json.loads(request.form.get('data'))
+        print(data, flush=True)
+
+        image = ''
+        if 'image' in request.files:
+            image = request.files['image']
+        if image and allowed_file(image.filename):
+            filename = str(uuid.uuid4()) + secure_filename(image.filename)
+            image_path = Path.joinpath(app.config['UPLOAD_FOLDER'], filename)
+            image.save(image_path)
+        else:
+            image_path = ''
+
+        Animal.update_animal(
+            animal_id,
+            data['name'] or animal.name,
+            data['age'] or animal.age,
+            data['description'] or animal.description,
+            image_path or animal.image_path,
+            data['animalClass'],
+            data['animalBreed'],
+            data['adoptionStatus'],
+            data['dispositions'],
+        )
+
+        return jsonify(message="Update succeeded"), 200
 
     except Exception as e:
         print(e, flush=True)
