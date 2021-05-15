@@ -763,12 +763,13 @@ class AnimalNews(db.Model):
     @staticmethod
     def get_printable_news_items_by_animal_id(animal_id):
         printable_news = []
-        current_printable_item = {}
         news_items = AnimalNews.query.filter_by(animal_id=animal_id)
 
         for news in news_items:
+            current_printable_item = {}
+            current_printable_item['id'] = news.id_animal_news
             current_printable_item['text'] = news.news_item
-            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y")
             printable_news.append(current_printable_item)
 
         return printable_news

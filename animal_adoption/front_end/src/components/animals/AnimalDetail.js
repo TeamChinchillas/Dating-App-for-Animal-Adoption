@@ -50,21 +50,33 @@ export default function AnimalDetail() {
         <Box>
           <Heading size="lg">{animal.name}</Heading>
         </Box>
-        <Image w="80%" src={animal.imageLink} fallbackSrc="https://via.placeholder.com/300?text=no%20photo" />
+        <Image
+          w="80%"
+          src={animal.imageLink}
+          fallbackSrc="https://via.placeholder.com/300?text=no%20photo"
+        />
         <Box>
-          <Heading size="md" mb="2">Status</Heading>
+          <Heading size="md" mb="2">
+            Status
+          </Heading>
           {animal.adoptionStatus}
         </Box>
         <Box>
-          <Heading size="md" mb="2">Age</Heading>
+          <Heading size="md" mb="2">
+            Age
+          </Heading>
           {animal.age}
         </Box>
         <Box>
-          <Heading size="md" md="2">Description</Heading>
+          <Heading size="md" md="2">
+            Description
+          </Heading>
           {animal.description}
         </Box>
         <Box>
-          <Heading size="md" mb="2">Dispositions</Heading>
+          <Heading size="md" mb="2">
+            Dispositions
+          </Heading>
           <Box pl="5">
             <ul>
               {animal.dispositions.map((e) => (
@@ -74,19 +86,27 @@ export default function AnimalDetail() {
           </Box>
         </Box>
         <Box>
-          <Heading size="md" mb="2">Class</Heading>
+          <Heading size="md" mb="2">
+            Class
+          </Heading>
           {animal.animalClass}
         </Box>
         <Box>
-          <Heading size="md" mb="2">Breed</Heading>
+          <Heading size="md" mb="2">
+            Breed
+          </Heading>
           {animal.animalBreed}
         </Box>
-        <Box mt="2" mb="3">creation date: {animal.creationDate}</Box>
+        <Box mt="2" mb="3">
+          creation date: {animal.creationDate}
+        </Box>
 
         <hr />
 
         <Box>
-          <Heading size="md" mt="5">Shelter Info</Heading>
+          <Heading size="md" mt="5">
+            Shelter Info
+          </Heading>
           <Table variant="simple" mt="2">
             <Tbody>
               <Tr>
