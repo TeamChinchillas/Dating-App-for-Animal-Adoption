@@ -671,7 +671,7 @@ def get_recent_news_items():
     parameter
     :return:
     """
-    news_item_count = request.args.get('newsItemCount')
+    news_item_count = request.args.get('newsItemCount') or 3
     try:
         animal_news = AnimalNews.get_printable_news_items_all_animals(news_item_count)
         return jsonify(message=animal_news), 200

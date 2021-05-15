@@ -32,21 +32,12 @@ import { useEffect, useState } from 'react'
 import Animal from '../../models/Animal'
 import Drawer from '../common/Drawer'
 import FormEditAnimal from '../animals/FormEditAnimal'
+import useAnimalNews from '../animals/useAnimalNews'
 
 function NewsItemModal({ animal }) {
   const { onOpen: _onOpen, isOpen, onClose } = useDisclosure()
-  const [news, setNews] = useState([])
 
-  async function fetchAnimalNews() {
-    try {
-      const { message } = await fetch(`/get-animal-news-by-id?animalId=${animal.id}`).then((res) => res.json())
-      if (message) {
-        setNews(message)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  const {news, fetchAnimalNews} = useAnimalNews(`/get-animal-news-by-id?animalId=${animal.id}`)
 
   const [newsText, setNewsText] = useState('')
 
@@ -59,15 +50,14 @@ function NewsItemModal({ animal }) {
       await fetch('/create-animal-news-item', {
         method: 'POST',
         headers: {
-         'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ animalId: animal.id, newsText })
+        body: JSON.stringify({ animalId: animal.id, newsText }),
       })
 
       setNewsText('')
 
       await fetchAnimalNews()
-
     } catch (e) {
       console.error(e)
     }
@@ -92,7 +82,7 @@ function NewsItemModal({ animal }) {
           <ModalBody>
             <Box ml="5">
               <ul>
-                {news.map(e => (
+                {news.map((e) => (
                   <li key={`${e.id}`}>
                     {e.text} - {e.date}
                   </li>

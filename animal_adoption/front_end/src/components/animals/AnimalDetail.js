@@ -14,12 +14,15 @@ import {
   Tbody,
 } from '@chakra-ui/react'
 import Animal from '../../models/Animal'
+import useAnimalNews from './useAnimalNews'
 
 const SUCCESS = 'SUCCESS'
 const FAILURE = 'FAILURE'
 
 export default function AnimalDetail() {
   const { animalId } = useParams()
+
+  const {news, fetchAnimalNews} = useAnimalNews(`/get-animal-news-by-id?animalId=${animalId}`)
 
   const [animal, setAnimal] = useState()
   const [status, setStatus] = useState()
@@ -30,6 +33,9 @@ export default function AnimalDetail() {
         res.json()
       )
       setAnimal(new Animal(response))
+
+      await fetchAnimalNews()
+
       setStatus(SUCCESS)
     } catch (e) {
       setStatus(FAILURE)
@@ -102,9 +108,24 @@ export default function AnimalDetail() {
         </Box>
 
         <hr />
-
         <Box>
           <Heading size="md" mt="5">
+            News Items
+          </Heading>
+          <Table variant="simple" mt="2">
+            <Tbody>
+              {news.map(e => (
+                <Tr key={e.id}>
+                  <Th>{e.date}</Th>
+                  <Td>{e.text}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
+
+        <Box borderWidth="1px" borderRadius="lg" p="5" boxShadow="lg">
+          <Heading size="md">
             Shelter Info
           </Heading>
           <Table variant="simple" mt="2">

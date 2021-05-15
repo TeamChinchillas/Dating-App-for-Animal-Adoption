@@ -742,7 +742,7 @@ class AnimalNews(db.Model):
     __tablename__ = 'AnimalNewsTable'
     id_animal_news = db.Column(db.Integer, primary_key=True)
     news_item = db.Column(db.TEXT)
-    creation_date = db.Column(db.DATE)
+    creation_date = db.Column(db.DATETIME)
     animal_id = db.Column(db.Integer, db.ForeignKey('AnimalTable.id_animal'))
 
     def __init__(self):
@@ -769,7 +769,7 @@ class AnimalNews(db.Model):
             current_printable_item = {}
             current_printable_item['id'] = news.id_animal_news
             current_printable_item['text'] = news.news_item
-            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y")
+            current_printable_item['date'] = news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
             printable_news.append(current_printable_item)
 
         return printable_news
@@ -781,8 +781,10 @@ class AnimalNews(db.Model):
 
         for news in news_items:
             current_printable_item = {
+                'id': news.id_animal_news,
+                'animal_id': news.animal_id,
                 'text': news.news_item,
-                'date': news.creation_date.strftime("%d/%m/%Y %H:%M:%S")
+                'date': news.creation_date.strftime("%d/%m/%Y %H:%M")
             }
             printable_news.append(current_printable_item)
 

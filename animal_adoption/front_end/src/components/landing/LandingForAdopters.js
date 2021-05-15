@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Animal from '../../models/Animal'
 import SearchConditions from '../../models/SearchConditions'
+import useAnimalNews from '../animals/useAnimalNews'
 import SearchModal from './SearchModal'
 
 const AnimalCard = ({ animal }) => (
@@ -72,6 +73,50 @@ const AnimalGrid = ({ animals }) => {
         </Link>
       ))}
     </Grid>
+  )
+}
+
+const NewsItems = () => {
+  const {news, fetchAnimalNews} = useAnimalNews()
+
+  useEffect(async () => {
+    await fetchAnimalNews()
+  }, [])
+
+  return (
+    <Stack w="50vw">
+      <Box>
+        <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
+          News
+        </Heading>
+      </Box>
+
+      {news ? (
+        <Grid mt="2" templateColumns="repeat(3, 1fr)" gap={5} justifyContent="center">
+          {news.map((e) => (
+            <Box
+              key={e.id}
+              borderWidth="1px"
+              borderRadius="lg"
+              overflow="hidden"
+              m="2"
+              p="3"
+              cursor="pointer"
+              onClick={() => {window.location.href=`/#/animals/${e.animal_id}`}}
+            >
+              <Box>
+                <Badge borderRadius="full" px="2" colorScheme="orange">
+                  {e.date}
+                </Badge>
+              </Box>
+              <Box>{e.text}</Box>
+            </Box>
+          ))}
+        </Grid>
+      ) : (
+        <div>No news items</div>
+      )}
+    </Stack>
   )
 }
 
@@ -157,6 +202,14 @@ export default function LandingForAdopters() {
 
   return (
     <Container centerContent>
+      <NewsItems />
+
+      <Box mt="5">
+        <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
+          Animal Profiles
+        </Heading>
+      </Box>
+
       <InputGroup m="5" size="md">
         <Input placeholder="Find a pet" rounded="xl" onChange={handleSearchWordChange} />
         <SearchModal
@@ -166,11 +219,6 @@ export default function LandingForAdopters() {
       </InputGroup>
 
       <Stack w="70vw">
-        <Box>
-          <Heading size="lg" textAlign={{ base: 'center', sm: 'center' }}>
-            Animal Profiles
-          </Heading>
-        </Box>
         <Box justifyContent="right">
           <FormControl display="flex" alignItems="center">
             <Spacer />
