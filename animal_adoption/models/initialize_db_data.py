@@ -12,6 +12,7 @@ def create_users():
         {'username': 'jimdoe@abc.com', 'password': 'test2'},
         {'username': 'jeandoe@abc.com', 'password': 'test3'},
         {'username': 'admin@abc.com', 'password': 'test4'},
+        {'username': 'test@abc.com', 'password': 'test5'},
     ]
 
     for user in users:
@@ -164,6 +165,12 @@ def create_user_details():
             'first_name': 'jean',
             'last_name': 'doe',
             'user_type': 'administrator'
+        },
+        {
+            'username': 'test@abc.com',
+            'first_name': 'test',
+            'last_name': 'test',
+            'user_type': 'shelter worker'
         }
     ]
 
@@ -245,6 +252,7 @@ def assign_adopters():
 def assign_shelter_workers():
     ShelterWorker.assign_user_by_username('jeandoe@abc.com', 'Save a Pet')
     ShelterWorker.assign_user_by_username('jeandoe@abc.com', 'Creature Comforts')
+    ShelterWorker.assign_user_by_username('test@abc.com', 'Creature Comforts')
 
 
 def assign_administrators():

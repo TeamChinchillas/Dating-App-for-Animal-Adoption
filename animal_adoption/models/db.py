@@ -532,6 +532,11 @@ class Shelter(db.Model):
         return shelter_list
 
     @staticmethod
+    def get_shelter_by_id(shelter_id):
+        shelter = Shelter.query.filter_by(id_shelter=shelter_id).first()
+        return Shelter.object_as_dict(shelter)
+
+    @staticmethod
     def get_shelter_by_name(name):
         shelter = Shelter.query.filter_by(name=name).first()
         if shelter:
@@ -603,7 +608,20 @@ class Animal(db.Model):
     @staticmethod
     def object_as_dict(obj):
         try:
-            return {column.key: getattr(obj, column.key) for column in inspect(obj).mapper.column_attrs}
+            result = {}
+            for column in inspect(obj).mapper.column_attrs:
+                if column.key == 'creation_date':
+                    result[column.key] = (getattr(obj, column.key)).strftime('%Y-%m-%d')
+                else:
+                    result[column.key] = getattr(obj, column.key)
+
+            # load dispositions
+            result['dispositions'] = list(map(lambda x: x.disposition, obj.animal_dispositions))
+
+            # Shelter info
+            result['shelter'] = Shelter.get_shelter_by_id(result['shelter_id'])
+
+            return result
         except Exception as e:
             raise ValueError(e)
 
@@ -682,6 +700,29 @@ class Animal(db.Model):
         return True
 
     @staticmethod
+    def update_animal(animal_id, name, age, description, image_path, animal_class, animal_breed,
+                      adoption_status, dispositions):
+        """
+        Method to update an animal profile
+        """
+        animal = Animal.get_animal_by_id(animal_id)
+        animal.name = name
+        animal.age = age
+        animal.description = description
+        animal.image_path = image_path
+        animal.animal_class_id = AnimalClass.get_animal_class_by_name(animal_class).id_animal_class
+        animal.animal_breed_id = AnimalBreed.get_animal_breed_by_name(animal_breed).id_animal_breed
+        animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+
+        # sync dispositions to new dispositions
+        for disposition in dispositions:
+            animal.animal_dispositions.append(Disposition.get_disposition_by_name(disposition))
+
+        db.session.commit()
+
+        return True
+
+    @staticmethod
     def update_adoption_status(animal_id, adoption_status):
         animal = Animal.get_animal_by_id(animal_id)
         animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
@@ -689,6 +730,12 @@ class Animal(db.Model):
         db.session.commit()
 
         return True
+    
+    @staticmethod
+    def delete(animal_id):
+        animal = Animal.query.filter_by(id_animal=animal_id).first()
+        db.session.delete(animal)
+        db.session.commit()
 
 
 class AnimalNews(db.Model):
