@@ -325,10 +325,6 @@ def create_news_items():
             'animal_id': '2',
             'text': 'news item 1 for animal 2'
         },
-        {
-            'animal_id': '3',
-            'text': 'news item 1 for animal 3'
-        },
     ]
 
     for news_item in news_items:

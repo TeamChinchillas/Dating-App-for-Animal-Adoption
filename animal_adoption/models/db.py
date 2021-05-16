@@ -742,7 +742,7 @@ class AnimalNews(db.Model):
     __tablename__ = 'AnimalNewsTable'
     id_animal_news = db.Column(db.Integer, primary_key=True)
     news_item = db.Column(db.TEXT)
-    creation_date = db.Column(db.DATETIME)
+    creation_date = db.Column(db.TIMESTAMP)
     animal_id = db.Column(db.Integer, db.ForeignKey('AnimalTable.id_animal'))
 
     def __init__(self):
