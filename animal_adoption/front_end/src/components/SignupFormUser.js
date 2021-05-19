@@ -150,13 +150,6 @@ export default class SignupFormUser extends Component {
             <br />
             <Divider />
             <br />
-            <Select>
-              <option value="">Select Animal</option>
-              <option value="dog">Dog</option>
-              <option value="cat">Cat</option>
-              <option value="other">Other</option>
-            </Select>
-            <br />
             <Divider />
             <Stack spacing={0} direction="column">
               <FormLabel>Animal Disposition</FormLabel>
