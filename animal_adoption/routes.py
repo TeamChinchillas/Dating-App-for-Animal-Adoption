@@ -735,7 +735,8 @@ def adopt_animal():
             adoption_status = Animal.get_adoption_status(animal_id)
             print(adoption_status)
             if adoption_status == 'Available':
-                result = Animal.update_adoption_status(animal_id, 'Pending')
+                result = Animal.update_adoption_status(animal_id, 'Pending') \
+                    and Animal.set_adopter(animal_id, current_user)
                 return jsonify(message='{}'.format(result)), 200
             else:
                 message = 'Animal is not available for adoption, adoption status: {}'.format(adoption_status)

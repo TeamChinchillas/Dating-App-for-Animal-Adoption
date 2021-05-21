@@ -12,6 +12,7 @@ import {
   Tr,
   Td,
   Tbody,
+  Button,
 } from '@chakra-ui/react'
 import Animal from '../../models/Animal'
 import useAnimalNews from './useAnimalNews'
@@ -22,10 +23,27 @@ const FAILURE = 'FAILURE'
 export default function AnimalDetail() {
   const { animalId } = useParams()
 
-  const {news, fetchAnimalNews} = useAnimalNews(`/get-animal-news-by-id?animalId=${animalId}`)
+  const { news, fetchAnimalNews } = useAnimalNews(`/get-animal-news-by-id?animalId=${animalId}`)
 
   const [animal, setAnimal] = useState()
   const [status, setStatus] = useState()
+
+  const adoptAnimal = async () => {
+    try {
+      const response = await fetch('/adopt-animal', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({ animalId }),
+      }).then((res) => res.json())
+
+      animal.afterAdoptionRequestSucceeded()
+      setAnimal({ ...animal })
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   useEffect(async () => {
     try {
@@ -66,6 +84,9 @@ export default function AnimalDetail() {
             Status
           </Heading>
           {animal.adoptionStatus}
+          <Button ml="10" disabled={!animal.available} colorScheme="teal" onClick={adoptAnimal}>
+            Adopt this animal
+          </Button>
         </Box>
         <Box>
           <Heading size="md" mb="2">
@@ -114,7 +135,7 @@ export default function AnimalDetail() {
           </Heading>
           <Table variant="simple" mt="2">
             <Tbody>
-              {news.map(e => (
+              {news.map((e) => (
                 <Tr key={e.id}>
                   <Th>{e.date}</Th>
                   <Td>{e.text}</Td>
@@ -125,9 +146,7 @@ export default function AnimalDetail() {
         </Box>
 
         <Box borderWidth="1px" borderRadius="lg" p="5" boxShadow="lg">
-          <Heading size="md">
-            Shelter Info
-          </Heading>
+          <Heading size="md">Shelter Info</Heading>
           <Table variant="simple" mt="2">
             <Tbody>
               <Tr>

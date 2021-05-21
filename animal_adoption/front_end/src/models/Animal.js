@@ -54,10 +54,19 @@ export default class Animal {
     this.dispositions = data?.dispositions ?? []
     this.adoptionStatus = setAdoptionStatus(data?.adoption_status_id)
     this.creationDate = data?.creation_date
+    this.adopter = data?.adopter
 
     this.shelter = data?.shelter
 
     this.imageData = null // for submit an image file
     this.imageLink = getImageLink(data?.image_path)
+  }
+
+  get available() {
+    return this.adoptionStatus === adoptionStatuses[1]
+  }
+
+  afterAdoptionRequestSucceeded() {
+    this.adoptionStatus = 'Pending'
   }
 }

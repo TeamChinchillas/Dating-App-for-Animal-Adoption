@@ -89,7 +89,7 @@ export default function SearchModal({ searchConditions: state, setSearchConditio
                 ))}
               </Select>
 
-              <FormLabel>Animal Disposition</FormLabel>
+              <FormLabel mt="2">Animal Disposition</FormLabel>
               <Stack spacing={2} direction="column">
                 <Checkbox
                   type="checkbox"
@@ -116,6 +116,14 @@ export default function SearchModal({ searchConditions: state, setSearchConditio
                   Animal must be leashed at all times
                 </Checkbox>
               </Stack>
+
+              <FormLabel mt="2">Creation Date</FormLabel>
+              <Select name="creationDate" onChange={handleChange}>
+                <option>All</option>
+                <option value="today">Today</option>
+                <option value="week">Last 7 days</option>
+                <option value="month">Last 30 days</option>
+              </Select>
             </FormControl>
           </ModalBody>
 
