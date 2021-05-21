@@ -181,7 +181,32 @@ export default function LandingForAdopters() {
       hasDispositions = hasDispositions && !!animal.dispositions.find((e) => e === disposition)
     })
 
-    return keywordMatched && classMatched && breedMatched && hasDispositions
+    let creationDateMatched = true
+    const creationDate = new Date(animal.creationDate)
+    creationDate.setHours(0)
+    const baseDate = new Date()
+    baseDate.setHours(0)
+    switch (searchConditions.creationDate) {
+      case 'today':
+        creationDateMatched = baseDate === creationDate
+        break
+      case 'week':
+        baseDate.setDate(baseDate.getDate() - 7)
+        creationDateMatched = baseDate <= creationDate
+        break
+      case 'month':
+        baseDate.setDate(baseDate.getDate() - 30)
+        creationDateMatched = baseDate <= creationDate
+        break
+      default:
+        creationDateMatched = true
+    }
+
+    return keywordMatched && classMatched && breedMatched && hasDispositions && creationDateMatched
+  }
+
+  const checkCreationDate = () => {
+
   }
 
   const filteredAnimals = () => {
