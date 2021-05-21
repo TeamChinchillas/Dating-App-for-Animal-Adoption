@@ -37,7 +37,7 @@ import useAnimalNews from '../animals/useAnimalNews'
 function NewsItemModal({ animal }) {
   const { onOpen: _onOpen, isOpen, onClose } = useDisclosure()
 
-  const {news, fetchAnimalNews} = useAnimalNews(`/get-animal-news-by-id?animalId=${animal.id}`)
+  const { news, fetchAnimalNews } = useAnimalNews(`/get-animal-news-by-id?animalId=${animal.id}`)
 
   const [newsText, setNewsText] = useState('')
 
@@ -209,6 +209,7 @@ export default function LandingForShelters() {
               <Th border="1px">class</Th>
               <Th border="1px">breed</Th>
               <Th border="1px">Status</Th>
+              <Th border="1px">Adopter</Th>
               <Th border="1px">Action</Th>
             </Tr>
           </Thead>
@@ -226,6 +227,11 @@ export default function LandingForShelters() {
                 <Td border="1px"> {animal.animalClass} </Td>
                 <Td border="1px"> {animal.animalBreed} </Td>
                 <Td border="1px"> {animal.adoptionStatus} </Td>
+                <Td border="1px">
+                  {animal.available
+                    ? null
+                    : `${animal.adopter?.firstName} ${animal.adopter?.lastName}`}
+                </Td>
                 <Td border="1px">
                   <NewsItemModal animal={animal} />
                   <Button mt="1" mr="2" colorScheme="teal" onClick={() => editAnimal(animal)}>

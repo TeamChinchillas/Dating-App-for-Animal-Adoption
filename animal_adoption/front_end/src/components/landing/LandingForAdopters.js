@@ -77,7 +77,7 @@ const AnimalGrid = ({ animals }) => {
 }
 
 const NewsItems = () => {
-  const {news, fetchAnimalNews} = useAnimalNews()
+  const { news, fetchAnimalNews } = useAnimalNews()
 
   useEffect(async () => {
     await fetchAnimalNews()
@@ -102,7 +102,9 @@ const NewsItems = () => {
               m="2"
               p="3"
               cursor="pointer"
-              onClick={() => {window.location.href=`/#/animals/${e.animal_id}`}}
+              onClick={() => {
+                window.location.href = `/#/animals/${e.animal_id}`
+              }}
             >
               <Box>
                 <Badge borderRadius="full" px="2" colorScheme="orange">
@@ -205,9 +207,7 @@ export default function LandingForAdopters() {
     return keywordMatched && classMatched && breedMatched && hasDispositions && creationDateMatched
   }
 
-  const checkCreationDate = () => {
-
-  }
+  const checkCreationDate = () => {}
 
   const filteredAnimals = () => {
     if (!animals) {

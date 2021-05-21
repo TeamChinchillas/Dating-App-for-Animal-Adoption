@@ -119,10 +119,10 @@ export default function SearchModal({ searchConditions: state, setSearchConditio
 
               <FormLabel mt="2">Creation Date</FormLabel>
               <Select name="creationDate" onChange={handleChange}>
-                <option>All</option>  
-                <option value="today">Today</option>  
-                <option value="week">Last 7 days</option>  
-                <option value="month">Last 30 days</option>  
+                <option>All</option>
+                <option value="today">Today</option>
+                <option value="week">Last 7 days</option>
+                <option value="month">Last 30 days</option>
               </Select>
             </FormControl>
           </ModalBody>

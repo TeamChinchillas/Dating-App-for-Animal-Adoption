@@ -173,6 +173,14 @@ class UserDetail(db.Model):
             raise ValueError(e)
 
     @staticmethod
+    def get_user_detail_by_user_id(user_id):
+        try:
+            user_detail = UserDetail.query.filter_by(user_id=user_id).first()
+            return user_detail
+        except Exception as e:
+            raise ValueError(e)
+
+    @staticmethod
     def get_printable_user_detail(username):
         try:
             user_detail = UserDetail.query.filter_by(user_id=User.get_id_by_username(username)).first()
@@ -621,6 +629,10 @@ class Animal(db.Model):
             # Shelter info
             result['shelter'] = Shelter.get_shelter_by_id(result['shelter_id'])
 
+            # Adopter info
+            if obj.adopter_id:
+                result['adopter'] = UserDetail.get_printable_user_detail(User.get_username_by_id(obj.adopter_id))
+
             return result
         except Exception as e:
             raise ValueError(e)
@@ -733,6 +745,15 @@ class Animal(db.Model):
     def update_adoption_status(animal_id, adoption_status):
         animal = Animal.get_animal_by_id(animal_id)
         animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
+        db.session.add(animal)
+        db.session.commit()
+
+        return True
+
+    @staticmethod
+    def set_adopter(animal_id, adopter_id):
+        animal = Animal.get_animal_by_id(animal_id)
+        animal.adopter_id = adopter_id
         db.session.add(animal)
         db.session.commit()
 
