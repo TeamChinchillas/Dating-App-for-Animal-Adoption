@@ -720,7 +720,36 @@ def adopt_animal():
     """
     Route for an adopter to adopt an animal
     """
-    pass
+    current_user = get_jwt_identity()
+
+    if not current_user:
+        print('uri=/login error="Missing user"')
+        return jsonify(message="Missing user"), 400
+
+    animal_id = request.json.get('animalId', None)
+
+    try:
+        username = User.get_username_by_id(current_user)
+        user_detail = UserDetail.get_printable_user_detail(username)
+        if user_detail['userType'] == 'adopter':
+            adoption_status = Animal.get_adoption_status(animal_id)
+            print(adoption_status)
+            if adoption_status == 'Available':
+                result = Animal.update_adoption_status(animal_id, 'Pending')
+                return jsonify(message='{}'.format(result)), 200
+            else:
+                message = 'Animal is not available for adoption, adoption status: {}'.format(adoption_status)
+                print(message)
+                return jsonify(message='{}'.format(message)), 500
+        else:
+            message = 'User {} is not an adopter. Only adopters can adopt animals'.format(username)
+            print(message)
+            return jsonify(message='{}'.format(message)), 401
+
+    except Exception as e:
+        print(e)
+        return jsonify(message='{}'.format(e)), 501
+
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 @jwt_required(locations='cookies')

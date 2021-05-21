@@ -723,6 +723,13 @@ class Animal(db.Model):
         return True
 
     @staticmethod
+    def get_adoption_status(animal_id):
+        animal = Animal.get_animal_by_id(animal_id)
+        adoption_status = AdoptionStatus.get_adoption_status_by_id(animal.adoption_status_id)
+
+        return adoption_status.adoption_status
+
+    @staticmethod
     def update_adoption_status(animal_id, adoption_status):
         animal = Animal.get_animal_by_id(animal_id)
         animal.adoption_status_id = AdoptionStatus.get_adoption_status_by_name(adoption_status).id_adoption_status
@@ -932,6 +939,14 @@ class AdoptionStatus(db.Model):
             return adoption_status
         else:
             print('Adoption status {} not found'.format(name))
+
+    @staticmethod
+    def get_adoption_status_by_id(adoption_status_id):
+        adoption_status = AdoptionStatus.query.filter_by(id_adoption_status=adoption_status_id).first()
+        if adoption_status:
+            return adoption_status
+        else:
+            print('Adoption status {} not found'.format(adoption_status_id))
 
     def create_adoption_status(self, adoption_status_name):
         if not AdoptionStatus.get_adoption_status_by_name(adoption_status_name):
