@@ -149,8 +149,6 @@ export default class SignupFormUser extends Component {
             </Select>
             <br />
             <Divider />
-            <br />
-            <Divider />
             <Stack spacing={0} direction="column">
               <FormLabel>Animal Disposition</FormLabel>
               <Checkbox
