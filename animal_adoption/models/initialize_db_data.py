@@ -100,6 +100,10 @@ def create_animal_breeds():
             'class': 'dog'
         },
         {
+            'name': 'boxer',
+            'class': 'dog'
+        },
+        {
             'name': 'tabby',
             'class': 'cat'
         },
@@ -262,10 +266,10 @@ def assign_administrators():
 def create_animals():
     animals = [
         {
-            'name': 'fido',
+            'name': 'Fido',
             'age': '2',
-            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
-                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'description': 'Fido is a 2 year old Golden Retriever that loves children and '
+                           'going on car rides.',
             'image': 'animal_adoption/front_end/public/img/sample/sample04.jpeg',
             'animal_class': 'dog',
             'animal_breed': 'golden retriever',
@@ -273,26 +277,78 @@ def create_animals():
             'shelter': 'Creature Comforts',
             'dispositions': [
                 'Good with other animals',
-                'Good with children',
-                'Animal must be leashed at all times'
+                'Good with children'
             ]
         },
         {
-            'name': 'boots',
+            'name': 'Boots',
             'age': '5',
-            'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
-                           'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'description': 'Boots is a 5 year old Tabby that likes big families, but takes '
+                           'time to warm up to other animals.',
             'image': 'animal_adoption/front_end/public/img/sample/sample05.jpeg',
             'animal_class': 'cat',
             'animal_breed': 'tabby',
             'adoption_status': 'Pending',
             'shelter': 'Critters and Creatures',
             'dispositions': [
-                'Good with other animals',
-                'Good with children',
+                'Good with children'
+            ]
+        },
+        {
+            'name': 'Rex',
+            'age': '3',
+            'description': 'Rex is a 3 year old Boxer that likes to be left alone.',
+            'image': 'animal_adoption/front_end/public/img/sample/sample06.jpeg',
+            'animal_class': 'dog',
+            'animal_breed': 'boxer',
+            'adoption_status': 'Available',
+            'shelter': 'Creature Comforts',
+            'dispositions': [
                 'Animal must be leashed at all times'
             ]
-        }
+        },
+        {
+            'name': 'Michael',
+            'age': '7',
+            'description': 'Michael is a 7 year old Bengal that is happiest outside.',
+            'image': 'animal_adoption/front_end/public/img/sample/sample07.jpeg',
+            'animal_class': 'dog',
+            'animal_breed': 'bengal',
+            'adoption_status': 'Available',
+            'shelter': 'Save a Pet',
+            'dispositions': [
+                'Good with other animals'
+            ]
+        },
+        {
+            'name': 'Snickers',
+            'age': '2',
+            'description': 'Snickers is a 2 year old Ferret that loves playing and sneaking '
+                           'around the house.',
+            'image': 'animal_adoption/front_end/public/img/sample/sample08.jpeg',
+            'animal_class': 'other',
+            'animal_breed': 'other',
+            'adoption_status': 'Available',
+            'shelter': 'Critters and Creatures',
+            'dispositions': [
+                'Good with children',
+                'Good with other animals'
+            ]
+        },
+        {
+            'name': 'Ada',
+            'age': '15',
+            'description': 'Ada is a 15 year old Cockatiel that likes to sing and is happiest '
+                           'when she is outside of her cage.',
+            'image': 'animal_adoption/front_end/public/img/sample/sample09.jpeg',
+            'animal_class': 'other',
+            'animal_breed': 'other',
+            'adoption_status': 'Available',
+            'shelter': 'Save a Pet',
+            'dispositions': [
+                'Good with children'
+            ]
+        },
     ]
 
     for animal in animals:
@@ -301,7 +357,6 @@ def create_animals():
             animal['name'],
             animal['age'],
             animal['description'],
-            # animal['image'].encode(),
             animal['image'],
             animal['animal_class'],
             animal['animal_breed'],
