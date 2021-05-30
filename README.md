@@ -1,4 +1,21 @@
-# Run the app by Docker
+# Usage Instructions
+URL: https://osu-cs467-team-chinchillas.herokuapp.com/
+
+1. Register as a user on the Sign up page.
+
+  If you are unable to register, please use the following user:
+
+  >Email: johndoe@abc.com
+  >
+  >password: test1
+
+2. Go to the Login page and login with the information you have registered.
+3. Animal profiles will appear and you can browse the profiles of your favorite animals.
+4. If the animal status is available, you can click the "Adopt this animal" button to send an adoption request to the shelter.
+5. Click "advanced" next to the search bar to narrow down the list of animal profiles.
+
+
+# Run the backend server by Docker
 If you run the app for the first time, please run this command.
 
 ```
@@ -11,6 +28,24 @@ Press Ctrl+C to quit
 Next time, you just run
 ```
 docker-compose up
+```
+
+# Run the front end
+First, go to front_end directory.
+
+```
+cd animal_adoption/front_end/
+```
+
+Then, run the following commands
+```
+npm install
+npm start
+```
+
+# Reset local database
+```
+make reset_local_sqlite
 ```
 
 ### How to get into a Docker container
