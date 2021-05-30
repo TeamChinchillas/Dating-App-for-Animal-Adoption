@@ -30,7 +30,7 @@ Next time, you just run
 docker-compose up
 ```
 
-# Run the front end
+# Run the frontend
 First, go to front_end directory.
 
 ```
