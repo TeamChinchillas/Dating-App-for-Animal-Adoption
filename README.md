@@ -1,7 +1,7 @@
 # Usage Instructions
 URL: https://osu-cs467-team-chinchillas.herokuapp.com/
 
-1. Register as a user on the Sign up page.
+1. Register as an adopter user on the Sign up page.
 
   If you are unable to register, please use the following user:
 
