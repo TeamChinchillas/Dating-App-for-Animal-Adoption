@@ -2,13 +2,6 @@
 URL: https://osu-cs467-team-chinchillas.herokuapp.com/
 
 1. Register as an adopter user on the Sign up page.
-
-  If you are unable to register, please use the following user:
-
-  >Email: johndoe@abc.com
-  >
-  >password: test1
-
 2. Go to the Login page and login with the information you have registered.
 3. Animal profiles will appear and you can browse the profiles of your favorite animals.
 4. If the animal status is available, you can click the "Adopt this animal" button to send an adoption request to the shelter.
