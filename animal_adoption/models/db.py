@@ -805,7 +805,7 @@ class AnimalNews(db.Model):
     @staticmethod
     def get_printable_news_items_all_animals(news_item_count):
         printable_news = []
-        news_items = AnimalNews.query.order_by('creation_date').limit(int(news_item_count))
+        news_items = AnimalNews.query.order_by(AnimalNews.creation_date.desc()).limit(int(news_item_count))
 
         for news in news_items:
             current_printable_item = {
